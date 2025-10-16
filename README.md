@@ -93,6 +93,47 @@ This will scan all projects and generate `PROJECT_STATUS.md`.
 
 ---
 
+## Claude Code Custom Commands
+
+YPM includes custom slash commands for quick operations:
+
+### Project Management
+- `/ypm` - Show welcome message and quick commands
+- `/ypm-help` - Show detailed help with all available commands
+- `/ypm-update` - Update project status (scan all projects)
+- `/ypm-next` - Show next tasks for all projects in priority order
+- `/ypm-active` - Show only active projects (updated within 1 week)
+
+### New Project Setup
+- `/ypm-new` - Launch interactive project setup wizard
+
+**Usage**: Simply type the command in Claude Code, e.g., `/ypm-update`
+
+---
+
+## Project Bootstrap Assistant
+
+YPM includes a comprehensive project setup assistant for launching new projects.
+
+**What it does**:
+- Guides you through project planning and requirements definition
+- Creates proper directory structure with documentation
+- Sets up Git workflow (Git Flow, Worktree support)
+- Configures development environment (.gitignore, .claude/settings.json)
+- Establishes documentation management rules (DDD, TDD, DRY principles)
+
+**How to use**:
+
+Simply run `/ypm-new` in Claude Code, or manually use the prompt:
+
+1. Copy the contents of `project-bootstrap-prompt.md`
+2. Paste into Claude Code
+3. Follow the interactive wizard through 8 phases
+
+See [project-bootstrap-prompt.md](project-bootstrap-prompt.md) for details.
+
+---
+
 ## Configuration
 
 Edit `config.yml` to customize monitoring:
