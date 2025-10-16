@@ -1,0 +1,77 @@
+# YPM設定ファイル（テンプレート）
+#
+# このファイルをコピーして config.yml を作成してください:
+#   cp config.example.yml config.yml
+#
+# その後、あなたの環境に合わせて config.yml を編集してください。
+
+# 監視対象ディレクトリ
+monitor:
+  # 監視するディレクトリ（複数指定可能）
+  # 例:
+  #   - /Users/yourname/Projects
+  #   - /home/yourname/workspace
+  #   - ~/Documents/dev
+  directories:
+    - /path/to/your/projects    # TODO: あなたのプロジェクトディレクトリに変更してください
+
+  # 除外パターン（このプロジェクト自身など）
+  # 相対パスまたは部分一致で指定
+  exclude:
+    - proj_YPM/YPM         # YPM自身を除外
+    # 必要に応じて追加してください:
+    # - "node_modules"
+    # - ".git"
+    # - "tmp"
+
+  # プロジェクト検出パターン
+  # Gitリポジトリを検出するためのディレクトリパターン
+  # ディレクトリ構造に応じて調整可能
+  #
+  # 例:
+  #   - "*"              # 1階層（直下の全プロジェクト）
+  #   - "work/*"         # 2階層（work/project1, work/project2, ...）
+  #   - "proj_*/*"       # 特定の命名規則（proj_xxx/yyy）
+  patterns:
+    - "*"                # デフォルト: 直下の全プロジェクト
+    # 必要に応じて追加してください:
+    # - "personal/*"
+    # - "client/*"
+    # - "work/*/*"       # 3階層
+
+# プロジェクト分類の基準
+classification:
+  # アクティブ: 最近N日以内に更新
+  # デフォルト: 7日（1週間）
+  # 調整例: 3日（短期）、14日（2週間）
+  active_days: 7
+
+  # 休止中: N日以上更新なし
+  # デフォルト: 30日（1ヶ月）
+  # 調整例: 60日（2ヶ月）、90日（3ヶ月）
+  inactive_days: 30
+
+# 進捗率の推測基準
+# YPMはドキュメントやGit履歴から進捗率を推測します
+# 以下の基準を参考に、PROJECT_STATUS.mdで手動調整も可能です
+progress:
+  phase_0: 0-20    # 設計・計画段階（ドキュメント作成、アーキテクチャ設計）
+  phase_1: 20-30   # 開発環境構築（依存関係インストール、初期設定）
+  phase_2: 30-60   # 基本機能実装（コア機能の開発）
+  phase_3: 60-80   # テスト・改善（バグ修正、リファクタリング）
+  phase_4: 80-100  # 本番稼働・機能拡張（運用開始、新機能追加）
+
+# その他の設定
+settings:
+  # Gitリポジトリでないディレクトリも含める
+  # false: Gitリポジトリのみ監視（推奨）
+  # true: 全ディレクトリを監視（注意: Git非管理プロジェクトも表示されます）
+  include_non_git: false
+
+  # ドキュメント読み込みの優先順序
+  # YPMは各プロジェクトの概要を以下の順序で取得します
+  # 必要に応じて順序を変更できます
+  doc_priority:
+    - CLAUDE.md      # Claude Code向け指示書
+    - README.md      # プロジェクト概要
+    - docs/INDEX.md  # ドキュメント索引
