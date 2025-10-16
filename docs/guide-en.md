@@ -184,6 +184,153 @@ Displays next tasks for each project in priority order.
 
 ---
 
+## Claude Code Custom Commands
+
+YPM includes convenient custom commands that can be executed directly within Claude Code.
+
+### Project Management Commands
+
+#### `/ypm`
+Displays a welcome message and list of frequently used commands. Useful when starting a session.
+
+#### `/ypm-help`
+Displays detailed help for all commands. You can view command descriptions, YPM principles, and common use cases.
+
+#### `/ypm-update`
+Scans all projects and updates `PROJECT_STATUS.md`.
+
+**Actions performed**:
+1. Scans monitoring target directories specified in `config.yml`
+2. Retrieves Git information for each project (branch, last commit, changed files)
+3. Reads `CLAUDE.md`, `README.md`, `docs/INDEX.md` from each project
+4. Collects progress information (Phase, implementation progress, testing, documentation)
+5. Updates `PROJECT_STATUS.md`
+6. Commits changes
+
+**Note**: Other projects' files are read-only (modification forbidden)
+
+#### `/ypm-next`
+Displays "next tasks" for each project in priority order.
+
+**Display content**:
+- Project name
+- Current Phase
+- Next task
+- Last update date
+
+**Priority order**:
+1. Active projects (updated within the last week)
+2. Projects with high implementation progress
+3. Phase order
+
+#### `/ypm-active`
+Displays only active projects updated within the last week.
+
+**Display content**:
+- Project name, overview, branch
+- Last update date, Phase, implementation progress
+- Next task
+
+Displayed in descending order of update date (newest first).
+
+### New Project Setup Command
+
+#### `/ypm-new`
+Launches an interactive wizard to help set up new projects.
+
+Sets up projects step-by-step through 8 phases:
+1. **Project Planning**: Requirements definition, technology selection
+2. **Directory Creation**: Local directory creation and Git initialization
+3. **Documentation Setup**: Development environment based on DDD/TDD/DRY principles
+4. **GitHub Integration**: Remote repository creation and initial push
+5. **Git Workflow Setup**: Branch strategy and rule establishment
+6. **Environment Configuration**: `.gitignore`, `.claude/settings.json`
+7. **Documentation Management Rules**: Synchronization between implementation and documentation
+8. **Final Confirmation**: Ready to start development
+
+**After setup completion**:
+- Move to the new project directory
+- Start development in a dedicated Claude Code session for that project
+- YPM will automatically add it to monitoring targets on the next `/ypm-update`
+
+See [project-bootstrap-prompt.md](../project-bootstrap-prompt.md) for details.
+
+---
+
+## Project Bootstrap Assistant
+
+YPM includes a comprehensive assistant feature for launching new projects.
+
+### How to Use
+
+Two methods are available:
+
+**Method 1: Use Custom Command (Recommended)**
+
+Execute in Claude Code:
+```
+/ypm-new
+```
+
+**Method 2: Use Prompt Manually**
+
+1. Copy the contents of `project-bootstrap-prompt.md`
+2. Paste into Claude Code
+3. Follow the interactive wizard through 8 phases
+
+### Features
+
+- **Comprehensive Support from Requirements to Setup**
+  - Project planning interviews
+  - Requirements and specification documents
+  - Proper directory structure
+
+- **Introduction of Development Best Practices**
+  - DDD (Domain-Driven Design)
+  - TDD (Test-Driven Development)
+  - DRY (Don't Repeat Yourself) principle
+
+- **Git Workflow Configuration**
+  - Git Flow support
+  - Git Worktree support (optional)
+  - Branch protection rules
+
+- **Documentation Management Rules**
+  - Synchronization between implementation and documentation
+  - Onboarding support
+  - PR templates and checklists
+
+### Introduced Development Principles
+
+#### DDD (Domain-Driven Design)
+- Layer structure definition (Domain, Application, Infrastructure, Presentation)
+- Directory structure guidelines
+
+#### TDD (Test-Driven Development)
+- Red → Green → Refactor cycle adherence
+- Culture of writing tests before implementation
+- Test coverage goal setting
+
+#### DRY (Don't Repeat Yourself)
+- Avoid code duplication
+- Extract common logic
+- Reusable component design
+
+### Generated Documentation
+
+The following documentation is created during project setup:
+
+- `README.md` - Project overview, setup instructions
+- `docs/requirements.md` - Requirements specification
+- `docs/specifications.md` - System specifications
+- `docs/architecture.md` - Architecture design
+- `docs/development-guide.md` - Development guidelines
+- `docs/onboarding.md` - Onboarding guide for new members
+- `.claude/settings.json` - Claude Code permissions
+- `.gitignore` - Git exclusion settings
+
+---
+
 ## File Structure
 
 ```
