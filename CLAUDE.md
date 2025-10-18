@@ -302,22 +302,73 @@ main          ← リリースブランチ（本番環境）
 
 **デフォルトブランチ**: `develop`
 
+### ⚠️ 重要: Git Workflowの強制ルール
+
+**このセクションは絶対に省略できません。違反した場合は即座に停止してユーザーに報告すること。**
+
+#### 新機能開発フロー
+
+**STEP 1**: GitHubでISSUE作成（必須）
+**STEP 2**: 現在のブランチ確認（`git branch --show-current`で`develop`であることを確認）
+**STEP 3**: featureブランチ作成（`git checkout -b feature/<issue番号>-<機能名>`）
+**STEP 4**: 実装・コミット
+**STEP 5**: PR作成（`feature/<...>` → `develop`）
+**STEP 6**: マージ（マージコミット使用）
+
+#### リリースフロー
+
+**STEP 1**: GitHubでISSUE作成（例: `Release v1.0.1`）
+**STEP 2**: developブランチで最終調整・バージョン更新（必要に応じて）
+**STEP 3**: PR作成（`develop` → `main`）  ← **直接PRでOK**
+**STEP 4**: マージ（マージコミット使用）
+**STEP 5**: タグ付け（`git tag v1.0.1`）
+
+**重要**: developからmainへの直接PRは**リリース時のみ許可**。
+逆方向（main → develop）は**絶対禁止**。
+
+#### 🚨 絶対禁止事項
+
+- ❌ **main → develop への逆流**（これが最も重要）
+- ❌ **main・developブランチへの直接コミット**
+- ❌ Squashマージ（Git Flow履歴が破壊される）
+- ❌ ISSUE番号のないブランチ名
+
+#### 🚨 違反時の対応
+
+以下の状況を検知した場合、**即座に作業を停止**してユーザーに報告：
+
+1. **main → develop への逆流PR作成を試みた**
+   → 即座停止、「逆流は絶対禁止です」と報告
+
+2. **main・developブランチへの直接コミットを試みた**
+   → 即座停止、「featureブランチまたはbugfix/hotfixブランチで作業してください」と報告
+
+3. **Squashマージを選択しようとした**
+   → 即座停止、「必ずマージコミットを使用してください」と報告
+
 ### ブランチ保護
 
 - **main/develop への直接プッシュ禁止**
 - **PR必須**（レビュー数: 0、一人プロジェクトのため）
 - **管理者も含めてルール適用**
-- **Linear history必須**
+- **マージコミット必須**（`required_linear_history: false`）
 
 ### コミットメッセージ規約
 
-**Conventional Commits**に準拠（英語）
+**Conventional Commits**に準拠
 
-**フォーマット**:
+#### 🚨 絶対に守るべき言語ルール（CRITICAL）
+
+**コミット・PR・ISSUEの言語**:
+- ✅ **タイトル（1行目）**: **必ず英語** (Conventional Commits)
+- ✅ **本文（2行目以降）**: **必ず日本語**
+
+#### フォーマット
+
 ```
-<type>(<scope>): <subject>
+<type>(<scope>): <subject>  ← 英語
 
-<body>
+<body>  ← 日本語
 
 <footer>
 ```
@@ -330,15 +381,18 @@ main          ← リリースブランチ（本番環境）
 - `chore`: ビルドプロセスやツールの変更
 - `update`: PROJECT_STATUS.md更新（YPM専用）
 
-**例**:
+#### ✅ 正しい例
+
 ```bash
 feat(scan): add Git worktree detection support
 
-- Detect worktrees in project scanning
-- Add worktree info to PROJECT_STATUS.md
+Git worktree検出機能を実装
+- プロジェクトスキャン時にworktreeを検出
+- PROJECT_STATUS.mdにworktree情報を追加
 
 update: PROJECT_STATUS.mdを更新 (2025-10-18)
 
+プロジェクトスキャンを実施
 - 18プロジェクトをスキャン
 - 新規検出: 3個のworktree
 
@@ -346,6 +400,26 @@ update: PROJECT_STATUS.mdを更新 (2025-10-18)
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
+
+#### ❌ 間違った例（絶対にやってはいけない）
+
+```bash
+# NG: 本文が英語
+feat(scan): add Git worktree detection support
+
+- Detect worktrees in project scanning  ← 英語はダメ！
+- Add worktree info to PROJECT_STATUS.md  ← 英語はダメ！
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+#### 🚨 違反時の対応
+
+4. **コミット・PRの本文が英語になっている**
+   → **絶対に許されない違反**
+   → 即座にユーザーに報告し、修正方法を提案
 
 ### PR（Pull Request）ルール
 
