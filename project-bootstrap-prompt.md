@@ -299,43 +299,104 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      - `develop`は開発ブランチ（開発作業用）
      - 開発は`develop`で行うため、`develop`がデフォルト
 
-   - **ブランチ保護ルール設定**：
-     - **重要**: ユーザーに「main/developへの直接プッシュを禁止しますか？」と確認
-     - 推奨: 直接プッシュ禁止（PR必須）
-     - 必要なレビュワー数（一人プロジェクト: 0、チーム: 1）を確認
+   - **開発スタイルの選択**（新規追加）
+     - ユーザーに確認：
+       ```
+       このプロジェクトの開発スタイルを選択してください：
 
-   - **直接プッシュ禁止設定**（推奨）:
+       1️⃣ 一人開発（推奨）
+          - あなた一人で開発
+          - 管理者バイパス有効
+          - レビュー推奨（強制ではない）
+
+       2️⃣ チーム開発
+          - 複数人で開発
+          - 管理者も保護ルール適用
+          - レビュー必須
+
+       選択: [1/2]
+       ```
+
+   - **ブランチ保護ルール設定**
+
+     **⚠️ 重要な設計原則**:
+     - **Git Flowはマージコミットが必須**
+     - `required_linear_history: false` に設定（Squashマージ禁止）
+     - Squashマージは履歴を破壊し、main/developの履歴が分岐する原因になる
+
+     **一人開発の場合**:
      ```bash
-     # main/developブランチに以下の保護設定を適用
+     # mainブランチ
      gh api repos/:owner/:repo/branches/main/protection -X PUT --input - <<'EOF'
      {
-       "required_status_checks": {
-         "strict": false,
-         "contexts": []
-       },
-       "enforce_admins": true,
+       "required_status_checks": null,
+       "enforce_admins": false,
        "required_pull_request_reviews": {
          "dismiss_stale_reviews": true,
          "require_code_owner_reviews": false,
-         "required_approving_review_count": 0
+         "required_approving_review_count": 1
        },
        "restrictions": null,
        "allow_force_pushes": false,
        "allow_deletions": false,
-       "required_linear_history": true,
-       "lock_branch": false
+       "required_linear_history": false
      }
      EOF
 
-     # developブランチも同様に設定
+     # developブランチ
+     gh api repos/:owner/:repo/branches/develop/protection -X PUT --input - <<'EOF'
+     {
+       "required_status_checks": null,
+       "enforce_admins": false,
+       "required_pull_request_reviews": null,
+       "restrictions": null,
+       "allow_force_pushes": false,
+       "allow_deletions": false,
+       "required_linear_history": false
+     }
+     EOF
      ```
 
-     設定内容：
-     - `required_status_checks`: 空のチェック（直プッシュ防止）
-     - `enforce_admins`: 管理者も保護ルールに従う
-     - `required_pull_request_reviews`: PR必須
-     - `allow_force_pushes`: force push禁止
-     - `required_linear_history`: リニアな履歴を強制
+     **チーム開発の場合**:
+     ```bash
+     # mainブランチ
+     gh api repos/:owner/:repo/branches/main/protection -X PUT --input - <<'EOF'
+     {
+       "required_status_checks": null,
+       "enforce_admins": true,
+       "required_pull_request_reviews": {
+         "dismiss_stale_reviews": true,
+         "require_code_owner_reviews": false,
+         "required_approving_review_count": 1
+       },
+       "restrictions": null,
+       "allow_force_pushes": false,
+       "allow_deletions": false,
+       "required_linear_history": false
+       }
+     EOF
+
+     # developブランチ
+     gh api repos/:owner/:repo/branches/develop/protection -X PUT --input - <<'EOF'
+     {
+       "required_status_checks": null,
+       "enforce_admins": true,
+       "required_pull_request_reviews": {
+         "required_approving_review_count": 1
+       },
+       "restrictions": null,
+       "allow_force_pushes": false,
+       "allow_deletions": false,
+       "required_linear_history": false
+     }
+     EOF
+     ```
+
+     **設定内容の説明**:
+     - `required_linear_history: false` - **マージコミット許可**（Git Flow維持に必須）
+     - `enforce_admins` - 一人開発: false（バイパス可能）、チーム: true
+     - `required_approving_review_count` - 一人開発: 1（推奨、バイパス可能）、チーム: 1（必須）
+     - `allow_force_pushes: false` - Force push禁止
 
 3. **Git Worktreeの導入確認**
    - Git Worktreeを導入しますか？
@@ -590,11 +651,114 @@ Phase 8（CLAUDE.md作成と最終確認）に進んでよろしいですか？�
      - 技術スタック
      - 開発原則（DDD、TDD、DRY）
      - セッション開始時の手順
-     - Git Workflow
+     - **Git Workflow（詳細な手順書）**
+     - **コミット・PR・ISSUE規約（言語ルール強調）**
      - ディレクトリ構成
      - 実装の進め方
      - トラブルシューティング
      - 参考リソース
+
+   **CLAUDE.mdに必ず含めるべき重要セクション**:
+
+   ### A. Git Workflow強制ルール
+
+   ```markdown
+   ## 開発フロー
+
+   ### ⚠️ 重要: Git Workflowの強制ルール
+
+   **このセクションは絶対に省略できません。違反した場合は即座に停止してユーザーに報告すること。**
+
+   #### 新機能開発フロー
+
+   **STEP 1**: GitHubでISSUE作成（必須）
+   **STEP 2**: 現在のブランチ確認（`git branch --show-current`で`develop`であることを確認）
+   **STEP 3**: featureブランチ作成（`git checkout -b feature/<issue番号>-<機能名>`）
+   **STEP 4**: 実装・コミット
+   **STEP 5**: PR作成（`feature/<...>` → `develop`）
+   **STEP 6**: マージ（マージコミット使用）
+
+   #### リリースフロー
+
+   **STEP 1**: GitHubでISSUE作成（例: `Release v1.0.1`）
+   **STEP 2**: developブランチで最終調整・バージョン更新（必要に応じて）
+   **STEP 3**: PR作成（`develop` → `main`）  ← **直接PRでOK**
+   **STEP 4**: マージ（マージコミット使用）
+   **STEP 5**: タグ付け（`git tag v1.0.1`）
+
+   **重要**: developからmainへの直接PRは**リリース時のみ許可**。
+   逆方向（main → develop）は**絶対禁止**。
+
+   #### 🚨 絶対禁止事項
+
+   - ❌ **main → develop への逆流**（これが最も重要）
+   - ❌ **main・developブランチへの直接コミット**
+   - ❌ Squashマージ（Git Flow履歴が破壊される）
+   - ❌ ISSUE番号のないブランチ名
+
+   #### 🚨 違反時の対応
+
+   以下の状況を検知した場合、**即座に作業を停止**してユーザーに報告：
+
+   1. **main → develop への逆流PR作成を試みた**
+      → 即座停止、「逆流は絶対禁止です」と報告
+
+   2. **main・developブランチへの直接コミットを試みた**
+      → 即座停止、「featureブランチまたはbugfix/hotfixブランチで作業してください」と報告
+
+   3. **Squashマージを選択しようとした**
+      → 即座停止、「必ずマージコミットを使用してください」と報告
+   ```
+
+   ### B. コミット・PR言語ルール
+
+   ```markdown
+   ## コミットメッセージ規約
+
+   ### 🚨 絶対に守るべき言語ルール（CRITICAL）
+
+   **コミット・PR・ISSUEの言語**:
+   - ✅ **タイトル（1行目）**: **必ず英語** (Conventional Commits)
+   - ✅ **本文（2行目以降）**: **必ず日本語**
+
+   ### フォーマット
+
+   ```
+   <type>(<scope>): <subject>  ← 英語
+
+   <body>  ← 日本語
+
+   <footer>
+   ```
+
+   **✅ 正しい例**:
+   ```bash
+   feat(tickets): implement issue search functionality
+
+   チケット検索機能を実装
+   - search_issuesツールを追加
+   - 複数のフィルターパラメータに対応
+
+   Closes #123
+   ```
+
+   **❌ 間違った例（絶対にやってはいけない）**:
+   ```bash
+   # NG: 本文が英語
+   feat(tickets): implement issue search functionality
+
+   - Add search_issues tool  ← 英語はダメ！
+   - Support multiple filter parameters  ← 英語はダメ！
+
+   Closes #123
+   ```
+
+   ### 🚨 違反時の対応
+
+   4. **コミット・PRの本文が英語になっている**
+      → **絶対に許されない違反**
+      → 即座にユーザーに報告し、修正方法を提案
+   ```
 
 2. **CLAUDE.mdのレビュー**
    - 作成したCLAUDE.mdの内容をユーザーに提示
