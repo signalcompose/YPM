@@ -44,12 +44,24 @@ gh api "repos/$REPO/branches/develop/protection" \
 echo "✅ Develop branch protection configured"
 echo ""
 
+# Disable squash and rebase merge at repository level
+echo "📝 Disabling squash and rebase merge..."
+gh api "repos/$REPO" \
+  --method PATCH \
+  -f allow_squash_merge=false \
+  -f allow_rebase_merge=false \
+  > /dev/null
+
+echo "✅ Merge settings configured (merge commit only)"
+echo ""
+
 echo "🎉 Branch protection setup completed successfully!"
 echo ""
 echo "Configuration applied:"
 echo "  - Mode: $MODE"
 echo "  - Main branch: Protected"
 echo "  - Develop branch: Protected"
+echo "  - Merge method: Merge commit only (squash/rebase disabled)"
 echo ""
 
 # Display current settings
@@ -60,3 +72,6 @@ gh api "repos/$REPO/branches/main/protection" | jq '{enforce_admins, required_li
 echo ""
 echo "Develop branch:"
 gh api "repos/$REPO/branches/develop/protection" | jq '{enforce_admins, required_linear_history, required_approving_review_count: .required_pull_request_reviews.required_approving_review_count}'
+echo ""
+echo "Repository merge settings:"
+gh api "repos/$REPO" | jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge}'
