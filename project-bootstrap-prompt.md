@@ -298,9 +298,44 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      - `main`はリリースブランチ（本番環境）
      - `develop`は開発ブランチ（開発作業用）
      - 開発は`develop`で行うため、`develop`がデフォルト
-   - `main` と `develop` への直接プッシュを禁止
-   - ブランチ保護ルール設定：
+
+   - **ブランチ保護ルール設定**：
+     - **重要**: ユーザーに「main/developへの直接プッシュを禁止しますか？」と確認
+     - 推奨: 直接プッシュ禁止（PR必須）
      - 必要なレビュワー数（一人プロジェクト: 0、チーム: 1）を確認
+
+   - **直接プッシュ禁止設定**（推奨）:
+     ```bash
+     # main/developブランチに以下の保護設定を適用
+     gh api repos/:owner/:repo/branches/main/protection -X PUT --input - <<'EOF'
+     {
+       "required_status_checks": {
+         "strict": false,
+         "contexts": []
+       },
+       "enforce_admins": true,
+       "required_pull_request_reviews": {
+         "dismiss_stale_reviews": true,
+         "require_code_owner_reviews": false,
+         "required_approving_review_count": 0
+       },
+       "restrictions": null,
+       "allow_force_pushes": false,
+       "allow_deletions": false,
+       "required_linear_history": true,
+       "lock_branch": false
+     }
+     EOF
+
+     # developブランチも同様に設定
+     ```
+
+     設定内容：
+     - `required_status_checks`: 空のチェック（直プッシュ防止）
+     - `enforce_admins`: 管理者も保護ルールに従う
+     - `required_pull_request_reviews`: PR必須
+     - `allow_force_pushes`: force push禁止
+     - `required_linear_history`: リニアな履歴を強制
 
 3. **Git Worktreeの導入確認**
    - Git Worktreeを導入しますか？

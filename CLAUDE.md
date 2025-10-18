@@ -286,12 +286,106 @@ cat PROJECT_STATUS.md
 
 ---
 
-## コミットメッセージ規約
+## Git Workflow
 
-- `update: PROJECT_STATUS.mdを更新 (YYYY-MM-DD)`
-- `feat: 新機能追加`
-- `fix: バグ修正`
-- `docs: ドキュメント更新`
+### ブランチ戦略
+
+**Git Flow**を採用
+
+```
+main          ← リリースブランチ（本番環境）
+  └── develop ← 開発ブランチ（デフォルト）
+       └── feature/xxx  ← 機能ブランチ
+       └── bugfix/xxx   ← バグ修正ブランチ
+       └── docs/xxx     ← ドキュメント更新ブランチ
+```
+
+**デフォルトブランチ**: `develop`
+
+### ブランチ保護
+
+- **main/develop への直接プッシュ禁止**
+- **PR必須**（レビュー数: 0、一人プロジェクトのため）
+- **管理者も含めてルール適用**
+- **Linear history必須**
+
+### コミットメッセージ規約
+
+**Conventional Commits**に準拠（英語）
+
+**フォーマット**:
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**タイプ**:
+- `feat`: 新機能
+- `fix`: バグ修正
+- `docs`: ドキュメントのみの変更
+- `refactor`: リファクタリング
+- `chore`: ビルドプロセスやツールの変更
+- `update`: PROJECT_STATUS.md更新（YPM専用）
+
+**例**:
+```bash
+feat(scan): add Git worktree detection support
+
+- Detect worktrees in project scanning
+- Add worktree info to PROJECT_STATUS.md
+
+update: PROJECT_STATUS.mdを更新 (2025-10-18)
+
+- 18プロジェクトをスキャン
+- 新規検出: 3個のworktree
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### PR（Pull Request）ルール
+
+**PRタイトル**: 英語
+**PR本文**: 日本語または英語
+
+**PRテンプレート**:
+```markdown
+## 概要
+[変更内容の簡潔な説明]
+
+## 変更内容
+- [ ] 機能追加
+- [ ] バグ修正
+- [ ] ドキュメント更新
+
+## 関連Issue
+Closes #XXX
+```
+
+### 開発フロー
+
+```bash
+# 1. developブランチから最新を取得
+git checkout develop
+git pull origin develop
+
+# 2. 作業ブランチを作成
+git checkout -b feature/your-feature-name
+
+# 3. 開発・コミット
+git add .
+git commit -m "feat: implement your feature"
+
+# 4. プッシュ
+git push -u origin feature/your-feature-name
+
+# 5. Pull Request作成
+gh pr create --base develop --head feature/your-feature-name
+```
 
 ---
 
