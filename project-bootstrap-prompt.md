@@ -398,6 +398,21 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      - `required_approving_review_count` - 一人開発: 1（推奨、バイパス可能）、チーム: 1（必須）
      - `allow_force_pushes: false` - Force push禁止
 
+   - **リポジトリレベルのマージ設定**（必須）
+
+     **⚠️ 重要**: ブランチ保護だけでなく、リポジトリレベルでもSquashマージを無効化
+
+     ```bash
+     # Squashマージとリベースマージを無効化
+     gh api repos/:owner/:repo -X PATCH -f allow_squash_merge=false -f allow_rebase_merge=false
+     ```
+
+     **理由**:
+     - ブランチ保護は「履歴を直線にするか」の設定
+     - リポジトリ設定は「どのマージ方法を許可するか」の設定
+     - 両方設定しないと、PRマージ時にSquashが選択できてしまう
+     - **Git Flowでは必ずマージコミットのみ許可する**
+
 3. **Git Worktreeの導入確認**
    - Git Worktreeを導入しますか？
    - **導入する場合の構成**：
