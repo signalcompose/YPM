@@ -165,25 +165,38 @@ gh repo edit --default-branch develop
 
 ### STEP 4: ブランチ保護設定
 
-#### 4.1 レビュワー数の確認
-
-ユーザーに開発体制を確認：
-- **一人開発**: レビュワー数 0
-- **チーム開発**: レビュワー数 1以上（推奨: 1）
-
-#### 4.2 開発体制の確認
+#### 4.1 開発体制の確認とレビュー設定
 
 ユーザーに開発体制を確認：
 
 **一人開発（Solo Development）の推奨設定**:
 - `enforce_admins: false` - 管理者バイパス可能
-- `required_approving_review_count: 1` - セルフレビュー推奨（強制ではない）
+- `required_approving_review_count: 1` - セルフレビュー推奨（バイパス可能）
 - `required_linear_history: false` - **Git Flow対応（マージコミット許可）**
 
 **チーム開発（Team Development）の推奨設定**:
 - `enforce_admins: true` - 管理者も含めて全員ルール適用
 - `required_approving_review_count: 1` - 最低1人のレビュー必須
 - `required_linear_history: false` - **Git Flow対応（マージコミット許可）**
+
+#### 4.2 段階的移行の考え方
+
+**現在と将来を見据えた設定**:
+
+1. **ソロ開発フェーズ（初期）**
+   - レビュー設定: `required_approving_review_count: 1`
+   - Admin権限: `enforce_admins: false`でバイパス可能
+   - 効果: Adminはレビューなしでマージ可能、柔軟な開発
+
+2. **チーム参加時（移行期）**
+   - 設定変更なしで新メンバーは自動的にレビュー必須
+   - Admin以外: 1名の承認が必要
+   - Admin: 引き続きバイパス可能
+
+3. **完全チーム開発（最終形）**
+   - `enforce_admins: true`に変更
+   - 全員（Adminを含む）がレビュー必須
+   - より厳格なコード品質管理
 
 **🚨 重要: required_linear_history について**
 
@@ -200,14 +213,15 @@ gh repo edit --default-branch develop
 
 #### 4.3 mainブランチ保護
 
+**一人開発の場合**:
 ```bash
-# ブランチ保護設定用JSONファイル作成
-cat > /tmp/branch_protection.json <<EOF
+# mainブランチ保護設定
+gh api repos/:owner/:repo/branches/main/protection -X PUT --input - <<EOF
 {
   "required_status_checks": null,
-  "enforce_admins": <ENFORCE_ADMINS>,
+  "enforce_admins": false,
   "required_pull_request_reviews": {
-    "required_approving_review_count": <REVIEWER_COUNT>,
+    "required_approving_review_count": 1,
     "dismiss_stale_reviews": true,
     "require_code_owner_reviews": false
   },
@@ -219,31 +233,77 @@ cat > /tmp/branch_protection.json <<EOF
   "required_conversation_resolution": false
 }
 EOF
-
-# ブランチ保護ルール作成
-gh api repos/:owner/:repo/branches/main/protection \
-  -X PUT \
-  -H "Accept: application/vnd.github+json" \
-  --input /tmp/branch_protection.json
 ```
 
-**パラメータ設定**:
-- `<ENFORCE_ADMINS>`:
-  - Solo: `false`（管理者バイパス可能）
-  - Team: `true`（全員ルール適用）
-- `<REVIEWER_COUNT>`:
-  - Solo: `1`（セルフレビュー推奨、バイパス可能）
-  - Team: `1`（最低1人のレビュー必須）
+**チーム開発の場合**:
+```bash
+# mainブランチ保護設定
+gh api repos/:owner/:repo/branches/main/protection -X PUT --input - <<EOF
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": false
+}
+EOF
+```
 
 #### 4.4 developブランチ保護
 
+**一人開発の場合**:
 ```bash
-# developブランチも同じ設定で保護
-gh api repos/:owner/:repo/branches/develop/protection \
-  -X PUT \
-  -H "Accept: application/vnd.github+json" \
-  --input /tmp/branch_protection.json
+# developブランチ保護設定（mainと同じ設定）
+gh api repos/:owner/:repo/branches/develop/protection -X PUT --input - <<EOF
+{
+  "required_status_checks": null,
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": false
+}
+EOF
 ```
+
+**チーム開発の場合**:
+```bash
+# developブランチ保護設定（mainと同じ設定）
+gh api repos/:owner/:repo/branches/develop/protection -X PUT --input - <<EOF
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": false
+}
+EOF
+```
+
+**注**: main/develop両方に同じレビュー設定を適用することで、一貫性のある開発フローを実現します。
 
 #### 4.5 リポジトリレベルのマージ設定（必須）
 
@@ -425,11 +485,16 @@ gh repo view --json allowAutoMerge,allowForking
 - main/developへの直プッシュ禁止
 - Pull Requestによるマージのみ許可
 - マージコミット必須（Squashマージ禁止）
-- レビュワー数: <N>人
-- 管理者バイパス: <enforce_admins設定に応じて表示>
-  - false（Solo）: 管理者はレビューなしでマージ可能
-  - true（Team）: 管理者も含めて全員がレビュー必須
+- レビュー設定: 1名の承認必要
+- 管理者権限:
+  - Solo開発: Adminはレビューをバイパス可能（柔軟性重視）
+  - Team開発: 全員がレビュー必須（厳格性重視）
 - required_linear_history: false（Git Flow対応）
+
+【段階的移行サポート】
+- 現在: ソロ開発でも将来を見据えた設定
+- 将来: チーム参加時に自動的にレビュー適用
+- 移行時: `enforce_admins`を変更するだけで完全移行
 
 【マージ設定】
 - allow_squash_merge: false（Squashマージ無効）
