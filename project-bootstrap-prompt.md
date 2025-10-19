@@ -343,12 +343,16 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      }
      EOF
 
-     # developブランチ
+     # developブランチ（レビュー設定を追加）
      gh api repos/:owner/:repo/branches/develop/protection -X PUT --input - <<'EOF'
      {
        "required_status_checks": null,
        "enforce_admins": false,
-       "required_pull_request_reviews": null,
+       "required_pull_request_reviews": {
+         "dismiss_stale_reviews": true,
+         "require_code_owner_reviews": false,
+         "required_approving_review_count": 1
+       },
        "restrictions": null,
        "allow_force_pushes": false,
        "allow_deletions": false,
@@ -356,6 +360,10 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      }
      EOF
      ```
+
+     **注**: 一人開発でもレビュー設定を追加していますが、`enforce_admins: false`によりAdminはバイパス可能です。これにより：
+     - 現在：セルフレビューを推奨しつつ、必要に応じてスキップ可能
+     - 将来：チーム開発移行時に自動的にレビューが必須化される
 
      **チーム開発の場合**:
      ```bash
@@ -395,8 +403,14 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      **設定内容の説明**:
      - `required_linear_history: false` - **マージコミット許可**（Git Flow維持に必須）
      - `enforce_admins` - 一人開発: false（バイパス可能）、チーム: true
-     - `required_approving_review_count` - 一人開発: 1（推奨、バイパス可能）、チーム: 1（必須）
+     - `required_approving_review_count` - 両方: 1（一人開発はバイパス可能、チームは必須）
      - `allow_force_pushes: false` - Force push禁止
+     - `dismiss_stale_reviews: true` - 古いレビューは新コミットで無効化
+
+     **段階的移行の考え方**:
+     1. **ソロ開発フェーズ**: レビュー設定はあるが、Adminはバイパス可能で柔軟に作業
+     2. **チーム参加時**: 新メンバーは自動的にレビュー必須（Admin以外）
+     3. **完全移行時**: `enforce_admins: true`に変更で全員レビュー必須
 
    - **リポジトリレベルのマージ設定**（必須）
 
