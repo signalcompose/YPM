@@ -103,6 +103,13 @@ YPM includes custom slash commands for quick operations:
 - `/ypm-update` - Update project status (scan all projects)
 - `/ypm-next` - Show next tasks for all projects in priority order
 - `/ypm-active` - Show only active projects (updated within 1 week)
+- `/ypm-open [all|ignore-list|add-ignore|remove-ignore]` - Open a project in VS Code
+  - No arguments: Show projects excluding ignored ones (worktrees auto-excluded)
+  - `all`: Show all projects including ignored ones
+  - `ignore-list`: Show currently ignored projects
+  - `add-ignore`: Add a project to ignore list
+  - `remove-ignore`: Remove a project from ignore list
+  - See [ypm-open-spec.md](docs/development/ypm-open-spec.md) for details
 
 ### New Project Setup
 - `/ypm-new` - Launch interactive project setup wizard
