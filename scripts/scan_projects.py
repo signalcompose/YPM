@@ -153,6 +153,23 @@ def get_git_info(project_path):
     return info
 
 
+def is_worktree(project_path):
+    """
+    Git worktreeかどうかを判定
+
+    .gitがファイル → worktree
+    .gitがディレクトリ → 通常のリポジトリ
+
+    Args:
+        project_path: プロジェクトパス
+
+    Returns:
+        bool: worktreeの場合True
+    """
+    git_path = Path(project_path) / ".git"
+    return git_path.is_file()
+
+
 def read_project_docs(project_path):
     """
     プロジェクトのドキュメントを読み込み
@@ -266,6 +283,9 @@ def main():
         if category in ["active", "developing"]:
             docs = read_project_docs(project_path)
 
+        # worktree判定
+        is_wt = is_worktree(project_path)
+
         # プロジェクト情報を追加
         projects.append({
             "name": project_name,
@@ -274,6 +294,7 @@ def main():
             "last_commit": git_info['last_commit'],
             "changed_files": git_info['changed_files'],
             "category": category,
+            "is_worktree": is_wt,
             "docs": docs
         })
 
