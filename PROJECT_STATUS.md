@@ -1,35 +1,45 @@
 # プロジェクト状況一覧
 
-**最終更新**: 2025-10-28 12:09
+**最終更新**: 2025-10-28 17:27
 
 ---
 
 ## 📊 サマリー
 
 - **総プロジェクト数**: 26個
-- **アクティブ**: 6個（1週間以内に更新）
-- **開発中**: 17個（1週間以上1ヶ月未満の更新）
+- **アクティブ**: 7個（1週間以内に更新）
+- **開発中**: 16個（1週間以上1ヶ月未満の更新）
 - **休止中**: 3個（1ヶ月以上更新なし）
 
 ---
 
 ## 🔥 アクティブプロジェクト（最近1週間以内に更新）
 
+### oshireq
+- **概要**: 音楽業界向けプロジェクト（詳細は非公開）
+- **現在のブランチ**: 716-implement-playwright-e2e-testing
+- **最終更新**: 2時間前（docs: パートナーキャンペーン提案書に方式Cを追加）
+- **Phase**: 継続開発中
+- **次のタスク**: Issue #716（Implement automated E2E testing with Playwright）、Issue #722（Setup Playwright and Cognito auth helpers）、Issue #723（Implement basic user flow E2E tests）
+- **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/proj_usen/oshireq/CLAUDE.md)
+
+---
+
 ### orbitscore
 - **概要**: Audio-based live coding DSL for modern music production（オーディオファイル操作を中心とした音楽制作用DSL）
 - **現在のブランチ**: develop
-- **最終更新**: 1日前（chore: bump version to 1.0.1）
+- **最終更新**: 34時間前（chore: bump version to 1.0.1）
 - **Phase**: 継続開発中
 - **次のタスク**: Issue #73（Implement simplified end-user release workflow）
 - **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/proj_livecoding/orbitscore/CLAUDE.md)
-- **Git worktree**: orbitscore-main（main、1日前更新）
+- **Git worktree**: orbitscore-main（main、34時間前更新）
 
 ---
 
 ### CVI (Claude Voice Integration)
 - **概要**: Claude Codeのタスク完了時に音声通知を行うシステム
 - **現在のブランチ**: main
-- **最終更新**: 5日前（Merge pull request #11 from signalcompose/develop）
+- **最終更新**: 6日前（Merge pull request #11 from signalcompose/develop）
 - **Phase**: Phase 1完成・公開済み
 - **次のタスク**: Issue #2（音声読み上げ時の英単語・コマンド名の発音辞書機能）、Issue #1（音声読み上げと通知音のオンオフを個別設定）
 - **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/proj_CVI/CVI/CLAUDE.md)
@@ -50,7 +60,7 @@
 ### IAMAS-Resarch-LaTex-Format
 - **概要**: 情報科学芸術大学院大学（IAMAS）の修士論文用LaTeXフォーマット（非公式）
 - **現在のブランチ**: master
-- **最終更新**: 2時間前（Update English thesis citations and add ICMC 2026 submission plans）
+- **最終更新**: 8時間前（Update English thesis citations and add ICMC 2026 submission plans）
 - **Phase**: 修士論文執筆中
 - **次のタスク**: 記載なし（GitHub Issue未設定）
 - **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/proj_iamas/IAMAS-Resarch-LaTex-Format/CLAUDE.md)
@@ -60,7 +70,7 @@
 ### ICMC2026-papers
 - **概要**: ICMC 2026 (International Computer Music Conference 2026) への論文投稿プロジェクト
 - **現在のブランチ**: main
-- **最終更新**: 3分前（feat: add submodules and Google Drive symlinks）
+- **最終更新**: 5時間前（feat: add submodules and Google Drive symlinks）
 - **Phase**: プロジェクトセットアップ完了
 - **次のタスク**: 記載なし（GitHub Issue未設定）
 - **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/proj_icmc/ICMC2026-papers/CLAUDE.md)
@@ -70,7 +80,7 @@
 ### orbitscore-main（Git worktree）
 - **概要**: orbitscoreプロジェクトのmainブランチ確認用worktree
 - **現在のブランチ**: main
-- **最終更新**: 1日前（Merge pull request #77 from signalcompose/develop）
+- **最終更新**: 34時間前（Merge pull request #77 from signalcompose/develop）
 - **Phase**: 継続開発中
 - **次のタスク**: 記載なし（worktree - 参照用のみ）
 - **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/proj_livecoding/orbitscore-main/CLAUDE.md)
@@ -92,7 +102,7 @@
 ### oshireq.wiki
 - **概要**: oshireqプロジェクトのWikiドキュメント
 - **現在のブランチ**: master
-- **最終更新**: 8日前（docs: Wikiの構造化とプロポーザルの追加）
+- **最終更新**: 9日前（docs: Wikiの構造化とプロポーザルの追加）
 - **Phase**: ドキュメント整備中
 - **次のタスク**: Wiki構造化とプロポーザルの継続作業
 - **ドキュメント**: なし
@@ -149,16 +159,6 @@
 - **Phase**: 継続的更新
 - **次のタスク**: ノウハウ・ベストプラクティスの追加
 - **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/Claude-code/CLAUDE.md)
-
----
-
-### oshireq
-- **概要**: 音楽業界向けプロジェクト（詳細は非公開）
-- **現在のブランチ**: develop
-- **最終更新**: 13日前（Merge pull request #695 from signalcompose/integration-claude-and-git-worktree）
-- **Phase**: 継続開発中
-- **次のタスク**: docs/配下の仕様書に基づく開発継続
-- **ドキュメント**: [CLAUDE.md](file:///Users/yamato/Src/proj_usen/oshireq/CLAUDE.md)
 
 ---
 
@@ -258,7 +258,7 @@
 ### almf.github.io
 - **概要**: ALMF公式サイト（Jekyll）
 - **現在のブランチ**: main
-- **最終更新**: 6週間前（Update site opened post to clarify ALMF's official site announcement）
+- **最終更新**: 5週間前（Update site opened post to clarify ALMF's official site announcement）
 - **Phase**: 公開済み
 - **次のタスク**: コンテンツ更新
 - **ドキュメント**: [README.md](file:///Users/yamato/Src/proj_almf/almf.github.io/README.md)
