@@ -233,6 +233,44 @@ Displays only active projects updated within the last week.
 
 Displayed in descending order of update date (newest first).
 
+#### `/ypm-open [project] [editor] [options]`
+Opens a project in your preferred editor with automatic environment variable cleanup.
+
+**Basic Usage**:
+- `/ypm-open` - Show project list (excluding ignored projects, worktrees auto-excluded)
+- `/ypm-open oshireq` - Open "oshireq" project with default editor
+- `/ypm-open oshireq cursor` - Open "oshireq" project with Cursor editor
+
+**Supported Editors**:
+- `code` - VS Code
+- `cursor` - Cursor
+- `zed` - Zed
+
+**Editor Settings**:
+- `/ypm-open --editor` - Show current default editor
+- `/ypm-open --editor cursor` - Set default editor to Cursor
+- `/ypm-open --editor zed` - Set default editor to Zed
+
+**Ignore Management**:
+- `/ypm-open all` - Show all projects including ignored ones
+- `/ypm-open ignore-list` - Show currently ignored projects
+- `/ypm-open add-ignore` - Add a project to ignore list
+- `/ypm-open remove-ignore` - Remove a project from ignore list
+
+**Features**:
+- **Environment Variable Cleanup**: Automatically clears `NODENV_VERSION`, `NODENV_DIR`, `RBENV_VERSION`, `PYENV_VERSION` before launching editor, ensuring each project's version files (`.node-version`, etc.) are properly loaded
+- **Automatic Worktree Exclusion**: Git worktree directories (e.g., `MaxMCP-main`, `InstrVo-develop`) are automatically excluded from selection
+- **Flexible Editor Selection**: Switch between code editors based on project needs or personal preference
+
+**Configuration**:
+Default editor is set in `config.yml`:
+```yaml
+editor:
+  default: code  # Options: code, cursor, zed
+```
+
+See [ypm-open-spec.md](../docs/development/ypm-open-spec.md) for detailed specifications.
+
 ### New Project Setup Command
 
 #### `/ypm-new`
@@ -419,6 +457,21 @@ monitor:
     - "proj_*/*"          # 2-level structure
     - "projects/*"        # 1-level structure
     - "my-apps/*/src"     # 3-level structure
+```
+
+### Changing Default Editor
+
+Set your preferred editor in `config.yml`:
+
+```yaml
+editor:
+  default: cursor    # Change from code to cursor
+  # Options: code (VS Code), cursor (Cursor), zed (Zed)
+```
+
+Or use the command:
+```
+/ypm-open --editor cursor
 ```
 
 ### Changing Classification Criteria
