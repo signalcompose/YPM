@@ -1,24 +1,32 @@
-# YPM - Open Project in VS Code
+# YPM - Open Project in Editor
 
-YPMで管理しているプロジェクトをVS Codeで開きます。
+YPMで管理しているプロジェクトを指定したエディタで開きます。
 
 ## サブコマンド
 
-- **(引数なし)**: ignore除外の一覧から選択
+- **(引数なし)**: ignore除外の一覧から選択（デフォルトエディタで開く）
+- `<プロジェクト名> [エディタ名]`: プロジェクトを指定エディタで開く
 - `all`: ignore含む全プロジェクトから選択
 - `ignore-list`: ignore設定済みプロジェクト一覧表示
 - `add-ignore`: プロジェクトをignoreに追加
 - `remove-ignore`: ignoreから削除
+- `--editor [エディタ名]`: デフォルトエディタの設定・表示
 
 ## 使用例
 
 ```
-/ypm-open                    # 通常モード（ignore除外）
-/ypm-open all               # 全表示モード（ignore含む）
+/ypm-open                    # 通常モード（デフォルトエディタ）
+/ypm-open oshireq           # oshireqをデフォルトエディタで開く
+/ypm-open oshireq cursor    # oshireqをCursorで開く
+/ypm-open all               # 全表示モード
+/ypm-open --editor          # 現在のデフォルトエディタを表示
+/ypm-open --editor cursor   # デフォルトをCursorに設定
 /ypm-open ignore-list       # ignore一覧
 /ypm-open add-ignore        # ignoreに追加
 /ypm-open remove-ignore     # ignoreから削除
 ```
+
+**対応エディタ**: `code` (VS Code), `cursor` (Cursor), `zed` (Zed)
 
 ---
 
@@ -28,29 +36,57 @@ YPMで管理しているプロジェクトをVS Codeで開きます。
 
 引数を確認し、対応するモードに分岐：
 - 引数なし → **モード1: 通常モード**
+- `<プロジェクト名> [エディタ名]` → **モード1: 通常モード**（直接プロジェクト指定）
 - `all` → **モード2: 全表示モード**
 - `ignore-list` → **モード3: ignore一覧**
 - `add-ignore` → **モード4: ignore追加**
 - `remove-ignore` → **モード5: ignore削除**
+- `--editor [エディタ名]` → **モード6: エディタ設定**
 
 ---
 
-## モード1: 通常モード（引数なし）
+## モード1: 通常モード（引数なし または プロジェクト名指定）
 
-### STEP 1: VS Code CLIの確認
+### STEP 1: config.ymlとエディタCLIの確認
+
+#### 1-1. config.ymlからデフォルトエディタを取得
 
 ```bash
-which code
+# config.ymlを読み込み
+# editor.default の値を取得（例: code, cursor, zed）
+```
+
+#### 1-2. 第2引数がある場合、エディタを上書き
+
+- 第2引数 (`cursor`, `code`, `zed` 等) が指定されている場合、そのエディタを使用
+- 第2引数がない場合、config.ymlのデフォルトを使用
+
+#### 1-3. エディタCLIの確認
+
+```bash
+which <エディタ名>
 ```
 
 **結果が空の場合**:
 ```
-❌ VS Code CLI (code) が見つかりません。
+❌ <エディタ名> CLI が見つかりません。
 
-VS Code CLIをインストールしてください：
+<エディタ名>のCLIをインストールしてください。
+
+【VS Code (code)】
 1. VS Codeを開く
 2. Command Palette (Cmd+Shift+P)
 3. "Shell Command: Install 'code' command in PATH" を実行
+
+【Cursor (cursor)】
+1. Cursorを開く
+2. Command Palette (Cmd+Shift+P)
+3. "Shell Command: Install 'cursor' command in PATH" を実行
+
+【Zed (zed)】
+1. Zedを開く
+2. Command Palette (Cmd+Shift+P)
+3. "zed: Install CLI" を実行
 
 インストール後、再度このコマンドを実行してください。
 ```
@@ -155,12 +191,12 @@ config.ymlの`monitor.ignore_in_open`リストに含まれるプロジェクト�
   ```
   → **処理を中断**
 
-### STEP 6: VS Codeでプロジェクトを開く
+### STEP 6: エディタでプロジェクトを開く
 
-**重要**: 環境変数をクリアしてVS Codeを起動します。これにより、各プロジェクトの`.node-version`等が正しく読み込まれます。
+**重要**: 環境変数をクリアしてエディタを起動します。これにより、各プロジェクトの`.node-version`等が正しく読み込まれます。
 
 ```bash
-env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION code /path/to/project
+env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディタ名> /path/to/project
 ```
 
 **クリアする環境変数**:
@@ -171,22 +207,28 @@ env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION code /path
 
 **成功時のメッセージ**:
 ```
-✅ VS Codeで "MaxMCP" を開きました。
+✅ <エディタ表示名>で "MaxMCP" を開きました。
 
 プロジェクトパス: /Users/yamato/Src/proj_max_mcp/MaxMCP
+エディタ: <エディタ表示名> (<エディタ名>)
 
 ※ 環境変数（NODENV_VERSION等）をクリアした状態で起動しました。
 各プロジェクトの設定ファイル（.node-version等）が正しく読み込まれます。
 ```
 
+**エディタ表示名の対応**:
+- `code` → "VS Code"
+- `cursor` → "Cursor"
+- `zed` → "Zed"
+
 **失敗時のメッセージ**:
 ```
-❌ VS Codeの起動に失敗しました。
+❌ <エディタ表示名>の起動に失敗しました。
 
 エラー: <エラーメッセージ>
 
 手動で以下のコマンドを実行してください：
-env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION code /Users/yamato/Src/proj_max_mcp/MaxMCP
+env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディタ名> /Users/yamato/Src/proj_max_mcp/MaxMCP
 ```
 
 ---
@@ -360,6 +402,85 @@ config.ymlを更新:
 
 ---
 
+## モード6: エディタ設定（`/ypm-open --editor [エディタ名]`）
+
+### STEP 1: 引数の確認
+
+#### 引数がない場合（`/ypm-open --editor`）
+
+現在のデフォルトエディタを表示します。
+
+```bash
+# config.ymlを読み込み
+# editor.default の値を取得
+```
+
+**表示メッセージ**:
+```
+📝 現在のデフォルトエディタ
+
+エディタ: VS Code (code)
+
+変更方法: /ypm-open --editor <エディタ名>
+対応エディタ: code (VS Code), cursor (Cursor), zed (Zed)
+```
+
+#### 引数がある場合（`/ypm-open --editor cursor`）
+
+デフォルトエディタを変更します。
+
+### STEP 2: エディタ名のバリデーション
+
+指定されたエディタ名が対応しているか確認します。
+
+**対応エディタ**:
+- `code` - VS Code
+- `cursor` - Cursor
+- `zed` - Zed
+
+**対応していない場合**:
+```
+❌ 未対応のエディタです: "xxx"
+
+対応エディタ:
+- code (VS Code)
+- cursor (Cursor)
+- zed (Zed)
+
+使用例: /ypm-open --editor cursor
+```
+→ **処理を中断**
+
+### STEP 3: config.ymlの更新
+
+`editor.default`の値を指定されたエディタ名に変更します。
+
+```yaml
+# 変更前
+editor:
+  default: code
+
+# 変更後
+editor:
+  default: cursor
+```
+
+### STEP 4: 成功メッセージ
+
+```
+✅ デフォルトエディタを変更しました
+
+変更前: VS Code (code)
+変更後: Cursor (cursor)
+
+config.ymlを更新:
+  editor.default: cursor
+
+次回から /ypm-open で Cursor が使用されます。
+```
+
+---
+
 ## 重要な注意事項
 
 ### 1. Git worktreeの除外
@@ -373,11 +494,15 @@ Git worktree（例: `MaxMCP-main`, `redmine-mcp-server-main`, `InstrVo-develop`�
 
 ### 3. config.ymlの保存
 
-ignore追加・削除時は、config.ymlファイルを**必ず保存**してください。Writeツールを使用します。
+ignore追加・削除時、エディタ設定変更時は、config.ymlファイルを**必ず保存**してください。Writeツールを使用します。
 
 ### 4. PROJECT_STATUS.mdの更新
 
 プロジェクト一覧が古い場合、先に `/ypm-update` を実行してください。
+
+### 5. エディタCLIのインストール
+
+各エディタのCLIがインストールされていない場合、プロジェクトを開くことができません。STEP 1でインストール方法を案内します。
 
 ---
 
@@ -385,12 +510,13 @@ ignore追加・削除時は、config.ymlファイルを**必ず保存**してく
 
 | エラー | 対処法 |
 |--------|--------|
-| VS Code CLIがない | インストール手順を表示して中断 |
+| エディタCLIがない | インストール手順を表示して中断 |
+| 未対応のエディタ | 対応エディタ一覧を表示して中断 |
 | PROJECT_STATUS.mdがない | `/ypm-update` の実行を促して中断 |
 | config.ymlがない | エラーメッセージを表示して中断 |
 | プロジェクトが見つからない | エラーメッセージを表示して中断 |
 | 複数マッチ | 候補を番号付きで再表示 |
-| VS Code起動失敗 | エラーメッセージと手動コマンドを表示 |
+| エディタ起動失敗 | エラーメッセージと手動コマンドを表示 |
 
 ---
 
