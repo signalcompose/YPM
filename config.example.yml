@@ -61,6 +61,13 @@ progress:
   phase_3: 60-80   # テスト・改善（バグ修正、リファクタリング）
   phase_4: 80-100  # 本番稼働・機能拡張（運用開始、新機能追加）
 
+# エディタ設定
+editor:
+  # /ypm-open コマンドで使用するデフォルトエディタ
+  # 対応エディタ: code (VS Code), cursor (Cursor), zed (Zed)
+  # 変更方法: /ypm-open --editor <エディタ名>
+  default: code
+
 # その他の設定
 settings:
   # Gitリポジトリでないディレクトリも含める
