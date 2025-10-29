@@ -157,15 +157,26 @@ config.ymlの`monitor.ignore_in_open`リストに含まれるプロジェクト�
 
 ### STEP 6: VS Codeでプロジェクトを開く
 
+**重要**: 環境変数をクリアしてVS Codeを起動します。これにより、各プロジェクトの`.node-version`等が正しく読み込まれます。
+
 ```bash
-code /path/to/project
+env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION code /path/to/project
 ```
+
+**クリアする環境変数**:
+- `NODENV_VERSION` - Node.jsバージョン（nodenv）
+- `NODENV_DIR` - nodenvディレクトリ
+- `RBENV_VERSION` - Rubyバージョン（rbenv）
+- `PYENV_VERSION` - Pythonバージョン（pyenv）
 
 **成功時のメッセージ**:
 ```
 ✅ VS Codeで "MaxMCP" を開きました。
 
 プロジェクトパス: /Users/yamato/Src/proj_max_mcp/MaxMCP
+
+※ 環境変数（NODENV_VERSION等）をクリアした状態で起動しました。
+各プロジェクトの設定ファイル（.node-version等）が正しく読み込まれます。
 ```
 
 **失敗時のメッセージ**:
@@ -175,7 +186,7 @@ code /path/to/project
 エラー: <エラーメッセージ>
 
 手動で以下のコマンドを実行してください：
-code /Users/yamato/Src/proj_max_mcp/MaxMCP
+env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION code /Users/yamato/Src/proj_max_mcp/MaxMCP
 ```
 
 ---
