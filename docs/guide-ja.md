@@ -233,6 +233,44 @@ YPMには便利なカスタムコマンドが用意されています。Claude C
 
 更新日時の降順（新しい順）で表示されます。
 
+#### `/ypm-open [プロジェクト名] [エディタ] [オプション]`
+選択したエディタでプロジェクトを開きます。環境変数を自動的にクリアします。
+
+**基本的な使い方**:
+- `/ypm-open` - プロジェクト一覧を表示（ignore除外、worktreeは自動除外）
+- `/ypm-open oshireq` - "oshireq"プロジェクトをデフォルトエディタで開く
+- `/ypm-open oshireq cursor` - "oshireq"プロジェクトをCursorで開く
+
+**対応エディタ**:
+- `code` - VS Code
+- `cursor` - Cursor
+- `zed` - Zed
+
+**エディタ設定**:
+- `/ypm-open --editor` - 現在のデフォルトエディタを表示
+- `/ypm-open --editor cursor` - デフォルトエディタをCursorに設定
+- `/ypm-open --editor zed` - デフォルトエディタをZedに設定
+
+**Ignore管理**:
+- `/ypm-open all` - ignore設定済みを含む全プロジェクトを表示
+- `/ypm-open ignore-list` - ignore設定済みプロジェクト一覧
+- `/ypm-open add-ignore` - プロジェクトをignoreに追加
+- `/ypm-open remove-ignore` - プロジェクトをignoreから削除
+
+**機能**:
+- **環境変数クリア**: エディタ起動前に`NODENV_VERSION`、`NODENV_DIR`、`RBENV_VERSION`、`PYENV_VERSION`を自動的にクリアし、各プロジェクトのバージョンファイル（`.node-version`等）が正しく読み込まれるようにします
+- **Worktree自動除外**: Git worktreeディレクトリ（例: `MaxMCP-main`、`InstrVo-develop`）は選択肢から自動的に除外されます
+- **柔軟なエディタ選択**: プロジェクトのニーズや個人の好みに応じてエディタを切り替え可能
+
+**設定**:
+デフォルトエディタは`config.yml`で設定：
+```yaml
+editor:
+  default: code  # 選択肢: code, cursor, zed
+```
+
+詳細な仕様は [ypm-open-spec.md](../docs/development/ypm-open-spec.md) を参照してください。
+
 ### 新規プロジェクト立ち上げコマンド
 
 #### `/ypm-new`
@@ -419,6 +457,21 @@ monitor:
     - "proj_*/*"          # 2階層構造
     - "projects/*"        # 1階層構造
     - "my-apps/*/src"     # 3階層構造
+```
+
+### デフォルトエディタの変更
+
+お好みのエディタを`config.yml`で設定：
+
+```yaml
+editor:
+  default: cursor    # codeからcursorに変更
+  # 選択肢: code (VS Code), cursor (Cursor), zed (Zed)
+```
+
+またはコマンドで設定：
+```
+/ypm-open --editor cursor
 ```
 
 ### 分類基準の変更
