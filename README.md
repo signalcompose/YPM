@@ -123,6 +123,8 @@ YPM includes custom slash commands for quick operations:
 
 **Usage**: Simply type the command in Claude Code, e.g., `/ypm-update`
 
+**Note**: `/ypm-update` and similar operational commands do **not** use Git Flow. They update local files only (PROJECT_STATUS.md is `.gitignore`d). Git Flow is used **only for developing YPM itself** (adding features, fixing bugs).
+
 ---
 
 ## Project Bootstrap Assistant
