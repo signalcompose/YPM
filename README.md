@@ -176,14 +176,35 @@ classification:
 
 ---
 
+## このリポジトリについて
+
+これはyamato個人用のYPM（Your Project Manager）インスタンスです。
+
+### Public版との関係
+
+- **Public版**: [signalcompose/YPM](https://github.com/signalcompose/YPM)
+- **このリポジトリ**: Private fork（yamato個人環境）
+
+### Upstream同期
+
+```bash
+# Public版の最新機能を取り込む
+git fetch upstream
+git merge upstream/develop
+```
+
+詳細は[CLAUDE.md](CLAUDE.md)の「Upstream同期」セクションを参照してください。
+
+---
+
 ## Contributing
 
-Contributions are welcome!
+Contributions to public YPM are welcome!
 
+- **Public版リポジトリ**: [signalcompose/YPM](https://github.com/signalcompose/YPM)
 - **Bug reports & feature requests**: [GitHub Issues](https://github.com/signalcompose/YPM/issues)
-- **Pull requests**: Fork, create a feature branch, and submit a PR
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+このリポジトリ（YPM-yamato）はyamato個人用です。
 
 ---
 
