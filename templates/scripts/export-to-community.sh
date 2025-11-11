@@ -482,8 +482,15 @@ if [ "$INITIAL_EXPORT" = "true" ]; then
 PROTECTION
   print_success "Branch protection configured"
 
-  # Delete export branch (no longer needed) - use 'public' remote
-  git push public --delete "$FEATURE_BRANCH" 2>/dev/null || true
+  # Set default branch to main
+  print_info "Setting default branch to main..."
+  gh api -X PATCH "repos/$REPO_NAME" -f default_branch=main
+  print_success "Default branch set to main"
+
+  # Delete export branch (no longer needed) - use GitHub API
+  print_info "Cleaning up export branch..."
+  gh api -X DELETE "repos/$REPO_NAME/git/refs/heads/$FEATURE_BRANCH"
+  print_success "Export branch deleted"
 
   PR_URL="N/A (Initial export - pushed directly to main)"
   echo ""
