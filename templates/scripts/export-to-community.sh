@@ -23,11 +23,8 @@ print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 print_error() { echo -e "${RED}❌ $1${NC}"; exit 1; }
 
 # =============================================================================
-# Step 0: Configuration
+# Step 0A: Interactive Setup (if .export-config.yml doesn't exist)
 # =============================================================================
-
-# Save original directory for cleanup
-ORIGINAL_DIR="$(pwd)"
 
 # Determine config file location
 if [ -n "$1" ]; then
@@ -38,8 +35,168 @@ fi
 
 # Check if config file exists
 if [ ! -f "$CONFIG_FILE" ]; then
-  print_error "Configuration file not found: $CONFIG_FILE"
+  print_warning ".export-config.yml not found. Starting interactive setup..."
+  echo ""
+
+  # Private repository path
+  print_info "Step 1/4: Private Repository"
+  echo "Current directory: $(pwd)"
+  read -p "Private repository path [$(pwd)]: " PRIVATE_REPO
+  PRIVATE_REPO=${PRIVATE_REPO:-$(pwd)}
+  print_success "Private repo: $PRIVATE_REPO"
+  echo ""
+
+  # Public repository
+  print_info "Step 2/4: Public Repository"
+  echo "Options:"
+  echo "  1. Create new public repository"
+  echo "  2. Use existing repository URL"
+  read -p "Select [1/2]: " REPO_CHOICE
+
+  if [ "$REPO_CHOICE" = "1" ]; then
+    read -p "Repository owner (organization or username): " REPO_OWNER
+    read -p "Repository name: " REPO_NAME
+    PUBLIC_REPO_URL="https://github.com/$REPO_OWNER/$REPO_NAME.git"
+    NEED_CREATE_REPO=true
+  else
+    read -p "Public repository URL: " PUBLIC_REPO_URL
+    NEED_CREATE_REPO=false
+  fi
+  print_success "Public repo: $PUBLIC_REPO_URL"
+  echo ""
+
+  # Exclude paths with recommendations
+  print_info "Step 3/4: Files to Exclude"
+  echo "Recommended files to exclude (will be added automatically):"
+  echo "  - CLAUDE.md (personal configuration)"
+  echo "  - config.yml (personal paths)"
+  echo "  - PROJECT_STATUS.md (personal project data)"
+  echo "  - docs/research/ (internal research documents)"
+  echo ""
+  read -p "Additional files to exclude (comma-separated, or press Enter to skip): " ADDITIONAL_EXCLUDE
+  echo ""
+
+  # Sanitize patterns
+  print_info "Step 4/4: Commit Message Sanitization"
+  echo "Enter sensitive keywords to replace in commit messages"
+  read -p "(comma-separated, or press Enter to skip): " SENSITIVE_KEYWORDS
+  echo ""
+
+  # Generate .export-config.yml
+  print_info "Generating .export-config.yml..."
+
+  cat > "$CONFIG_FILE" <<YAML
+# Export Configuration for $(basename $(pwd))
+# Generated: $(date +%Y-%m-%d)
+
+export:
+  # Private repository path (absolute path)
+  private_repo: "$PRIVATE_REPO"
+
+  # Public repository URL
+  public_repo_url: "$PUBLIC_REPO_URL"
+
+  # Files and directories to exclude from export
+  exclude_paths:
+    - CLAUDE.md           # Personal configuration
+    - config.yml          # Personal paths
+    - PROJECT_STATUS.md   # Personal project data
+    - docs/research/      # Internal research documents
+YAML
+
+  # Add additional exclude paths if provided
+  if [ -n "$ADDITIONAL_EXCLUDE" ]; then
+    IFS=',' read -ra PATHS <<< "$ADDITIONAL_EXCLUDE"
+    for path in "${PATHS[@]}"; do
+      path_trimmed=$(echo "$path" | xargs)  # Trim whitespace
+      echo "    - $path_trimmed" >> "$CONFIG_FILE"
+    done
+  fi
+
+  # Add sanitize patterns section
+  echo "" >> "$CONFIG_FILE"
+  echo "  # Commit message sanitization patterns" >> "$CONFIG_FILE"
+  echo "  sanitize_patterns:" >> "$CONFIG_FILE"
+
+  if [ -n "$SENSITIVE_KEYWORDS" ]; then
+    IFS=',' read -ra KEYWORDS <<< "$SENSITIVE_KEYWORDS"
+    # Build pattern
+    pattern=""
+    for keyword in "${KEYWORDS[@]}"; do
+      keyword_trimmed=$(echo "$keyword" | xargs)
+      if [ -z "$pattern" ]; then
+        pattern="$keyword_trimmed"
+      else
+        pattern="$pattern|$keyword_trimmed"
+      fi
+    done
+
+    cat >> "$CONFIG_FILE" <<YAML
+    - pattern: "$pattern"
+      replace: "[redacted]"
+YAML
+  else
+    echo "    # Add patterns here if needed" >> "$CONFIG_FILE"
+    echo "    # - pattern: \"sensitive-keyword\"" >> "$CONFIG_FILE"
+    echo "    #   replace: \"[redacted]\"" >> "$CONFIG_FILE"
+  fi
+
+  print_success ".export-config.yml created successfully"
+  echo ""
+
+  # Create public repository if needed
+  if [ "$NEED_CREATE_REPO" = true ]; then
+    REPO_FULL_NAME="$REPO_OWNER/$REPO_NAME"
+    print_info "Creating public repository: $REPO_FULL_NAME"
+
+    if gh repo view "$REPO_FULL_NAME" &>/dev/null; then
+      print_warning "Repository already exists: $REPO_FULL_NAME"
+    else
+      read -p "Create public repository now? [y/n]: " CREATE_CONFIRM
+      if [ "$CREATE_CONFIRM" = "y" ] || [ "$CREATE_CONFIRM" = "Y" ]; then
+        gh repo create "$REPO_FULL_NAME" --public \
+          --description "Community version of $(basename $PRIVATE_REPO)"
+        print_success "Repository created: $REPO_FULL_NAME"
+
+        # Set up branch protection
+        print_info "Setting up branch protection for main branch..."
+        sleep 2  # Wait for repo to be fully created
+
+        gh api "repos/$REPO_FULL_NAME/branches/main/protection" -X PUT --input - <<'PROTECTION' 2>/dev/null || true
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+PROTECTION
+        print_success "Branch protection configured"
+      else
+        print_warning "Skipping repository creation. Please create it manually before running export."
+        exit 0
+      fi
+    fi
+    echo ""
+  fi
+
+  print_success "Interactive setup completed!"
+  echo ""
 fi
+
+# =============================================================================
+# Step 0: Configuration
+# =============================================================================
+
+# Save original directory for cleanup
+ORIGINAL_DIR="$(pwd)"
+
+# CONFIG_FILE is already determined in Step 0A
+# Skip if interactive setup just completed
 
 print_info "Using configuration: $CONFIG_FILE"
 
@@ -55,6 +212,53 @@ fi
 if [ "$PUBLIC_REPO_URL" = "null" ] || [ -z "$PUBLIC_REPO_URL" ]; then
   print_error "export.public_repo_url is not set in $CONFIG_FILE"
 fi
+
+# =============================================================================
+# Step 0B: Public Repository Check & Setup
+# =============================================================================
+
+# Extract repository name from URL
+REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
+
+# Check if public repository exists
+if ! gh repo view "$REPO_NAME" &>/dev/null; then
+  print_warning "Public repository does not exist: $REPO_NAME"
+  echo ""
+  read -p "Create public repository now? [y/n]: " CREATE_REPO
+
+  if [ "$CREATE_REPO" = "y" ] || [ "$CREATE_REPO" = "Y" ]; then
+    gh repo create "$REPO_NAME" --public \
+      --description "Community version of $(basename $PRIVATE_REPO)"
+    print_success "Repository created: $REPO_NAME"
+    echo ""
+    sleep 2  # Wait for repo to be fully created
+  else
+    print_error "Public repository is required. Please create it manually and run again."
+  fi
+fi
+
+# Check and set up branch protection if needed
+print_info "Checking branch protection settings..."
+if gh api "repos/$REPO_NAME/branches/main/protection" &>/dev/null; then
+  print_success "Branch protection already configured"
+else
+  print_info "Setting up branch protection for main branch..."
+  gh api "repos/$REPO_NAME/branches/main/protection" -X PUT --input - <<'PROTECTION' 2>/dev/null || true
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+PROTECTION
+  print_success "Branch protection configured"
+fi
+echo ""
 
 # Create temporary export directory
 EXPORT_DIR="/tmp/ypm-public-export-$(date +%s)"

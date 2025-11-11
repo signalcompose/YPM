@@ -72,9 +72,11 @@ brew install git-filter-repo
 brew install trufflehog
 ```
 
-### Step 4: プロジェクトごとの設定
+### Step 4: プロジェクトごとの設定（自動）
 
-各プロジェクトで`.export-config.yml`を作成：
+**YPM v1.3以降**では、`.export-config.yml`がない場合、スクリプトが自動的にインタラクティブセットアップを開始します。
+
+**手動で作成する場合**（オプション）：
 
 ```bash
 # サンプルからコピー
@@ -88,12 +90,92 @@ vim .export-config.yml
 
 ## 使い方
 
-### 基本的な使用方法
+### 初回実行（インタラクティブセットアップ）
 
-1. プロジェクトのルートディレクトリに移動
-2. Claude Codeで`/ypm-export-community`を実行
-3. 設定内容を確認して承認
-4. スクリプトが自動実行される
+**YPM v1.3以降**では、初回実行時に自動的にセットアップが開始されます：
+
+```bash
+# プロジェクトのルートディレクトリで実行
+~/.claude/scripts/export-to-community.sh
+
+# または、Claude Codeで
+/ypm-export-community
+```
+
+**インタラクティブセットアップの流れ**：
+
+1. **Step 1/4: Private Repository**
+   - 現在のディレクトリを確認
+   - Private repoパスを入力（デフォルト: カレントディレクトリ）
+
+2. **Step 2/4: Public Repository**
+   - 選択肢：
+     - 1. 新しいpublicリポジトリを作成
+     - 2. 既存のリポジトリURLを使用
+   - オプション1を選択した場合：
+     - Organization名またはユーザー名を入力
+     - リポジトリ名を入力
+     - → スクリプトが自動作成
+
+3. **Step 3/4: Files to Exclude**
+   - リコメンド（自動追加）：
+     - `CLAUDE.md` (personal configuration)
+     - `config.yml` (personal paths)
+     - `PROJECT_STATUS.md` (personal project data)
+     - `docs/research/` (internal research documents)
+   - 追加の除外ファイルを確認（任意）
+
+4. **Step 4/4: Commit Message Sanitization**
+   - 機密キーワードを入力（任意）
+   - カンマ区切りで複数指定可能
+   - 例: `project-alpha,project-beta,secret-key`
+
+**自動生成される`.export-config.yml`の例**：
+
+```yaml
+# Export Configuration for ProjectName
+# Generated: 2025-11-12
+
+export:
+  private_repo: "/Users/username/Src/proj_ProjectName/ProjectName-dev"
+  public_repo_url: "https://github.com/organization/ProjectName.git"
+
+  exclude_paths:
+    - CLAUDE.md           # Personal configuration
+    - config.yml          # Personal paths
+    - PROJECT_STATUS.md   # Personal project data
+    - docs/research/      # Internal research documents
+    - .env                # Additional (user-specified)
+
+  sanitize_patterns:
+    - pattern: "project-alpha|project-beta"
+      replace: "[redacted]"
+```
+
+**Public repoの自動作成**：
+
+- オプション1を選択した場合、スクリプトが自動的に：
+  - `gh repo create`でpublic repoを作成
+  - ブランチ保護設定を適用
+  - すぐにexportを開始
+
+### 2回目以降の実行
+
+`.export-config.yml`が既に存在する場合、インタラクティブセットアップはスキップされ、即座にexportが開始されます：
+
+```bash
+# プロジェクトのルートディレクトリで実行
+~/.claude/scripts/export-to-community.sh
+
+# または、Claude Codeで
+/ypm-export-community
+```
+
+**実行フロー**：
+1. `.export-config.yml`を読み込み
+2. Public repoの存在を確認（存在しない場合は作成プロンプト）
+3. ブランチ保護設定を確認・適用
+4. Exportを自動実行
 
 ### ワークフロー
 
