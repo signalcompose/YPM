@@ -170,6 +170,69 @@ def is_worktree(project_path):
     return git_path.is_file()
 
 
+def run_trufflehog_scan(project_path):
+    """
+    TruffleHogでプロジェクトをスキャン
+
+    Args:
+        project_path: プロジェクトパス
+
+    Returns:
+        スキャン結果の辞書
+    """
+    result = {
+        "scanned": False,
+        "issues_found": 0,
+        "has_secrets": False
+    }
+
+    # trufflehogコマンドの存在確認
+    try:
+        subprocess.run(
+            ['which', 'trufflehog'],
+            capture_output=True,
+            check=True
+        )
+    except subprocess.CalledProcessError:
+        # trufflehogがインストールされていない
+        return result
+
+    try:
+        # trufflehogスキャン実行
+        scan_result = subprocess.run(
+            ['trufflehog', 'git', f'file://{project_path}', '--json', '--no-update'],
+            capture_output=True,
+            text=True,
+            timeout=30  # 30秒タイムアウト
+        )
+
+        result["scanned"] = True
+
+        # JSON形式の出力をパース
+        if scan_result.stdout:
+            lines = scan_result.stdout.strip().split('\n')
+            issues_count = 0
+            for line in lines:
+                try:
+                    issue = json.loads(line)
+                    if issue:
+                        issues_count += 1
+                except json.JSONDecodeError:
+                    continue
+
+            result["issues_found"] = issues_count
+            result["has_secrets"] = issues_count > 0
+
+    except subprocess.TimeoutExpired:
+        result["scanned"] = True
+        result["timeout"] = True
+    except Exception:
+        # エラーが発生してもスキャンは続行
+        pass
+
+    return result
+
+
 def read_project_docs(project_path):
     """
     プロジェクトのドキュメントを読み込み
@@ -286,6 +349,9 @@ def main():
         # worktree判定
         is_wt = is_worktree(project_path)
 
+        # TruffleHogセキュリティスキャン
+        security_scan = run_trufflehog_scan(project_path)
+
         # プロジェクト情報を追加
         projects.append({
             "name": project_name,
@@ -295,7 +361,8 @@ def main():
             "changed_files": git_info['changed_files'],
             "category": category,
             "is_worktree": is_wt,
-            "docs": docs
+            "docs": docs,
+            "security_scan": security_scan
         })
 
     # 結果をJSON形式で出力
