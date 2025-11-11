@@ -4,11 +4,13 @@ set -e
 PRIVATE_REPO="/Users/yamato/Src/proj_YPM/YPM-yamato"
 PUBLIC_REPO_URL="https://github.com/signalcompose/YPM.git"
 EXPORT_DIR="/tmp/ypm-public-export-$(date +%s)"
+EXCLUDE_FILE="$PRIVATE_REPO/.export-exclude"
 
 echo "🔍 Exporting YPM to public repository..."
 echo "Private repo: $PRIVATE_REPO"
 echo "Public repo: $PUBLIC_REPO_URL"
 echo "Export dir: $EXPORT_DIR"
+echo "Exclude file: $EXCLUDE_FILE"
 
 # Step 1: Fresh cloneを作成
 echo "📦 Cloning private repository..."
@@ -18,13 +20,31 @@ cd "$EXPORT_DIR"
 # Step 2: Developブランチをcheckout
 git checkout develop
 
-# Step 3: 機密ファイルを履歴から削除
+# Step 3: 除外パスを.export-excludeから読み込み
 echo "🧹 Filtering sensitive files from history..."
-git filter-repo \
-  --path PROJECT_STATUS.md --invert-paths \
-  --path config.yml --invert-paths \
-  --path CLAUDE.md --invert-paths \
-  --force
+EXCLUDE_PATHS=()
+if [[ -f "$EXCLUDE_FILE" ]]; then
+  while IFS= read -r line; do
+    # コメント行と空行をスキップ
+    [[ "$line" =~ ^#.*$ ]] && continue
+    [[ -z "$line" ]] && continue
+    # 除外パスを配列に追加
+    EXCLUDE_PATHS+=(--path "$line" --invert-paths)
+  done < "$EXCLUDE_FILE"
+
+  echo "Excluding ${#EXCLUDE_PATHS[@]}/2 paths from export"
+else
+  echo "⚠️  Warning: $EXCLUDE_FILE not found, using default exclusions"
+  EXCLUDE_PATHS=(
+    --path PROJECT_STATUS.md --invert-paths
+    --path config.yml --invert-paths
+    --path CLAUDE.md --invert-paths
+    --path docs/research/ --invert-paths
+  )
+fi
+
+# git filter-repoを実行
+git filter-repo "${EXCLUDE_PATHS[@]}" --force
 
 # Step 4: コミットメッセージから機密情報を削除
 echo "✏️  Sanitizing commit messages..."
