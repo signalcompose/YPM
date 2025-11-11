@@ -72,9 +72,11 @@ brew install git-filter-repo
 brew install trufflehog
 ```
 
-### Step 4: プロジェクトごとの設定
+### Step 4: プロジェクトごとの設定（自動）
 
-各プロジェクトで`.export-config.yml`を作成：
+**YPM v1.3以降**では、`.export-config.yml`がない場合、スクリプトが自動的にインタラクティブセットアップを開始します。
+
+**手動で作成する場合**（オプション）：
 
 ```bash
 # サンプルからコピー
@@ -88,14 +90,135 @@ vim .export-config.yml
 
 ## 使い方
 
-### 基本的な使用方法
+### 初回実行（インタラクティブセットアップ）
 
-1. プロジェクトのルートディレクトリに移動
-2. Claude Codeで`/ypm-export-community`を実行
-3. 設定内容を確認して承認
-4. スクリプトが自動実行される
+**YPM v1.4以降**では、Claude Code完結型のインタラクティブセットアップに対応しています。
+
+#### 推奨方法: Claude Codeで実行
+
+```
+/ypm-export-community
+```
+
+**Claude Codeが自動的に**:
+1. `.export-config.yml`の存在をチェック
+2. 存在しない場合 → **AskUserQuestionツール**で対話形式セットアップ
+3. 存在する場合 → 即座にexport実行
+
+**インタラクティブセットアップの流れ**（初回のみ）：
+
+1. **Question 1: Repository Configuration**
+   - Private repo path:
+     - Current directory（現在のディレクトリ）
+     - Custom path（Git worktree対応：main branchのパスを指定）
+   - Public repo:
+     - Create new（新規作成）
+     - Use existing（既存URLを使用）
+
+2. **Question 2: Files to Exclude**（複数選択可）
+   - 推奨除外ファイル（デフォルト選択）：
+     - `CLAUDE.md` (personal configuration)
+     - `config.yml` (personal paths)
+     - `PROJECT_STATUS.md` (personal project data)
+     - `docs/research/` (internal research documents)
+   - 追加除外ファイル（任意）
+
+3. **Question 3: Commit Message Sanitization**
+   - Skip（サニタイズなし）
+   - Add keywords（機密キーワードを指定）
+
+**セットアップ完了後**:
+- Claude Codeが`.export-config.yml`を自動作成
+- 内容を確認
+- そのままexportに進む
+
+#### 代替方法: ターミナルで実行
+
+Bash対話形式を使いたい場合：
+
+```bash
+# プロジェクトのルートディレクトリで実行
+~/.claude/scripts/export-to-community.sh
+```
+
+スクリプトが4ステップのウィザードを起動します（Bash `read -p`形式）
+
+**自動生成される`.export-config.yml`の例**：
+
+```yaml
+# Export Configuration for ProjectName
+# Generated: 2025-11-12
+
+export:
+  private_repo: "/Users/username/Src/proj_ProjectName/ProjectName-dev"
+  public_repo_url: "https://github.com/organization/ProjectName.git"
+
+  exclude_paths:
+    - CLAUDE.md           # Personal configuration
+    - config.yml          # Personal paths
+    - PROJECT_STATUS.md   # Personal project data
+    - docs/research/      # Internal research documents
+    - .env                # Additional (user-specified)
+
+  sanitize_patterns:
+    - pattern: "project-alpha|project-beta"
+      replace: "[redacted]"
+```
+
+**Public repoの自動作成**：
+
+- オプション1を選択した場合、スクリプトが自動的に：
+  - `gh repo create`でpublic repoを作成
+  - exportブランチをmainに直接push
+  - ブランチ保護設定を適用
+  - デフォルトブランチをmainに設定
+  - exportブランチを削除（クリーンアップ）
+
+### 2回目以降の実行
+
+`.export-config.yml`が既に存在する場合、インタラクティブセットアップはスキップされ、即座にexportが開始されます：
+
+```bash
+# プロジェクトのルートディレクトリで実行
+~/.claude/scripts/export-to-community.sh
+
+# または、Claude Codeで
+/ypm-export-community
+```
+
+**実行フロー**：
+1. `.export-config.yml`を読み込み
+2. Public repoの存在を確認（存在しない場合は作成プロンプト）
+3. ブランチ保護設定を確認・適用
+4. Exportを自動実行
 
 ### ワークフロー
+
+#### 初回Export（Public repository新規作成時）
+
+```
+1. プロジェクトをクローン
+   ↓
+2. 機密ファイルを除外（git-filter-repo）
+   ↓
+3. コミットメッセージをサニタイズ
+   ↓
+4. exportブランチを作成
+   ↓
+5. exportブランチをmainに直接push（force）
+   ↓
+6. ブランチ保護設定を適用
+   ↓
+7. デフォルトブランチをmainに設定
+   ↓
+8. exportブランチを削除（クリーンアップ）
+   ↓
+9. TruffleHogセキュリティスキャン（自動）
+   ↓
+10. 一時ディレクトリクリーンアップ
+```
+
+#### 2回目以降のExport（PR作成）
 
 ```
 1. プロジェクトをクローン
