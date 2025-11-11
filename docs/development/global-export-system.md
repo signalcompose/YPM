@@ -92,43 +92,56 @@ vim .export-config.yml
 
 ### 初回実行（インタラクティブセットアップ）
 
-**YPM v1.3以降**では、初回実行時に自動的にセットアップが開始されます：
+**YPM v1.4以降**では、Claude Code完結型のインタラクティブセットアップに対応しています。
 
-```bash
-# プロジェクトのルートディレクトリで実行
-~/.claude/scripts/export-to-community.sh
+#### 推奨方法: Claude Codeで実行
 
-# または、Claude Codeで
+```
 /ypm-export-community
 ```
 
-**インタラクティブセットアップの流れ**：
+**Claude Codeが自動的に**:
+1. `.export-config.yml`の存在をチェック
+2. 存在しない場合 → **AskUserQuestionツール**で対話形式セットアップ
+3. 存在する場合 → 即座にexport実行
 
-1. **Step 1/4: Private Repository**
-   - 現在のディレクトリを確認
-   - Private repoパスを入力（デフォルト: カレントディレクトリ）
+**インタラクティブセットアップの流れ**（初回のみ）：
 
-2. **Step 2/4: Public Repository**
-   - 選択肢：
-     - 1. 新しいpublicリポジトリを作成
-     - 2. 既存のリポジトリURLを使用
-   - オプション1を選択した場合：
-     - Organization名またはユーザー名を入力
-     - リポジトリ名を入力
-     - → スクリプトが自動作成
+1. **Question 1: Repository Configuration**
+   - Private repo path:
+     - Current directory（現在のディレクトリ）
+     - Custom path（Git worktree対応：main branchのパスを指定）
+   - Public repo:
+     - Create new（新規作成）
+     - Use existing（既存URLを使用）
 
-3. **Step 3/4: Files to Exclude**
-   - リコメンド（自動追加）：
+2. **Question 2: Files to Exclude**（複数選択可）
+   - 推奨除外ファイル（デフォルト選択）：
      - `CLAUDE.md` (personal configuration)
      - `config.yml` (personal paths)
      - `PROJECT_STATUS.md` (personal project data)
      - `docs/research/` (internal research documents)
-   - 追加の除外ファイルを確認（任意）
+   - 追加除外ファイル（任意）
 
-4. **Step 4/4: Commit Message Sanitization**
-   - 機密キーワードを入力（任意）
-   - カンマ区切りで複数指定可能
-   - 例: `project-alpha,project-beta,secret-key`
+3. **Question 3: Commit Message Sanitization**
+   - Skip（サニタイズなし）
+   - Add keywords（機密キーワードを指定）
+
+**セットアップ完了後**:
+- Claude Codeが`.export-config.yml`を自動作成
+- 内容を確認
+- そのままexportに進む
+
+#### 代替方法: ターミナルで実行
+
+Bash対話形式を使いたい場合：
+
+```bash
+# プロジェクトのルートディレクトリで実行
+~/.claude/scripts/export-to-community.sh
+```
+
+スクリプトが4ステップのウィザードを起動します（Bash `read -p`形式）
 
 **自動生成される`.export-config.yml`の例**：
 
