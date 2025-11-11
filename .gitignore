@@ -71,6 +71,7 @@ yarn.lock
 # Personal files (not for public repository)
 config.yml
 PROJECT_STATUS.md
+CLAUDE.md
 HANDOFF.md
 docs/sessions/
 
