@@ -31,20 +31,23 @@ echo "✏️  Sanitizing commit messages..."
 git filter-repo --message-callback '
 import re
 
+# messageをdecodeして文字列として扱う
+msg = message.decode("utf-8", errors="ignore")
+
 # プロジェクト名を[project]に置換
-projects = [b"oshireq", b"orbitscore", b"picopr", b"TabClear", b"DUNGIA", b"godot-mcp", b"YPM-yamato"]
+projects = ["oshireq", "orbitscore", "picopr", "TabClear", "DUNGIA", "godot-mcp", "YPM-yamato"]
 for proj in projects:
-    message = message.replace(proj, b"[project]")
+    msg = msg.replace(proj, "[project]")
 
 # プロジェクト数を[N]に置換
-message = re.sub(rb"\d+プロジェクト", rb"[N]プロジェクト", message)
-message = re.sub(rb"\d+ projects", rb"[N] projects", message)
+msg = re.sub(r"\d+プロジェクト", r"[N]プロジェクト", msg)
+msg = re.sub(r"\d+ projects", r"[N] projects", msg)
 
 # 時刻情報を削除
-message = re.sub(rb"\d+分前", rb"[時間]前", message)
-message = re.sub(rb"\d+日前", rb"[日数]前", message)
+msg = re.sub(r"\d+分前", r"[時間]前", msg)
+msg = re.sub(r"\d+日前", r"[日数]前", msg)
 
-return message
+return msg.encode("utf-8")
 ' --force
 
 # Step 5: Public repoにpush
