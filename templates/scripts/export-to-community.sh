@@ -231,7 +231,14 @@ if [ -z "$ACTUAL_REPO" ] || [ "$ACTUAL_REPO" != "$REPO_NAME" ]; then
     print_warning "Public repository does not exist: $REPO_NAME"
   fi
   echo ""
-  read -p "Create public repository now? [y/n]: " CREATE_REPO
+
+  # Check for auto-create mode (for Claude Code integration)
+  if [ "$AUTO_CREATE_REPO" = "yes" ]; then
+    CREATE_REPO="y"
+    print_info "Auto-creating repository (AUTO_CREATE_REPO=yes)"
+  else
+    read -p "Create public repository now? [y/n]: " CREATE_REPO
+  fi
 
   if [ "$CREATE_REPO" = "y" ] || [ "$CREATE_REPO" = "Y" ]; then
     gh repo create "$REPO_NAME" --public \

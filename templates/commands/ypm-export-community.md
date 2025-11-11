@@ -188,37 +188,89 @@ yq eval '.export' .export-config.yml
 
 設定内容をユーザーに提示してください。
 
-#### STEP 4-2: Export実行の確認
+#### STEP 4-2: Public Repository存在チェック
 
-**重要**: エクスポートスクリプトは以下の操作を行います：
-- Public repositoryの作成（存在しない場合）
-- ブランチ保護設定の適用
-- Git履歴の書き換え（機密ファイル除外）
-- PRの自動作成
-- TruffleHogセキュリティスキャン
+**Bash**で以下を実行：
 
-ユーザーに以下を確認してください：
+```bash
+REPO_NAME=$(yq eval '.export.public_repo_url' .export-config.yml | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
+ACTUAL_REPO=$(gh repo view "$REPO_NAME" --json name,owner --jq '"\(.owner.login)/\(.name)"' 2>/dev/null || echo "")
+
+if [ -z "$ACTUAL_REPO" ] || [ "$ACTUAL_REPO" != "$REPO_NAME" ]; then
+  echo "NEEDS_CREATE"
+else
+  echo "EXISTS"
+fi
+```
+
+**結果に応じて分岐**:
+
+---
+
+##### A. リポジトリが存在しない場合（NEEDS_CREATE）
+
+**AskUserQuestionツール**でリポジトリ作成を確認：
+
+**質問内容**:
+```
+Public repository '$REPO_NAME' が存在しません。
+新規作成してexportを実行しますか？
+```
+
+**選択肢**:
+1. **Yes, create and export**:
+   - Label: "作成してexportを実行"
+   - Description: "Public repositoryを自動作成し、mainブランチを初期化してからexportを実行します"
+
+2. **No, cancel**:
+   - Label: "キャンセル"
+   - Description: "リポジトリを作成せずにキャンセルします"
+
+**ユーザーが "Yes" を選択**:
+→ STEP 4-3へ進む（`AUTO_CREATE_REPO=yes`でスクリプト実行）
+
+**ユーザーが "No" を選択**:
+→ 終了、ユーザーに手動作成を案内
+
+---
+
+##### B. リポジトリが存在する場合（EXISTS）
+
+ユーザーに以下を確認：
 ```
 以下の設定でpublic版へexportします：
 
 - Private repo: [private_repo の値]
-- Public repo: [public_repo_url の値]
+- Public repo: [public_repo_url の値] (既存)
 - 除外ファイル: [exclude_paths のリスト]
 
 このexportを実行しますか？
 ```
 
+**承認されたら** → STEP 4-3へ進む
+
+---
+
 #### STEP 4-3: スクリプト実行
 
-ユーザーが承認した場合のみ、以下を実行：
+**リポジトリが存在しない場合**（AUTO_CREATE_REPO=yes）:
+```bash
+AUTO_CREATE_REPO=yes ~/.claude/scripts/export-to-community.sh
+```
 
+**リポジトリが存在する場合**:
 ```bash
 ~/.claude/scripts/export-to-community.sh
 ```
 
-**注意**:
-- スクリプトがインタラクティブ入力を求めた場合、ユーザーに報告して手動実行を依頼
-- `.export-config.yml`が存在すれば、スクリプトはインタラクティブセットアップをスキップするはず
+**スクリプトの動作**:
+1. リポジトリが存在しない場合のみ:
+   - Public repository自動作成
+   - mainブランチ初期化（README付き）
+   - ブランチ保護設定
+2. Git履歴書き換え（機密ファイル除外）
+3. PRの自動作成
+4. TruffleHogセキュリティスキャン
 
 ---
 
