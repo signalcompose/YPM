@@ -239,6 +239,34 @@ if [ -z "$ACTUAL_REPO" ] || [ "$ACTUAL_REPO" != "$REPO_NAME" ]; then
     print_success "Repository created: $REPO_NAME"
     echo ""
     sleep 2  # Wait for repo to be fully created
+
+    # Initialize main branch with README
+    print_info "Initializing main branch..."
+    INIT_DIR=$(mktemp -d)
+    (
+      cd "$INIT_DIR"
+      git init -q
+      git config user.name "$(git config --global user.name)"
+      git config user.email "$(git config --global user.email)"
+
+      # Create initial README
+      cat > README.md <<EOF
+# $(basename "$REPO_NAME")
+
+Community version of $(basename "$PRIVATE_REPO").
+
+This repository is automatically exported from the private development repository.
+EOF
+
+      git add README.md
+      git commit -q -m "chore: initialize repository"
+      git branch -M main
+      git remote add origin "https://github.com/$REPO_NAME.git"
+      git push -u origin main -q
+    )
+    rm -rf "$INIT_DIR"
+    print_success "Main branch initialized"
+    echo ""
   else
     print_error "Public repository is required. Please create it manually and run again."
     exit 1
