@@ -121,7 +121,24 @@ Public版から除外するファイルを選択してください。
 
 #### STEP 3-2: .export-config.yml を作成
 
-**Writeツール**を使用して、収集した情報から`.export-config.yml`を生成してください。
+**重要**: データを正規化してから、YAMLを生成してください。
+
+##### データ正規化
+
+収集した情報を以下のように変換：
+
+1. **Private repo path**:
+   - 末尾のスラッシュを削除（あれば）
+   - 例: `/path/to/repo/` → `/path/to/repo`
+
+2. **Public repo URL**:
+   - `owner/name`形式の場合 → `https://github.com/owner/name.git`に変換
+   - 既に完全URLの場合 → そのまま使用
+   - 例: `signalcompose/MaxMCP` → `https://github.com/signalcompose/MaxMCP.git`
+
+##### YAML生成
+
+**Writeツール**を使用して、正規化した情報から`.export-config.yml`を生成してください。
 
 **フォーマット**:
 ```yaml
@@ -130,10 +147,10 @@ Public版から除外するファイルを選択してください。
 
 export:
   # Private repository path (absolute path)
-  private_repo: "[Step 3で収集したprivate_repo_path]"
+  private_repo: "[正規化したprivate_repo_path]"
 
   # Public repository URL
-  public_repo_url: "[Step 3で収集したpublic_repo_url]"
+  public_repo_url: "[正規化したpublic_repo_url（完全URL形式）]"
 
   # Files and directories to exclude from export
   exclude_paths:
