@@ -220,9 +220,16 @@ fi
 # Extract repository name from URL
 REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
 
-# Check if public repository exists
-if ! gh repo view "$REPO_NAME" &>/dev/null; then
-  print_warning "Public repository does not exist: $REPO_NAME"
+# Check if public repository exists (with redirect detection)
+ACTUAL_REPO=$(gh repo view "$REPO_NAME" --json name,owner --jq '"\(.owner.login)/\(.name)"' 2>/dev/null || echo "")
+
+if [ -z "$ACTUAL_REPO" ] || [ "$ACTUAL_REPO" != "$REPO_NAME" ]; then
+  if [ -n "$ACTUAL_REPO" ]; then
+    print_warning "⚠️  Repository '$REPO_NAME' redirects to '$ACTUAL_REPO'"
+    print_warning "Public repository does not exist: $REPO_NAME"
+  else
+    print_warning "Public repository does not exist: $REPO_NAME"
+  fi
   echo ""
   read -p "Create public repository now? [y/n]: " CREATE_REPO
 
@@ -234,6 +241,7 @@ if ! gh repo view "$REPO_NAME" &>/dev/null; then
     sleep 2  # Wait for repo to be fully created
   else
     print_error "Public repository is required. Please create it manually and run again."
+    exit 1
   fi
 fi
 
