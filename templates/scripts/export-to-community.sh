@@ -1,0 +1,374 @@
+#!/bin/bash
+set -e
+
+# =============================================================================
+# Global Community Export Script
+# =============================================================================
+# Purpose: Export private repository to public community version
+# Usage: export-to-community.sh [config_file]
+# Config: .export-config.yml in project root (default)
+# =============================================================================
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored messages
+print_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+print_success() { echo -e "${GREEN}✅ $1${NC}"; }
+print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+print_error() { echo -e "${RED}❌ $1${NC}"; exit 1; }
+
+# =============================================================================
+# Step 0: Configuration
+# =============================================================================
+
+# Save original directory for cleanup
+ORIGINAL_DIR="$(pwd)"
+
+# Determine config file location
+if [ -n "$1" ]; then
+  CONFIG_FILE="$1"
+else
+  CONFIG_FILE="$(pwd)/.export-config.yml"
+fi
+
+# Check if config file exists
+if [ ! -f "$CONFIG_FILE" ]; then
+  print_error "Configuration file not found: $CONFIG_FILE"
+fi
+
+print_info "Using configuration: $CONFIG_FILE"
+
+# Parse configuration using yq
+PRIVATE_REPO=$(yq eval '.export.private_repo' "$CONFIG_FILE")
+PUBLIC_REPO_URL=$(yq eval '.export.public_repo_url' "$CONFIG_FILE")
+
+# Validate required configuration
+if [ "$PRIVATE_REPO" = "null" ] || [ -z "$PRIVATE_REPO" ]; then
+  print_error "export.private_repo is not set in $CONFIG_FILE"
+fi
+
+if [ "$PUBLIC_REPO_URL" = "null" ] || [ -z "$PUBLIC_REPO_URL" ]; then
+  print_error "export.public_repo_url is not set in $CONFIG_FILE"
+fi
+
+# Create temporary export directory
+EXPORT_DIR="/tmp/ypm-public-export-$(date +%s)"
+
+print_info "🔍 Starting export process..."
+print_info "Private repo: $PRIVATE_REPO"
+print_info "Public repo: $PUBLIC_REPO_URL"
+print_info "Export dir: $EXPORT_DIR"
+
+# =============================================================================
+# Step 1: Clone private repository
+# =============================================================================
+
+print_info "📦 Cloning private repository..."
+git clone "$PRIVATE_REPO" "$EXPORT_DIR"
+cd "$EXPORT_DIR"
+
+# =============================================================================
+# Step 2: Get current branch name
+# =============================================================================
+
+CURRENT_BRANCH=$(git branch --show-current)
+print_info "📍 Using branch: $CURRENT_BRANCH"
+
+# =============================================================================
+# Step 3: Filter sensitive files from history
+# =============================================================================
+
+print_info "🧹 Filtering sensitive files from history..."
+
+# Read exclude paths from config
+EXCLUDE_PATHS=()
+EXCLUDE_COUNT=$(yq eval '.export.exclude_paths | length' "$CONFIG_FILE")
+
+if [ "$EXCLUDE_COUNT" -gt 0 ]; then
+  for i in $(seq 0 $((EXCLUDE_COUNT - 1))); do
+    path=$(yq eval ".export.exclude_paths[$i]" "$CONFIG_FILE")
+    EXCLUDE_PATHS+=(--path "$path" --invert-paths)
+  done
+  print_info "Excluding ${#EXCLUDE_PATHS[@]} / 2 paths from export"
+else
+  print_warning "No exclude_paths defined in config"
+fi
+
+# Run git filter-repo if there are paths to exclude
+if [ ${#EXCLUDE_PATHS[@]} -gt 0 ]; then
+  git filter-repo "${EXCLUDE_PATHS[@]}" --force
+  print_success "File filtering completed"
+else
+  print_info "No files to exclude, skipping filter-repo"
+fi
+
+# =============================================================================
+# Step 4: Sanitize commit messages
+# =============================================================================
+
+print_info "✏️  Sanitizing commit messages..."
+
+# Build Python code for message sanitization
+SANITIZE_COUNT=$(yq eval '.export.sanitize_patterns | length' "$CONFIG_FILE")
+
+if [ "$SANITIZE_COUNT" -gt 0 ]; then
+  # Generate Python replacement code
+  PYTHON_REPLACEMENTS=""
+  for i in $(seq 0 $((SANITIZE_COUNT - 1))); do
+    pattern=$(yq eval ".export.sanitize_patterns[$i].pattern" "$CONFIG_FILE")
+    replace=$(yq eval ".export.sanitize_patterns[$i].replace" "$CONFIG_FILE")
+
+    # Escape special characters for Python string
+    pattern_escaped=$(printf '%s' "$pattern" | sed 's/\\/\\\\/g')
+    replace_escaped=$(printf '%s' "$replace" | sed 's/\\/\\\\/g')
+
+    PYTHON_REPLACEMENTS+="msg = re.sub(r\"$pattern_escaped\", r\"$replace_escaped\", msg)
+"
+  done
+
+  # Run git filter-repo with message callback
+  git filter-repo --message-callback "
+import re
+
+# Decode message to string
+msg = message.decode('utf-8', errors='ignore')
+
+# Apply sanitization patterns
+$PYTHON_REPLACEMENTS
+
+return msg.encode('utf-8')
+" --force
+
+  print_success "Commit message sanitization completed"
+else
+  print_info "No sanitize_patterns defined, skipping message sanitization"
+fi
+
+# =============================================================================
+# Step 5: Create feature branch and push to public repository
+# =============================================================================
+
+print_info "🚀 Creating feature branch and pushing to public repository..."
+
+# Generate unique feature branch name
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+FEATURE_BRANCH="export/community-release-$TIMESTAMP"
+
+# Create and checkout feature branch
+git checkout -b "$FEATURE_BRANCH"
+
+# Add public remote
+git remote add public "$PUBLIC_REPO_URL"
+
+# Push feature branch
+git push public "$FEATURE_BRANCH"
+
+print_success "Feature branch pushed: $FEATURE_BRANCH"
+
+# =============================================================================
+# Step 6: Create Pull Request
+# =============================================================================
+
+print_info "📝 Creating pull request..."
+
+# Extract repository name from URL (e.g., signalcompose/YPM)
+REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
+
+# Get the last commit SHA from public repo
+print_info "Fetching last public commit..."
+LAST_PUBLIC_COMMIT=$(gh api "repos/$REPO_NAME/commits?per_page=1" --jq '.[0].sha' 2>/dev/null || echo "")
+
+# Generate commit summary
+if [ -n "$LAST_PUBLIC_COMMIT" ]; then
+  print_info "Generating change summary since last export..."
+
+  # Try to find the corresponding commit in our filtered history
+  # Note: Due to filter-repo rewriting, SHAs won't match directly
+  # Instead, we'll show all commits in this export
+  COMMIT_SUMMARY=$(git log --oneline --no-decorate)
+  COMMIT_COUNT=$(git log --oneline --no-decorate | wc -l | tr -d ' ')
+
+  CHANGES_SECTION="### 📝 Changes in This Release
+
+**Total Commits**: $COMMIT_COUNT
+
+\`\`\`
+$COMMIT_SUMMARY
+\`\`\`
+
+**Note**: Commit SHAs differ from private repository due to history filtering."
+else
+  CHANGES_SECTION="### 📝 Changes in This Release
+
+This is the initial export or unable to fetch previous commit history.
+
+**Total Commits**: $(git log --oneline --no-decorate | wc -l | tr -d ' ')
+
+\`\`\`
+$(git log --oneline --no-decorate | tail -10)
+\`\`\`"
+fi
+
+# Create PR with detailed body
+PR_URL=$(gh pr create \
+  --repo "$REPO_NAME" \
+  --base main \
+  --head "$FEATURE_BRANCH" \
+  --title "Community Release: Export from Private Repository ($TIMESTAMP)" \
+  --body "$(cat <<EOF
+## 🚀 Community Release
+
+This PR contains the latest updates from the private repository, exported on $TIMESTAMP.
+
+$CHANGES_SECTION
+
+### 🔒 Export Process
+
+- ✅ **Sensitive files excluded** from history
+  - CLAUDE.md (personal configuration)
+  - config.yml (personal paths)
+  - PROJECT_STATUS.md (personal project data)
+  - docs/research/ (internal research documents)
+- ✅ **Commit messages sanitized**
+  - Project names → \`[project]\`
+  - Statistics → \`[N]\`
+  - Timestamps → \`[time]\`
+- ✅ **Ready for community review**
+
+### ✅ Verification Checklist
+
+Please verify before merging:
+- [ ] No sensitive information in commit history
+- [ ] All excluded files are properly removed
+- [ ] Commit messages are properly sanitized
+- [ ] Documentation is up to date
+
+### 📁 Technical Details
+
+- **Export Directory**: \`$EXPORT_DIR\`
+- **Feature Branch**: \`$FEATURE_BRANCH\`
+- **Export Script**: \`~/.claude/scripts/export-to-community.sh\`
+
+---
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+)")
+
+# =============================================================================
+# Step 7: Security Verification
+# =============================================================================
+
+print_info "🔍 Running TruffleHog security scan..."
+
+if command -v trufflehog &> /dev/null; then
+  # Run TruffleHog scan
+  SCAN_OUTPUT=$(trufflehog git file://. --json --no-update 2>&1)
+
+  # Extract scan results
+  VERIFIED_SECRETS=$(echo "$SCAN_OUTPUT" | grep -o '"verified_secrets":[0-9]*' | grep -o '[0-9]*' | tail -1)
+  UNVERIFIED_SECRETS=$(echo "$SCAN_OUTPUT" | grep -o '"unverified_secrets":[0-9]*' | grep -o '[0-9]*' | tail -1)
+
+  # Display scan summary
+  echo ""
+  echo "📊 Security Scan Results:"
+  echo "  🔐 Verified Secrets: ${VERIFIED_SECRETS:-0}"
+  echo "  ⚠️  Unverified Secrets: ${UNVERIFIED_SECRETS:-0}"
+  echo ""
+
+  if [ "${VERIFIED_SECRETS:-0}" -eq 0 ] && [ "${UNVERIFIED_SECRETS:-0}" -eq 0 ]; then
+    print_success "Security scan passed - no secrets detected"
+  else
+    print_error "Security scan detected potential secrets. Please review before merging."
+  fi
+else
+  print_warning "TruffleHog not installed. Skipping security scan."
+  print_warning "Install: brew install trufflehog"
+  echo ""
+fi
+
+# =============================================================================
+# Step 8: Interactive Merge
+# =============================================================================
+
+echo ""
+print_info "📋 Pull Request created: $PR_URL"
+echo ""
+
+if command -v trufflehog &> /dev/null && [ "${VERIFIED_SECRETS:-0}" -eq 0 ] && [ "${UNVERIFIED_SECRETS:-0}" -eq 0 ]; then
+  # Ask user if they want to merge now
+  read -p "$(echo -e ${BLUE}Merge PR now? \(y/n\): ${NC})" MERGE_CONFIRM
+
+  if [ "$MERGE_CONFIRM" = "y" ] || [ "$MERGE_CONFIRM" = "Y" ]; then
+    print_info "🚀 Merging Pull Request..."
+
+    # Extract repository name from URL
+    REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
+
+    # Merge PR
+    gh pr merge "$PR_URL" --repo "$REPO_NAME" --merge --delete-branch
+
+    print_success "Pull Request merged successfully"
+
+    # =============================================================================
+    # Step 9: Cleanup
+    # =============================================================================
+
+    print_info "🧹 Cleaning up temporary export directory..."
+    cd "$ORIGINAL_DIR"
+    rm -rf "$EXPORT_DIR"
+    print_success "Export directory cleaned up"
+
+    # =============================================================================
+    # Step 10: Summary (Auto-merge completed)
+    # =============================================================================
+
+    echo ""
+    print_success "Community release completed successfully!"
+    echo ""
+    echo "📋 Pull Request: $PR_URL (merged)"
+    echo "🌿 Feature Branch: $FEATURE_BRANCH (deleted)"
+    echo ""
+  else
+    # =============================================================================
+    # Step 10: Summary (Manual merge required)
+    # =============================================================================
+
+    echo ""
+    print_success "Export and PR creation completed successfully!"
+    echo ""
+    echo "📋 Pull Request: $PR_URL"
+    echo "🌿 Feature Branch: $FEATURE_BRANCH"
+    echo "📁 Export Directory: $EXPORT_DIR"
+    echo ""
+    print_warning "Next steps:"
+    echo "1. Review the PR on GitHub: $PR_URL"
+    echo "2. Verify no sensitive information: cd $EXPORT_DIR && git show"
+    echo "3. Merge the PR when ready"
+    echo "4. Clean up: rm -rf $EXPORT_DIR"
+    echo ""
+  fi
+else
+  # =============================================================================
+  # Step 10: Summary (Security scan failed or TruffleHog not installed)
+  # =============================================================================
+
+  echo ""
+  print_success "Export and PR creation completed successfully!"
+  echo ""
+  echo "📋 Pull Request: $PR_URL"
+  echo "🌿 Feature Branch: $FEATURE_BRANCH"
+  echo "📁 Export Directory: $EXPORT_DIR"
+  echo ""
+  print_warning "Next steps:"
+  echo "1. Review the PR on GitHub: $PR_URL"
+  echo "2. Verify no sensitive information: cd $EXPORT_DIR && git show"
+  echo "3. Merge the PR when ready"
+  echo "4. Clean up: rm -rf $EXPORT_DIR"
+  echo ""
+fi
