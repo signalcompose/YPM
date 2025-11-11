@@ -261,7 +261,9 @@ fi
 echo ""
 
 # Create temporary export directory
-EXPORT_DIR="/tmp/ypm-public-export-$(date +%s)"
+# Extract project name from private repo path (remove -main/-dev suffixes)
+PROJECT_NAME=$(basename "$PRIVATE_REPO" | sed 's/-main$//' | sed 's/-dev$//')
+EXPORT_DIR="/tmp/${PROJECT_NAME}-public-export-$(date +%s)"
 
 print_info "🔍 Starting export process..."
 print_info "Private repo: $PRIVATE_REPO"
