@@ -457,8 +457,9 @@ if [ "$INITIAL_EXPORT" = "true" ]; then
   # Initial export: Push export branch directly to main (no PR)
   print_info "🎯 Initial export detected: Pushing export branch to main..."
 
-  # Push export branch to main (force)
-  git push origin "$FEATURE_BRANCH:main" --force
+  # Push export branch to main (force) - use 'public' remote, not 'origin'
+  # Note: git-filter-repo removes 'origin' remote
+  git push public "$FEATURE_BRANCH:main" --force
 
   print_success "Export branch pushed to main"
 
@@ -481,8 +482,8 @@ if [ "$INITIAL_EXPORT" = "true" ]; then
 PROTECTION
   print_success "Branch protection configured"
 
-  # Delete export branch (no longer needed)
-  git push origin --delete "$FEATURE_BRANCH" 2>/dev/null || true
+  # Delete export branch (no longer needed) - use 'public' remote
+  git push public --delete "$FEATURE_BRANCH" 2>/dev/null || true
 
   PR_URL="N/A (Initial export - pushed directly to main)"
   echo ""
