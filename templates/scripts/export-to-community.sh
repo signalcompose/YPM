@@ -23,11 +23,8 @@ print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 print_error() { echo -e "${RED}❌ $1${NC}"; exit 1; }
 
 # =============================================================================
-# Step 0: Configuration
+# Step 0A: Interactive Setup (if .export-config.yml doesn't exist)
 # =============================================================================
-
-# Save original directory for cleanup
-ORIGINAL_DIR="$(pwd)"
 
 # Determine config file location
 if [ -n "$1" ]; then
@@ -38,8 +35,168 @@ fi
 
 # Check if config file exists
 if [ ! -f "$CONFIG_FILE" ]; then
-  print_error "Configuration file not found: $CONFIG_FILE"
+  print_warning ".export-config.yml not found. Starting interactive setup..."
+  echo ""
+
+  # Private repository path
+  print_info "Step 1/4: Private Repository"
+  echo "Current directory: $(pwd)"
+  read -p "Private repository path [$(pwd)]: " PRIVATE_REPO
+  PRIVATE_REPO=${PRIVATE_REPO:-$(pwd)}
+  print_success "Private repo: $PRIVATE_REPO"
+  echo ""
+
+  # Public repository
+  print_info "Step 2/4: Public Repository"
+  echo "Options:"
+  echo "  1. Create new public repository"
+  echo "  2. Use existing repository URL"
+  read -p "Select [1/2]: " REPO_CHOICE
+
+  if [ "$REPO_CHOICE" = "1" ]; then
+    read -p "Repository owner (organization or username): " REPO_OWNER
+    read -p "Repository name: " REPO_NAME
+    PUBLIC_REPO_URL="https://github.com/$REPO_OWNER/$REPO_NAME.git"
+    NEED_CREATE_REPO=true
+  else
+    read -p "Public repository URL: " PUBLIC_REPO_URL
+    NEED_CREATE_REPO=false
+  fi
+  print_success "Public repo: $PUBLIC_REPO_URL"
+  echo ""
+
+  # Exclude paths with recommendations
+  print_info "Step 3/4: Files to Exclude"
+  echo "Recommended files to exclude (will be added automatically):"
+  echo "  - CLAUDE.md (personal configuration)"
+  echo "  - config.yml (personal paths)"
+  echo "  - PROJECT_STATUS.md (personal project data)"
+  echo "  - docs/research/ (internal research documents)"
+  echo ""
+  read -p "Additional files to exclude (comma-separated, or press Enter to skip): " ADDITIONAL_EXCLUDE
+  echo ""
+
+  # Sanitize patterns
+  print_info "Step 4/4: Commit Message Sanitization"
+  echo "Enter sensitive keywords to replace in commit messages"
+  read -p "(comma-separated, or press Enter to skip): " SENSITIVE_KEYWORDS
+  echo ""
+
+  # Generate .export-config.yml
+  print_info "Generating .export-config.yml..."
+
+  cat > "$CONFIG_FILE" <<YAML
+# Export Configuration for $(basename $(pwd))
+# Generated: $(date +%Y-%m-%d)
+
+export:
+  # Private repository path (absolute path)
+  private_repo: "$PRIVATE_REPO"
+
+  # Public repository URL
+  public_repo_url: "$PUBLIC_REPO_URL"
+
+  # Files and directories to exclude from export
+  exclude_paths:
+    - CLAUDE.md           # Personal configuration
+    - config.yml          # Personal paths
+    - PROJECT_STATUS.md   # Personal project data
+    - docs/research/      # Internal research documents
+YAML
+
+  # Add additional exclude paths if provided
+  if [ -n "$ADDITIONAL_EXCLUDE" ]; then
+    IFS=',' read -ra PATHS <<< "$ADDITIONAL_EXCLUDE"
+    for path in "${PATHS[@]}"; do
+      path_trimmed=$(echo "$path" | xargs)  # Trim whitespace
+      echo "    - $path_trimmed" >> "$CONFIG_FILE"
+    done
+  fi
+
+  # Add sanitize patterns section
+  echo "" >> "$CONFIG_FILE"
+  echo "  # Commit message sanitization patterns" >> "$CONFIG_FILE"
+  echo "  sanitize_patterns:" >> "$CONFIG_FILE"
+
+  if [ -n "$SENSITIVE_KEYWORDS" ]; then
+    IFS=',' read -ra KEYWORDS <<< "$SENSITIVE_KEYWORDS"
+    # Build pattern
+    pattern=""
+    for keyword in "${KEYWORDS[@]}"; do
+      keyword_trimmed=$(echo "$keyword" | xargs)
+      if [ -z "$pattern" ]; then
+        pattern="$keyword_trimmed"
+      else
+        pattern="$pattern|$keyword_trimmed"
+      fi
+    done
+
+    cat >> "$CONFIG_FILE" <<YAML
+    - pattern: "$pattern"
+      replace: "[redacted]"
+YAML
+  else
+    echo "    # Add patterns here if needed" >> "$CONFIG_FILE"
+    echo "    # - pattern: \"sensitive-keyword\"" >> "$CONFIG_FILE"
+    echo "    #   replace: \"[redacted]\"" >> "$CONFIG_FILE"
+  fi
+
+  print_success ".export-config.yml created successfully"
+  echo ""
+
+  # Create public repository if needed
+  if [ "$NEED_CREATE_REPO" = true ]; then
+    REPO_FULL_NAME="$REPO_OWNER/$REPO_NAME"
+    print_info "Creating public repository: $REPO_FULL_NAME"
+
+    if gh repo view "$REPO_FULL_NAME" &>/dev/null; then
+      print_warning "Repository already exists: $REPO_FULL_NAME"
+    else
+      read -p "Create public repository now? [y/n]: " CREATE_CONFIRM
+      if [ "$CREATE_CONFIRM" = "y" ] || [ "$CREATE_CONFIRM" = "Y" ]; then
+        gh repo create "$REPO_FULL_NAME" --public \
+          --description "Community version of $(basename $PRIVATE_REPO)"
+        print_success "Repository created: $REPO_FULL_NAME"
+
+        # Set up branch protection
+        print_info "Setting up branch protection for main branch..."
+        sleep 2  # Wait for repo to be fully created
+
+        gh api "repos/$REPO_FULL_NAME/branches/main/protection" -X PUT --input - <<'PROTECTION' 2>/dev/null || true
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+PROTECTION
+        print_success "Branch protection configured"
+      else
+        print_warning "Skipping repository creation. Please create it manually before running export."
+        exit 0
+      fi
+    fi
+    echo ""
+  fi
+
+  print_success "Interactive setup completed!"
+  echo ""
 fi
+
+# =============================================================================
+# Step 0: Configuration
+# =============================================================================
+
+# Save original directory for cleanup
+ORIGINAL_DIR="$(pwd)"
+
+# CONFIG_FILE is already determined in Step 0A
+# Skip if interactive setup just completed
 
 print_info "Using configuration: $CONFIG_FILE"
 
@@ -56,8 +213,86 @@ if [ "$PUBLIC_REPO_URL" = "null" ] || [ -z "$PUBLIC_REPO_URL" ]; then
   print_error "export.public_repo_url is not set in $CONFIG_FILE"
 fi
 
+# =============================================================================
+# Step 0B: Public Repository Check & Setup
+# =============================================================================
+
+# Extract repository name from URL
+REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
+
+# Check if public repository exists (with redirect detection)
+ACTUAL_REPO=$(gh repo view "$REPO_NAME" --json name,owner --jq '"\(.owner.login)/\(.name)"' 2>/dev/null || echo "")
+
+if [ -z "$ACTUAL_REPO" ] || [ "$ACTUAL_REPO" != "$REPO_NAME" ]; then
+  if [ -n "$ACTUAL_REPO" ]; then
+    print_warning "⚠️  Repository '$REPO_NAME' redirects to '$ACTUAL_REPO'"
+    print_warning "Public repository does not exist: $REPO_NAME"
+  else
+    print_warning "Public repository does not exist: $REPO_NAME"
+  fi
+  echo ""
+
+  # Check for auto-create mode (for Claude Code integration)
+  if [ "$AUTO_CREATE_REPO" = "yes" ]; then
+    CREATE_REPO="y"
+    print_info "Auto-creating repository (AUTO_CREATE_REPO=yes)"
+  else
+    read -p "Create public repository now? [y/n]: " CREATE_REPO
+  fi
+
+  if [ "$CREATE_REPO" = "y" ] || [ "$CREATE_REPO" = "Y" ]; then
+    gh repo create "$REPO_NAME" --public \
+      --description "Community version of $(basename $PRIVATE_REPO)"
+    print_success "Repository created: $REPO_NAME"
+    echo ""
+    sleep 2  # Wait for repo to be fully created
+
+    # Mark as initial export (no main branch exists yet)
+    INITIAL_EXPORT=true
+  else
+    print_error "Public repository is required. Please create it manually and run again."
+    exit 1
+  fi
+else
+  # Repository exists, check if main branch has history
+  MAIN_COMMITS=$(gh api "repos/$REPO_NAME/commits?sha=main&per_page=1" --jq 'length' 2>/dev/null || echo "0")
+  if [ "$MAIN_COMMITS" = "0" ]; then
+    print_info "Main branch has no commits, treating as initial export"
+    INITIAL_EXPORT=true
+  else
+    INITIAL_EXPORT=false
+  fi
+fi
+
+# Check and set up branch protection if needed (skip for initial export)
+if [ "$INITIAL_EXPORT" != "true" ]; then
+  print_info "Checking branch protection settings..."
+  if gh api "repos/$REPO_NAME/branches/main/protection" &>/dev/null; then
+    print_success "Branch protection already configured"
+  else
+    print_info "Setting up branch protection for main branch..."
+    gh api "repos/$REPO_NAME/branches/main/protection" -X PUT --input - <<'PROTECTION' 2>/dev/null || true
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+PROTECTION
+    print_success "Branch protection configured"
+  fi
+  echo ""
+fi
+
 # Create temporary export directory
-EXPORT_DIR="/tmp/ypm-public-export-$(date +%s)"
+# Extract project name from private repo path (remove -main/-dev suffixes)
+PROJECT_NAME=$(basename "$PRIVATE_REPO" | sed 's/-main$//' | sed 's/-dev$//')
+EXPORT_DIR="/tmp/${PROJECT_NAME}-public-export-$(date +%s)"
 
 print_info "🔍 Starting export process..."
 print_info "Private repo: $PRIVATE_REPO"
@@ -214,13 +449,62 @@ $(git log --oneline --no-decorate | tail -10)
 \`\`\`"
 fi
 
-# Create PR with detailed body
-PR_URL=$(gh pr create \
-  --repo "$REPO_NAME" \
-  --base main \
-  --head "$FEATURE_BRANCH" \
-  --title "Community Release: Export from Private Repository ($TIMESTAMP)" \
-  --body "$(cat <<EOF
+# =============================================================================
+# Step 6: Create PR or Initialize Main Branch
+# =============================================================================
+
+if [ "$INITIAL_EXPORT" = "true" ]; then
+  # Initial export: Push export branch directly to main (no PR)
+  print_info "🎯 Initial export detected: Pushing export branch to main..."
+
+  # Push export branch to main (force) - use 'public' remote, not 'origin'
+  # Note: git-filter-repo removes 'origin' remote
+  git push public "$FEATURE_BRANCH:main" --force
+
+  print_success "Export branch pushed to main"
+
+  # Set up branch protection now that main exists
+  print_info "Setting up branch protection for main branch..."
+  sleep 2  # Wait for branch to be fully created
+
+  gh api "repos/$REPO_NAME/branches/main/protection" -X PUT --input - <<'PROTECTION' 2>/dev/null || true
+{
+  "required_status_checks": null,
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+PROTECTION
+  print_success "Branch protection configured"
+
+  # Set default branch to main
+  print_info "Setting default branch to main..."
+  gh api -X PATCH "repos/$REPO_NAME" -f default_branch=main
+  print_success "Default branch set to main"
+
+  # Delete export branch (no longer needed) - use GitHub API
+  print_info "Cleaning up export branch..."
+  gh api -X DELETE "repos/$REPO_NAME/git/refs/heads/$FEATURE_BRANCH"
+  print_success "Export branch deleted"
+
+  PR_URL="N/A (Initial export - pushed directly to main)"
+  echo ""
+else
+  # Subsequent exports: Create PR
+  print_info "📝 Creating Pull Request..."
+
+  # Create PR with detailed body
+  PR_URL=$(gh pr create \
+    --repo "$REPO_NAME" \
+    --base main \
+    --head "$FEATURE_BRANCH" \
+    --title "Community Release: Export from Private Repository ($TIMESTAMP)" \
+    --body "$(cat <<EOF
 ## 🚀 Community Release
 
 This PR contains the latest updates from the private repository, exported on $TIMESTAMP.
@@ -259,6 +543,8 @@ Please verify before merging:
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
 )")
+  echo ""
+fi
 
 # =============================================================================
 # Step 7: Security Verification
@@ -293,50 +579,70 @@ else
 fi
 
 # =============================================================================
-# Step 8: Interactive Merge
+# Step 8: Interactive Merge (PR-based exports only)
 # =============================================================================
 
-echo ""
-print_info "📋 Pull Request created: $PR_URL"
-echo ""
+if [ "$INITIAL_EXPORT" != "true" ]; then
+  echo ""
+  print_info "📋 Pull Request created: $PR_URL"
+  echo ""
 
-if command -v trufflehog &> /dev/null && [ "${VERIFIED_SECRETS:-0}" -eq 0 ] && [ "${UNVERIFIED_SECRETS:-0}" -eq 0 ]; then
-  # Ask user if they want to merge now
-  read -p "$(echo -e ${BLUE}Merge PR now? \(y/n\): ${NC})" MERGE_CONFIRM
+  if command -v trufflehog &> /dev/null && [ "${VERIFIED_SECRETS:-0}" -eq 0 ] && [ "${UNVERIFIED_SECRETS:-0}" -eq 0 ]; then
+    # Ask user if they want to merge now
+    read -p "$(echo -e ${BLUE}Merge PR now? \(y/n\): ${NC})" MERGE_CONFIRM
 
-  if [ "$MERGE_CONFIRM" = "y" ] || [ "$MERGE_CONFIRM" = "Y" ]; then
-    print_info "🚀 Merging Pull Request..."
+    if [ "$MERGE_CONFIRM" = "y" ] || [ "$MERGE_CONFIRM" = "Y" ]; then
+      print_info "🚀 Merging Pull Request..."
 
-    # Extract repository name from URL
-    REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
+      # Extract repository name from URL
+      REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
 
-    # Merge PR
-    gh pr merge "$PR_URL" --repo "$REPO_NAME" --merge --delete-branch
+      # Merge PR
+      gh pr merge "$PR_URL" --repo "$REPO_NAME" --merge --delete-branch
 
-    print_success "Pull Request merged successfully"
+      print_success "Pull Request merged successfully"
 
-    # =============================================================================
-    # Step 9: Cleanup
-    # =============================================================================
+      # =============================================================================
+      # Step 9: Cleanup
+      # =============================================================================
 
-    print_info "🧹 Cleaning up temporary export directory..."
-    cd "$ORIGINAL_DIR"
-    rm -rf "$EXPORT_DIR"
-    print_success "Export directory cleaned up"
+      print_info "🧹 Cleaning up temporary export directory..."
+      cd "$ORIGINAL_DIR"
+      rm -rf "$EXPORT_DIR"
+      print_success "Export directory cleaned up"
 
-    # =============================================================================
-    # Step 10: Summary (Auto-merge completed)
-    # =============================================================================
+      # =============================================================================
+      # Step 10: Summary (Auto-merge completed)
+      # =============================================================================
 
-    echo ""
-    print_success "Community release completed successfully!"
-    echo ""
-    echo "📋 Pull Request: $PR_URL (merged)"
-    echo "🌿 Feature Branch: $FEATURE_BRANCH (deleted)"
-    echo ""
+      echo ""
+      print_success "Community release completed successfully!"
+      echo ""
+      echo "📋 Pull Request: $PR_URL (merged)"
+      echo "🌿 Feature Branch: $FEATURE_BRANCH (deleted)"
+      echo ""
+    else
+      # =============================================================================
+      # Step 10: Summary (Manual merge required)
+      # =============================================================================
+
+      echo ""
+      print_success "Export and PR creation completed successfully!"
+      echo ""
+      echo "📋 Pull Request: $PR_URL"
+      echo "🌿 Feature Branch: $FEATURE_BRANCH"
+      echo "📁 Export Directory: $EXPORT_DIR"
+      echo ""
+      print_warning "Next steps:"
+      echo "1. Review the PR on GitHub: $PR_URL"
+      echo "2. Verify no sensitive information: cd $EXPORT_DIR && git show"
+      echo "3. Merge the PR when ready"
+      echo "4. Clean up: rm -rf $EXPORT_DIR"
+      echo ""
+    fi
   else
     # =============================================================================
-    # Step 10: Summary (Manual merge required)
+    # Step 10: Summary (Security scan failed or TruffleHog not installed)
     # =============================================================================
 
     echo ""
@@ -355,20 +661,22 @@ if command -v trufflehog &> /dev/null && [ "${VERIFIED_SECRETS:-0}" -eq 0 ] && [
   fi
 else
   # =============================================================================
-  # Step 10: Summary (Security scan failed or TruffleHog not installed)
+  # Step 10: Summary (Initial export completed)
   # =============================================================================
 
+  # Cleanup
+  print_info "🧹 Cleaning up temporary export directory..."
+  cd "$ORIGINAL_DIR"
+  rm -rf "$EXPORT_DIR"
+  print_success "Export directory cleaned up"
+
   echo ""
-  print_success "Export and PR creation completed successfully!"
+  print_success "Initial community release completed successfully!"
   echo ""
-  echo "📋 Pull Request: $PR_URL"
-  echo "🌿 Feature Branch: $FEATURE_BRANCH"
-  echo "📁 Export Directory: $EXPORT_DIR"
+  echo "✅ Repository: https://github.com/$REPO_NAME"
+  echo "✅ Main branch: Initialized with export content"
+  echo "✅ Branch protection: Configured"
   echo ""
-  print_warning "Next steps:"
-  echo "1. Review the PR on GitHub: $PR_URL"
-  echo "2. Verify no sensitive information: cd $EXPORT_DIR && git show"
-  echo "3. Merge the PR when ready"
-  echo "4. Clean up: rm -rf $EXPORT_DIR"
+  print_info "Next exports will create Pull Requests for review."
   echo ""
 fi
