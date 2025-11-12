@@ -23,6 +23,34 @@ print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 print_error() { echo -e "${RED}❌ $1${NC}"; exit 1; }
 
 # =============================================================================
+# Repository Safety Check Helper
+# =============================================================================
+# This script operates on TWO repositories:
+# - PRIVATE_REPO: Source repository (current working directory, may have upstream)
+# - PUBLIC_REPO: Target repository for export
+#
+# All gh commands MUST explicitly specify the target repository using -R or --repo flag
+# to avoid accidentally operating on the wrong repository (e.g., upstream).
+# =============================================================================
+
+check_repo_safety() {
+  local TARGET_REPO="$1"
+  local CURRENT_REPO=$(git remote get-url origin 2>/dev/null | sed -E 's/.*github\.com[:/](.*)(\.git)?/\1/')
+  local GH_DEFAULT_REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null)
+
+  if [ "$CURRENT_REPO" != "$TARGET_REPO" ]; then
+    print_info "Repository Context:"
+    print_info "  Working directory: $CURRENT_REPO"
+    print_info "  Export target: $TARGET_REPO"
+
+    if [ "$GH_DEFAULT_REPO" != "$TARGET_REPO" ]; then
+      print_warning "gh default repo ($GH_DEFAULT_REPO) differs from export target ($TARGET_REPO)"
+      print_info "All gh commands will use -R $TARGET_REPO to avoid mistakes"
+    fi
+  fi
+}
+
+# =============================================================================
 # Step 0A: Interactive Setup (if .export-config.yml doesn't exist)
 # =============================================================================
 
@@ -219,6 +247,11 @@ fi
 
 # Extract repository name from URL
 REPO_NAME=$(echo "$PUBLIC_REPO_URL" | sed -E 's/.*github\.com[:/](.*)\.git/\1/')
+
+# Perform repository safety check
+echo ""
+check_repo_safety "$REPO_NAME"
+echo ""
 
 # Check if public repository exists (with redirect detection)
 ACTUAL_REPO=$(gh repo view "$REPO_NAME" --json name,owner --jq '"\(.owner.login)/\(.name)"' 2>/dev/null || echo "")
