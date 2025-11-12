@@ -313,6 +313,43 @@ brew install trufflehog
   rm -rf /tmp/ypm-public-export-XXXXXXXXXX
   ```
 
+### Q: gh pr createが間違ったリポジトリにPRを作成してしまう
+
+**A**: upstream設定があるプロジェクト（private fork等）では、ghコマンドがupstreamをデフォルトリポジトリとして使用する場合があります。
+
+**予防策**:
+
+1. **ghコマンド実行前にリポジトリ一致を確認**:
+
+```bash
+# 現在のリポジトリ
+CURRENT_REPO=$(git remote get-url origin | sed -E 's/.*github\.com[:/](.*)(\.git)?/\1/')
+
+# ghのデフォルトリポジトリ
+GH_DEFAULT_REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null)
+
+# 一致確認
+if [ "$CURRENT_REPO" != "$GH_DEFAULT_REPO" ]; then
+  echo "⚠️  警告: リポジトリ不一致"
+  echo "  現在: $CURRENT_REPO"
+  echo "  gh デフォルト: $GH_DEFAULT_REPO"
+  echo "  -R $CURRENT_REPO を使用してください"
+  exit 1
+fi
+```
+
+2. **常に-Rフラグでリポジトリを明示的に指定**:
+
+```bash
+# 正しい方法
+gh pr create -R signalcompose/YPM-yamato --base develop --head feature/xxx
+
+# 間違った方法（upstreamに誤爆する可能性）
+gh pr create --base develop --head feature/xxx
+```
+
+**注意**: export-to-community.shスクリプトは、意図的に異なるリポジトリ（private→public）を操作するため、スクリプト内で`--repo "$REPO_NAME"`を明示的に使用しています。
+
 ## セキュリティ考慮事項
 
 1. **機密情報の除外**
