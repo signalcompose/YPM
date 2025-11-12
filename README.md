@@ -121,6 +121,14 @@ YPM includes custom slash commands for quick operations:
 ### New Project Setup
 - `/ypm-new` - Launch interactive project setup wizard
 
+### Community Export
+- `/ypm-export-community` - Export private repository to public community version
+  - **Multi-language support**: Automatic language detection (Japanese/English)
+  - **Interactive setup**: Configure private/public repositories, file exclusions, and commit sanitization
+  - **Upstream safety**: Automatic repository verification to prevent mistakes
+  - **Security scan**: TruffleHog integration for secret detection
+  - See [global-export-system.md](docs/development/global-export-system.md) for details
+
 **Usage**: Simply type the command in Claude Code, e.g., `/ypm-update`
 
 **Note**: `/ypm-update` and similar operational commands do **not** use Git Flow. They update local files only (PROJECT_STATUS.md is `.gitignore`d). Git Flow is used **only for developing YPM itself** (adding features, fixing bugs).
