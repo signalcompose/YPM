@@ -24,6 +24,11 @@
 
 どのプロジェクトからも`/ypm-export-community`で実行可能なClaude Code slash command。
 
+**特徴**:
+- **多言語対応**: ユーザーのメッセージから言語を自動検出（日本語/英語）
+- **AskUserQuestion使用**: 構造化された対話形式でセットアップ
+- **Claude Code完結型**: ターミナル実行不要
+
 ### 3. 設定ファイル
 
 各プロジェクトのルートに`.export-config.yml`を配置：

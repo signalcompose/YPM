@@ -10,6 +10,19 @@
 
 ---
 
+### STEP 0: 言語検出
+
+ユーザーの最近のメッセージから使用言語を検出し、以降のAskUserQuestionで使用します。
+
+**検出ルール**:
+- ユーザーの直近のメッセージに日本語キーワード（「です」「ます」「を」「が」「は」「に」「の」等）が含まれる → **日本語**
+- 上記以外（英語のみ） → **英語**
+- デフォルト: **日本語**
+
+検出した言語を内部メモし、以降のSTEP 3とSTEP 4-2のAskUserQuestionで使用してください。
+
+---
+
 ### STEP 1: 現在のディレクトリとブランチを確認
 
 ```bash
@@ -39,6 +52,10 @@ ls -la .export-config.yml 2>/dev/null || echo "NOT_FOUND"
 
 #### Question 1: Repository Configuration
 
+**STEP 0で検出した言語に応じて、以下のいずれかを使用してください**:
+
+##### 日本語版
+
 **質問内容**:
 ```
 Private repositoryとPublic repositoryの設定を行います。
@@ -46,26 +63,56 @@ Private repositoryとPublic repositoryの設定を行います。
 
 **選択肢**:
 1. **Private repo path**:
-   - Label: "Current directory"
+   - Label: "現在のディレクトリを使用"
+   - Description: "現在のディレクトリをprivate repoとして使用します ({{current_dir}})"
+
+2. **Private repo path (custom)**:
+   - Label: "カスタムパスを指定"
+   - Description: "別のパスを指定します（例: Git worktreeのmainブランチ）"
+
+3. **Public repo (new)**:
+   - Label: "新規public repositoryを作成"
+   - Description: "新しいpublic GitHubリポジトリを自動作成します"
+
+4. **Public repo (existing)**:
+   - Label: "既存のリポジトリを使用"
+   - Description: "既存のpublic repository URLを指定します"
+
+##### 英語版
+
+**Question**:
+```
+Configure Private and Public repository settings.
+```
+
+**Options**:
+1. **Private repo path**:
+   - Label: "Use current directory"
    - Description: "Use current directory as private repo ({{current_dir}})"
 
 2. **Private repo path (custom)**:
-   - Label: "Custom path"
+   - Label: "Specify custom path"
    - Description: "Specify different path (e.g., for Git worktree main branch)"
 
 3. **Public repo (new)**:
    - Label: "Create new public repository"
-   - Description: "Create a new public GitHub repository"
+   - Description: "Automatically create a new public GitHub repository"
 
 4. **Public repo (existing)**:
    - Label: "Use existing repository"
-   - Description: "Use an existing public repository URL"
+   - Description: "Specify an existing public repository URL"
+
+---
 
 **収集する情報**:
 - Private repo path（カレントディレクトリまたはカスタムパス）
 - Public repo URL（新規作成の場合はowner/name、既存の場合はURL）
 
 #### Question 2: Files to Exclude
+
+**STEP 0で検出した言語に応じて、以下のいずれかを使用してください**:
+
+##### 日本語版
 
 **質問内容**:
 ```
@@ -74,6 +121,35 @@ Public版から除外するファイルを選択してください。
 ```
 
 **選択肢（multiSelect: true）**:
+1. **CLAUDE.md**:
+   - Label: "CLAUDE.md"
+   - Description: "個人用Claude Code設定ファイル（推奨）"
+
+2. **config.yml**:
+   - Label: "config.yml"
+   - Description: "ローカルパスを含む個人設定（推奨）"
+
+3. **PROJECT_STATUS.md**:
+   - Label: "PROJECT_STATUS.md"
+   - Description: "個人のプロジェクト管理データ（推奨）"
+
+4. **docs/research/**:
+   - Label: "docs/research/"
+   - Description: "内部リサーチドキュメント（推奨）"
+
+5. **Additional files**:
+   - Label: "その他のファイル"
+   - Description: "追加の除外ファイルを次のステップで指定"
+
+##### 英語版
+
+**Question**:
+```
+Select files to exclude from public version.
+Recommended exclusions are pre-selected.
+```
+
+**Options (multiSelect: true)**:
 1. **CLAUDE.md**:
    - Label: "CLAUDE.md"
    - Description: "Personal Claude Code configuration (recommended)"
@@ -94,10 +170,16 @@ Public版から除外するファイルを選択してください。
    - Label: "Other files"
    - Description: "Specify additional files in the next step"
 
+---
+
 **追加除外ファイル**（Otherを選択した場合）:
 - ユーザーに追加の除外ファイルをカンマ区切りで入力してもらう
 
 #### Question 3: Commit Message Sanitization
+
+**STEP 0で検出した言語に応じて、以下のいずれかを使用してください**:
+
+##### 日本語版
 
 **質問内容**:
 ```
@@ -107,12 +189,31 @@ Public版から除外するファイルを選択してください。
 
 **選択肢**:
 1. **No sanitization**:
+   - Label: "スキップ"
+   - Description: "サニタイズする機密キーワードはありません"
+
+2. **Add keywords**:
+   - Label: "キーワードを追加"
+   - Description: "削除する機密キーワードを指定します"
+
+##### 英語版
+
+**Question**:
+```
+Specify sensitive keywords to remove from commit messages.
+(e.g., project names, internal code names, etc.)
+```
+
+**Options**:
+1. **No sanitization**:
    - Label: "Skip"
    - Description: "No sensitive keywords to sanitize"
 
 2. **Add keywords**:
    - Label: "Add keywords"
    - Description: "Specify sensitive keywords to redact"
+
+---
 
 **収集する情報**:
 - 機密キーワードのリスト（カンマ区切り）
@@ -209,7 +310,9 @@ fi
 
 ##### A. リポジトリが存在しない場合（NEEDS_CREATE）
 
-**AskUserQuestionツール**でリポジトリ作成を確認：
+**AskUserQuestionツール**でリポジトリ作成を確認。**STEP 0で検出した言語に応じて、以下のいずれかを使用してください**:
+
+###### 日本語版
 
 **質問内容**:
 ```
@@ -225,6 +328,25 @@ Public repository '$REPO_NAME' が存在しません。
 2. **No, cancel**:
    - Label: "キャンセル"
    - Description: "リポジトリを作成せずにキャンセルします"
+
+###### 英語版
+
+**Question**:
+```
+Public repository '$REPO_NAME' does not exist.
+Create new repository and proceed with export?
+```
+
+**Options**:
+1. **Yes, create and export**:
+   - Label: "Create and export"
+   - Description: "Automatically create public repository, initialize main branch, and execute export"
+
+2. **No, cancel**:
+   - Label: "Cancel"
+   - Description: "Cancel without creating repository"
+
+---
 
 **ユーザーが "Yes" を選択**:
 → STEP 4-3へ進む（`AUTO_CREATE_REPO=yes`でスクリプト実行）

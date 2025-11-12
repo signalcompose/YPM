@@ -45,6 +45,19 @@
 
 ## フェーズ1: プロジェクト企画
 
+### STEP 0: 言語検出
+
+ユーザーの最近のメッセージから使用言語を検出し、以降のAskUserQuestionで使用します。
+
+**検出ルール**:
+- ユーザーの直近のメッセージに日本語キーワード（「です」「ます」「を」「が」「は」「に」「の」等）が含まれる → **日本語**
+- 上記以外（英語のみ） → **英語**
+- デフォルト: **日本語**
+
+検出した言語を内部メモし、以降のAskUserQuestionで使用してください。
+
+---
+
 **進捗表示**:
 ```
 🔄 Phase 1: プロジェクト企画 ← 現在ここ
@@ -57,21 +70,172 @@
 ⏳ Phase 8: CLAUDE.md作成と最終確認
 ```
 
-まず、以下について対話しながら要件を固めていきます：
+### STEP 1: 基本情報の収集（AskUserQuestion使用）
 
-1. **プロジェクト概要のヒアリング**
-   - どんなプロジェクトを作りたいですか？（目的、機能、技術スタック）
+**AskUserQuestionツール**を使用して、基本情報を効率的に収集します。
+
+**STEP 0で検出した言語に応じて、以下のいずれかを使用してください**:
+
+#### 日本語版
+
+**Question 1: プロジェクトタイプ**
+
+**質問内容**:
+```
+どのタイプのプロジェクトを作成しますか？
+```
+
+**選択肢**:
+1. **Webアプリケーション**:
+   - Label: "Webアプリケーション"
+   - Description: "フロントエンド/バックエンド含むWebサービス"
+
+2. **CLIツール**:
+   - Label: "CLIツール"
+   - Description: "コマンドラインツール・スクリプト"
+
+3. **ライブラリ/SDK**:
+   - Label: "ライブラリ/SDK"
+   - Description: "再利用可能なライブラリやSDK"
+
+4. **その他**:
+   - Label: "その他"
+   - Description: "デスクトップアプリ、モバイルアプリ、ゲーム等"
+
+**Question 2: 技術スタック**
+
+**質問内容**:
+```
+主要な技術スタックを選択してください
+```
+
+**選択肢**:
+1. **Node.js/TypeScript**:
+   - Label: "Node.js/TypeScript"
+   - Description: "Node.js + TypeScript/JavaScript"
+
+2. **Python**:
+   - Label: "Python"
+   - Description: "Python 3.x"
+
+3. **Rust**:
+   - Label: "Rust"
+   - Description: "Rust言語"
+
+4. **C/C++**:
+   - Label: "C/C++"
+   - Description: "C言語またはC++"
+
+5. **その他**:
+   - Label: "その他"
+   - Description: "Go、Ruby、Java、Kotlin等"
+
+**Question 3: 開発体制**
+
+**質問内容**:
+```
+開発体制を選択してください
+```
+
+**選択肢**:
+1. **Solo（個人開発）**:
+   - Label: "Solo（個人開発）"
+   - Description: "一人で開発します"
+
+2. **Team（チーム開発）**:
+   - Label: "Team（チーム開発）"
+   - Description: "複数人で開発します"
+
+#### 英語版
+
+**Question 1: Project Type**
+
+**Question**:
+```
+What type of project are you creating?
+```
+
+**Options**:
+1. **Web Application**:
+   - Label: "Web Application"
+   - Description: "Frontend/Backend web service"
+
+2. **CLI Tool**:
+   - Label: "CLI Tool"
+   - Description: "Command-line tool or script"
+
+3. **Library/SDK**:
+   - Label: "Library/SDK"
+   - Description: "Reusable library or SDK"
+
+4. **Other**:
+   - Label: "Other"
+   - Description: "Desktop app, mobile app, game, etc."
+
+**Question 2: Tech Stack**
+
+**Question**:
+```
+Select your primary tech stack
+```
+
+**Options**:
+1. **Node.js/TypeScript**:
+   - Label: "Node.js/TypeScript"
+   - Description: "Node.js + TypeScript/JavaScript"
+
+2. **Python**:
+   - Label: "Python"
+   - Description: "Python 3.x"
+
+3. **Rust**:
+   - Label: "Rust"
+   - Description: "Rust language"
+
+4. **C/C++**:
+   - Label: "C/C++"
+   - Description: "C or C++ language"
+
+5. **Other**:
+   - Label: "Other"
+   - Description: "Go, Ruby, Java, Kotlin, etc."
+
+**Question 3: Development Team**
+
+**Question**:
+```
+Select your development approach
+```
+
+**Options**:
+1. **Solo (Individual)**:
+   - Label: "Solo (Individual)"
+   - Description: "Developing alone"
+
+2. **Team (Collaborative)**:
+   - Label: "Team (Collaborative)"
+   - Description: "Developing with multiple people"
+
+---
+
+### STEP 2: 詳細情報のヒアリング（自然会話形式）
+
+STEP 1で収集した基本情報を元に、以下について対話しながら詳細を固めていきます：
+
+1. **プロジェクト概要の詳細**
+   - プロジェクト名（案）
+   - 目的・背景
    - 対象ユーザーや利用シーン
-   
+
 2. **要件定義の作成**
    - 機能要件（必須機能、優先順位）
    - 非機能要件（パフォーマンス、セキュリティ、スケーラビリティ）
-   - 技術選定の理由
-   
-3. **プロジェクト基本情報の決定**
-   - プロジェクト名
+   - 技術選定の理由（STEP 1の選択を深掘り）
+
+3. **プロジェクト仕様の確定**
+   - プロジェクト名（最終決定）
    - 概要説明（短文・長文）
-   - 使用言語・フレームワーク
+   - 使用言語・フレームワーク（詳細）
 
 要件定義がまとまったら、システム仕様書・アーキテクチャ図などの必要なドキュメントを作成します。
 
