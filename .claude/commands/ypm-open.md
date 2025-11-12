@@ -32,19 +32,6 @@ YPMで管理しているプロジェクトを指定したエディタで開き�
 
 ## 実行手順
 
-### STEP 0: 言語検出
-
-ユーザーの最近のメッセージから使用言語を検出し、以降のAskUserQuestionで使用します。
-
-**検出ルール**:
-- ユーザーの直近のメッセージに日本語キーワード（「です」「ます」「を」「が」「は」「に」「の」等）が含まれる → **日本語**
-- 上記以外（英語のみ） → **英語**
-- デフォルト: **日本語**
-
-検出した言語を内部メモし、以降のAskUserQuestionで使用してください。
-
----
-
 ### 共通STEP: 引数の確認
 
 引数を確認し、対応するモードに分岐：
@@ -147,74 +134,64 @@ which <エディタ名>
 
 config.ymlの`monitor.ignore_in_open`リストに含まれるプロジェクトを除外。
 
-### STEP 4: プロジェクト選択（AskUserQuestion使用）
+### STEP 4: 番号付き一覧表示
 
-抽出したプロジェクト一覧を、**AskUserQuestionツール**で選択肢として提示します。
-
-**STEP 0で検出した言語に応じて、以下のいずれかを使用してください**:
-
-#### 日本語版
-
-**質問内容**:
 ```
-プロジェクトを選択してください（{エディタ表示名}で開きます）
-```
+## 利用可能なプロジェクト（12個）
 
-**選択肢**:
-各プロジェクトを以下の形式で提示：
-- Label: "{プロジェクト名}"
-- Description: "{概要}（{進捗}）{カテゴリ絵文字}"
+### 🔥 アクティブ（1週間以内に更新）
+1. Slack_MCP - Slack-Claude Bridge MCP（v1.0.0リリース準備中、95%）
+2. CVI - Claude Voice Integration（v2.0.0リリース済み、100%）
+3. MaxMCP - Max/MSP用ネイティブMCPサーバー（実装中、35%）
+4. MaxMSP-MCP-Server-multipatch - Max/MSP MCPサーバー研究版（80%）
+5. picopr - メールマガジン自動化システム（15%）
+6. redmine-mcp-server - Redmine REST API MCPサーバー（100%）
+7. InstrVo - 楽器演奏を歌声に変換（MVP開発、70%）
+8. Claude-code - Claude Code活用ガイド
+9. git-dotfiles-manager - プライベート設定ファイル管理（90%）
+10. TabClear - P2Pタブ管理・共有システム（設計段階、5%）
+11. oshireq - 推し活リクエスト（本番稼働中）
 
-**例**:
-1. Label: "MaxMCP-Dev"
-   Description: "Max/MSP用ネイティブC++ MCPサーバー（実装中、35%）🔥"
+### 🚧 開発中（1ヶ月以内に更新）
+12. DUNGIA - ダンジョンタイムアタックゲーム（設計中、0%）
+13. my_first_turnip - 自動取引PDCAシステム（実験段階、30%）
+14. orbitscore - ライブコーディングDSL（オーディオ実装、20%）
 
-2. Label: "CVI"
-   Description: "Claude Voice Integration（v2.0.0リリース済み、100%）🔥"
+※ 非表示: 2個（全て表示: /ypm-open all）
 
-3. Label: "TabClear"
-   Description: "P2Pタブ管理・共有システム（設計段階、5%）🚧"
-
-**カテゴリ絵文字**:
-- 🔥 : アクティブ（1週間以内に更新）
-- 🚧 : 開発中（1ヶ月以内に更新）
-- 💤 : 休止中（1ヶ月以上更新なし）
-
-#### 英語版
-
-**Question**:
-```
-Select a project to open (opens in {エディタ表示名})
+番号またはプロジェクト名を入力してください:
 ```
 
-**Options**:
-Each project with the format:
-- Label: "{Project Name}"
-- Description: "{Overview} ({Progress}) {Category Emoji}"
+### STEP 5: ユーザー入力処理
 
-**Example**:
-1. Label: "MaxMCP-Dev"
-   Description: "Native C++ MCP server for Max/MSP (In Development, 35%) 🔥"
+**入力パターン**:
 
-2. Label: "CVI"
-   Description: "Claude Voice Integration (Released v2.0.0, 100%) 🔥"
+#### 5-1. 番号入力（例: `3`）
+- 該当番号のプロジェクトを選択 → STEP 6へ
 
-3. Label: "TabClear"
-   Description: "P2P tab management system (Design phase, 5%) 🚧"
+#### 5-2. プロジェクト名入力（例: `max`）
+- 大文字小文字を区別せず部分一致検索
+- **1件マッチ**: そのプロジェクトを選択 → STEP 6へ
+- **複数マッチ**:
+  ```
+  複数のプロジェクトがマッチしました：
 
-**Category Emojis**:
-- 🔥 : Active (updated within 1 week)
-- 🚧 : In Development (updated within 1 month)
-- 💤 : Dormant (no updates for over 1 month)
+  1. MaxMCP
+  2. MaxMSP-MCP-Server-multipatch
 
----
+  番号を入力してください:
+  ```
+  → 再度番号入力を待つ → STEP 6へ
 
-**選択されたプロジェクト**:
-- ユーザーが選択したプロジェクトを取得
-- プロジェクトパスを特定
-- STEP 5へ進む
+- **0件マッチ**:
+  ```
+  ❌ プロジェクト "xxx" が見つかりませんでした。
 
-### STEP 5: エディタでプロジェクトを開く
+  正確なプロジェクト名または番号を指定してください。
+  ```
+  → **処理を中断**
+
+### STEP 6: エディタでプロジェクトを開く
 
 **重要**: 環境変数をクリアしてエディタを起動します。これにより、各プロジェクトの`.node-version`等が正しく読み込まれます。
 
@@ -266,14 +243,25 @@ env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディ
 - worktreeは除外
 - **ignore_in_openは除外しない**（これが通常モードとの違い）
 
-**STEP 4**: プロジェクト選択（AskUserQuestion使用）
+**STEP 4**: 番号付き一覧表示（ignore含む）
 
-**モード1のSTEP 4と同じ方法で実施**:
-- 全プロジェクト（ignore含む）をAskUserQuestionで提示
-- 質問内容とオプションの形式は同じ
-- ignore設定済みのプロジェクトもdescriptionに「💤（ignore設定済み）」を追記
+```
+## 利用可能なプロジェクト（全16個）
 
-**STEP 5**: モード1のSTEP 5と同じ（エディタで開く）
+### 🔥 アクティブ
+1-11. （通常モードと同じ）
+
+### 🚧 開発中
+12-14. （通常モードと同じ）
+
+### 💤 休止中・その他（ignore設定済み）
+15. godot-mcp - Godot Engine向けMCPサーバー（休止中）
+16. loto7loto6Generator - ロト番号生成ツール（レガシー、完成済み）
+
+番号またはプロジェクト名を入力してください:
+```
+
+**STEP 5-6**: モード1と同じ
 
 ---
 
@@ -310,15 +298,24 @@ env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディ
 
 ### STEP 1-3: モード1と同じ（通常モード）
 
-### STEP 4: プロジェクト選択（AskUserQuestion使用）
+### STEP 4: プロジェクト一覧表示
 
-**モード1のSTEP 4と同じ方法で実施**:
-- 現在表示中のプロジェクト（ignore除外済み）をAskUserQuestionで提示
-- **STEP 0で検出した言語に応じて、質問内容を切り替え**:
-  - 日本語: "ignoreに追加するプロジェクトを選択してください"
-  - 英語: "Select a project to add to ignore list"
+```
+## ignoreに追加するプロジェクトを選択
 
-### STEP 5: config.ymlに追加
+現在表示中のプロジェクト（12個）:
+1. Slack_MCP
+2. CVI
+3. MaxMCP
+...
+14. orbitscore
+
+番号またはプロジェクト名を入力してください:
+```
+
+### STEP 5: プロジェクト選択（モード1と同じ）
+
+### STEP 6: config.ymlに追加
 
 選択されたプロジェクト名を`monitor.ignore_in_open`リストに追加。
 
@@ -363,37 +360,23 @@ config.ymlを更新:
 ```
 → **処理を中断**
 
-### STEP 2: プロジェクト選択（AskUserQuestion使用）
+### STEP 2: ignore一覧表示
 
-**AskUserQuestionツール**を使用して、ignore設定済みプロジェクトから選択：
-
-**STEP 0で検出した言語に応じて、以下のいずれかを使用してください**:
-
-#### 日本語版
-
-**質問内容**:
 ```
-ignoreから削除するプロジェクトを選択してください
-```
+## ignoreから削除するプロジェクトを選択
 
-**選択肢**:
-各ignoreプロジェクトを以下の形式で提示：
-- Label: "{プロジェクト名}"
-- Description: "（ignore設定済み）"
+1. godot-mcp
+2. loto7loto6Generator
+3. orbitscore
 
-#### 英語版
-
-**Question**:
-```
-Select a project to remove from ignore list
+番号またはプロジェクト名を入力してください:
 ```
 
-**Options**:
-Each ignored project with the format:
-- Label: "{Project Name}"
-- Description: "(Currently ignored)"
+### STEP 3: プロジェクト選択
 
-### STEP 3: config.ymlから削除
+番号または名前で選択（モード1のSTEP 5と同じロジック）
+
+### STEP 4: config.ymlから削除
 
 選択されたプロジェクト名を`monitor.ignore_in_open`リストから削除。
 
