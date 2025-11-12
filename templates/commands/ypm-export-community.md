@@ -409,6 +409,51 @@ AUTO_CREATE_REPO=yes ~/.claude/scripts/export-to-community.sh
 
 ## 重要な注意事項
 
+### GitHub CLI (gh) コマンドの安全性確認（絶対必須）
+
+**このコマンド実行中にghコマンドを使用する際は、必ず以下を確認すること：**
+
+#### 問題
+
+upstream設定があるプロジェクト（private fork等）では、ghコマンドがupstreamをデフォルトリポジトリとして使用する場合があります。これにより、誤ったリポジトリにPR/Issueを作成してしまう可能性があります。
+
+#### 🚨 絶対ルール
+
+**ghコマンド実行前に、必ず現在のリポジトリとghのデフォルトリポジトリが一致しているか確認すること。**
+
+#### 安全確認手順
+
+ghコマンドを実行する前に、以下の確認を必ず行ってください：
+
+```bash
+# 現在のリポジトリ（originから取得）
+CURRENT_REPO=$(git remote get-url origin | sed -E 's/.*github\.com[:/](.*)(\.git)?/\1/')
+
+# ghのデフォルトリポジトリ
+GH_DEFAULT_REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null)
+
+# 一致チェック
+if [ "$CURRENT_REPO" != "$GH_DEFAULT_REPO" ]; then
+  echo "⚠️  警告: リポジトリ不一致を検出"
+  echo "  現在の作業リポジトリ: $CURRENT_REPO"
+  echo "  gh のデフォルト: $GH_DEFAULT_REPO"
+  echo ""
+  echo "以下のように -R フラグで明示的に指定してください："
+  echo "  gh pr create -R $CURRENT_REPO --base develop --head feature/xxx"
+  exit 1
+fi
+
+echo "✅ リポジトリ一致確認: $CURRENT_REPO"
+```
+
+確認が取れたら、安全のため`-R`フラグを使用してghコマンドを実行：
+
+```bash
+gh pr create -R "$CURRENT_REPO" --base develop --head feature/xxx
+```
+
+### その他の注意事項
+
 - **PRマージは必ずユーザーの承認を得てから実行**（絶対禁止事項）
 - 依存ツール: `git-filter-repo`, `yq`, `gh` (GitHub CLI), `trufflehog`
 - GitHub権限が必要（repository作成、branch protection設定）
