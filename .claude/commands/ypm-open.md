@@ -18,6 +18,7 @@ YPMで管理しているプロジェクトを指定したエディタで開き�
 /ypm-open                    # 通常モード（デフォルトエディタ）
 /ypm-open oshireq           # oshireqをデフォルトエディタで開く
 /ypm-open oshireq cursor    # oshireqをCursorで開く
+/ypm-open OnsetSpace terminal  # OnsetSpaceをTerminal.appで開く
 /ypm-open all               # 全表示モード
 /ypm-open --editor          # 現在のデフォルトエディタを表示
 /ypm-open --editor cursor   # デフォルトをCursorに設定
@@ -26,7 +27,7 @@ YPMで管理しているプロジェクトを指定したエディタで開き�
 /ypm-open remove-ignore     # ignoreから削除
 ```
 
-**対応エディタ**: `code` (VS Code), `cursor` (Cursor), `zed` (Zed)
+**対応エディタ**: `code` (VS Code), `cursor` (Cursor), `zed` (Zed), `terminal` (Terminal.app)
 
 ---
 
@@ -63,6 +64,8 @@ YPMで管理しているプロジェクトを指定したエディタで開き�
 
 #### 1-3. エディタCLIの確認
 
+**Terminal.app以外のエディタの場合**:
+
 ```bash
 which <エディタ名>
 ```
@@ -91,6 +94,10 @@ which <エディタ名>
 インストール後、再度このコマンドを実行してください。
 ```
 → **処理を中断**
+
+**Terminal.appの場合**:
+- CLI確認は不要（macOS組み込みのため）
+- そのまま次のSTEPへ進む
 
 ### STEP 2: PROJECT_STATUS.mdとconfig.ymlの読み込み
 
@@ -193,6 +200,8 @@ config.ymlの`monitor.ignore_in_open`リストに含まれるプロジェクト�
 
 ### STEP 6: エディタでプロジェクトを開く
 
+#### 6-1. Terminal.app以外のエディタの場合
+
 **重要**: 環境変数をクリアしてエディタを起動します。これにより、各プロジェクトの`.node-version`等が正しく読み込まれます。
 
 ```bash
@@ -205,7 +214,24 @@ env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディ
 - `RBENV_VERSION` - Rubyバージョン（rbenv）
 - `PYENV_VERSION` - Pythonバージョン（pyenv）
 
-**成功時のメッセージ**:
+#### 6-2. Terminal.appの場合
+
+**重要**: ディレクトリ移動後にシェルを再初期化することで、環境変数が正しく設定されます。
+
+```bash
+osascript -e 'tell application "Terminal" to do script "cd '"$PROJECT_PATH"' && exec $SHELL"'
+```
+
+**仕組み**:
+1. Terminal.appを起動
+2. 指定されたプロジェクトディレクトリに移動
+3. `exec $SHELL`でシェルを再初期化
+4. 新しいディレクトリのコンテキストで`.zshrc`/`.bashrc`が実行される
+5. nodenv/rbenv等の環境マネージャーがプロジェクト固有のバージョンを検出
+
+#### 6-3. 成功時のメッセージ
+
+**Terminal.app以外**:
 ```
 ✅ <エディタ表示名>で "MaxMCP" を開きました。
 
@@ -216,10 +242,22 @@ env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディ
 各プロジェクトの設定ファイル（.node-version等）が正しく読み込まれます。
 ```
 
+**Terminal.app**:
+```
+✅ Terminal.appで "MaxMCP" を開きました。
+
+プロジェクトパス: /Users/yamato/Src/proj_max_mcp/MaxMCP
+エディタ: Terminal.app (terminal)
+
+※ プロジェクトディレクトリに移動後、シェルを再初期化しました。
+各プロジェクトの設定ファイル（.node-version等）が正しく読み込まれます。
+```
+
 **エディタ表示名の対応**:
 - `code` → "VS Code"
 - `cursor` → "Cursor"
 - `zed` → "Zed"
+- `terminal` → "Terminal.app"
 
 **失敗時のメッセージ**:
 ```
@@ -422,7 +460,7 @@ config.ymlを更新:
 エディタ: VS Code (code)
 
 変更方法: /ypm-open --editor <エディタ名>
-対応エディタ: code (VS Code), cursor (Cursor), zed (Zed)
+対応エディタ: code (VS Code), cursor (Cursor), zed (Zed), terminal (Terminal.app)
 ```
 
 #### 引数がある場合（`/ypm-open --editor cursor`）
@@ -437,6 +475,7 @@ config.ymlを更新:
 - `code` - VS Code
 - `cursor` - Cursor
 - `zed` - Zed
+- `terminal` - Terminal.app
 
 **対応していない場合**:
 ```
@@ -446,6 +485,7 @@ config.ymlを更新:
 - code (VS Code)
 - cursor (Cursor)
 - zed (Zed)
+- terminal (Terminal.app)
 
 使用例: /ypm-open --editor cursor
 ```

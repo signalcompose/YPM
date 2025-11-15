@@ -371,8 +371,13 @@ fi
 if [ ${#EXCLUDE_PATHS[@]} -gt 0 ]; then
   git filter-repo "${EXCLUDE_PATHS[@]}" --force
   print_success "File filtering completed"
+  # Save result for PR body
+  FILE_FILTER_STATUS="✅ COMPLETED"
+  FILE_FILTER_COUNT=$((${#EXCLUDE_PATHS[@]} / 2))
 else
   print_info "No files to exclude, skipping filter-repo"
+  FILE_FILTER_STATUS="⚠️ SKIPPED"
+  FILE_FILTER_COUNT=0
 fi
 
 # =============================================================================
@@ -413,8 +418,13 @@ return msg.encode('utf-8')
 " --force
 
   print_success "Commit message sanitization completed"
+  # Save result for PR body
+  SANITIZE_STATUS="✅ COMPLETED"
+  SANITIZE_PATTERN_COUNT=$SANITIZE_COUNT
 else
   print_info "No sanitize_patterns defined, skipping message sanitization"
+  SANITIZE_STATUS="⚠️ SKIPPED"
+  SANITIZE_PATTERN_COUNT=0
 fi
 
 # =============================================================================
@@ -602,12 +612,76 @@ if command -v trufflehog &> /dev/null; then
 
   if [ "${VERIFIED_SECRETS:-0}" -eq 0 ] && [ "${UNVERIFIED_SECRETS:-0}" -eq 0 ]; then
     print_success "Security scan passed - no secrets detected"
+    SECURITY_STATUS="✅ PASSED"
+    SECURITY_RESULT="No secrets detected"
   else
     print_error "Security scan detected potential secrets. Please review before merging."
+    SECURITY_STATUS="❌ FAILED"
+    SECURITY_RESULT="Potential secrets detected - manual review required"
   fi
+  TRUFFLEHOG_INSTALLED="true"
 else
   print_warning "TruffleHog not installed. Skipping security scan."
   print_warning "Install: brew install trufflehog"
+  echo ""
+  SECURITY_STATUS="⚠️ SKIPPED"
+  SECURITY_RESULT="TruffleHog not installed"
+  VERIFIED_SECRETS="-"
+  UNVERIFIED_SECRETS="-"
+  TRUFFLEHOG_INSTALLED="false"
+fi
+
+# =============================================================================
+# Step 7.5: Update PR with Verification Results (PR-based exports only)
+# =============================================================================
+
+if [ "$INITIAL_EXPORT" != "true" ]; then
+  print_info "📝 Updating PR with verification results..."
+
+  # Count files changed and commits
+  FILES_CHANGED=$(git diff --name-only "public/$FEATURE_BRANCH^" 2>/dev/null | wc -l | tr -d ' ' || echo "N/A")
+  COMMITS_EXPORTED=$(git log --oneline "public/$FEATURE_BRANCH^..public/$FEATURE_BRANCH" 2>/dev/null | wc -l | tr -d ' ' || echo "N/A")
+
+  # Generate verification results section
+  VERIFICATION_SECTION="## ✅ Automated Verification Results
+
+### 🔐 Security Scan (TruffleHog)
+- **Status:** $SECURITY_STATUS
+- **Verified Secrets:** ${VERIFIED_SECRETS:-0}
+- **Unverified Secrets:** ${UNVERIFIED_SECRETS:-0}
+- **Result:** $SECURITY_RESULT
+
+### 🧹 File Filtering (git-filter-repo)
+- **Status:** $FILE_FILTER_STATUS
+- **Excluded Paths:** $FILE_FILTER_COUNT paths filtered
+
+### ✏️ Commit Message Sanitization
+- **Status:** $SANITIZE_STATUS
+- **Patterns Applied:** $SANITIZE_PATTERN_COUNT patterns
+
+### 📊 Export Summary
+- **Files Changed:** $FILES_CHANGED
+- **Commits Exported:** $COMMITS_EXPORTED
+- **Export Date:** $(date '+%Y-%m-%d %H:%M:%S')
+
+---
+"
+
+  # Get current PR body
+  CURRENT_PR_BODY=$(gh pr view "$PR_URL" --repo "$REPO_NAME" --json body --jq '.body')
+
+  # Insert verification section after title
+  NEW_PR_BODY="$VERIFICATION_SECTION
+$CURRENT_PR_BODY"
+
+  # Update PR with verification results
+  # Extract PR number from URL
+  PR_NUMBER=$(echo "$PR_URL" | grep -o '[0-9]*$')
+
+  # Use REST API to update PR body (gh pr edit fails due to Projects (classic) deprecation)
+  gh api -X PATCH "repos/$REPO_NAME/pulls/$PR_NUMBER" -f body="$NEW_PR_BODY"
+
+  print_success "PR updated with verification results"
   echo ""
 fi
 
