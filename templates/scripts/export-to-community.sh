@@ -675,7 +675,11 @@ if [ "$INITIAL_EXPORT" != "true" ]; then
 $CURRENT_PR_BODY"
 
   # Update PR with verification results
-  gh pr edit "$PR_URL" --repo "$REPO_NAME" --body "$NEW_PR_BODY"
+  # Extract PR number from URL
+  PR_NUMBER=$(echo "$PR_URL" | grep -o '[0-9]*$')
+
+  # Use REST API to update PR body (gh pr edit fails due to Projects (classic) deprecation)
+  gh api -X PATCH "repos/$REPO_NAME/pulls/$PR_NUMBER" -f body="$NEW_PR_BODY"
 
   print_success "PR updated with verification results"
   echo ""
