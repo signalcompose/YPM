@@ -16,6 +16,7 @@ YPM is a project management tool that automatically tracks the status of multipl
 - Progress visualization with multiple metrics (Phase, Implementation, Testing, Documentation)
 - Next task identification for each project
 - Flexible configuration via `config.yml`
+- GitHub Actions integration for automated workflows
 
 ---
 
