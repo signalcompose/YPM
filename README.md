@@ -184,35 +184,55 @@ classification:
 
 ---
 
-## このリポジトリについて
+## Using YPM as a Private Fork
 
-これはyamato個人用のYPM（Your Project Manager）インスタンスです。
+You can use YPM as a private fork to manage your personal projects while staying synchronized with the public version.
 
-### Public版との関係
+### Why Use a Private Fork?
 
-- **Public版**: [signalcompose/YPM](https://github.com/signalcompose/YPM)
-- **このリポジトリ**: Private fork（yamato個人環境）
+- Keep your project-specific configurations (`config.yml`, `CLAUDE.md`) private
+- Store sensitive project information securely
+- Sync with upstream updates to get new features
+- Export improvements back to the public repository
 
-### Upstream同期
+### Setting Up a Private Fork
 
-```bash
-# Public版の最新機能を取り込む
-git fetch upstream
-git merge upstream/develop
-```
+1. **Create a private fork**:
+   ```bash
+   # Clone the public repository
+   git clone https://github.com/signalcompose/YPM.git YPM-private
+   cd YPM-private
 
-詳細は[CLAUDE.md](CLAUDE.md)の「Upstream同期」セクションを参照してください。
+   # Create your private repository on GitHub (set as private)
+   gh repo create your-username/YPM-private --private --source=. --remote=origin
+
+   # Add upstream remote
+   git remote add upstream https://github.com/signalcompose/YPM.git
+   ```
+
+2. **Synchronize with upstream**:
+   ```bash
+   # Fetch latest changes from public version
+   git fetch upstream
+   git merge upstream/develop
+   ```
+
+3. **Customize for your environment**:
+   - Edit `config.yml` with your project directories
+   - Update `CLAUDE.md` with your workflow preferences
+   - These files are excluded from community exports
+
+For detailed private fork management, see `CLAUDE.md` in your fork.
 
 ---
 
 ## Contributing
 
-Contributions to public YPM are welcome!
+Contributions to YPM are welcome!
 
-- **Public版リポジトリ**: [signalcompose/YPM](https://github.com/signalcompose/YPM)
+- **Repository**: [signalcompose/YPM](https://github.com/signalcompose/YPM)
 - **Bug reports & feature requests**: [GitHub Issues](https://github.com/signalcompose/YPM/issues)
-
-このリポジトリ（YPM-yamato）はyamato個人用です。
+- **Pull requests**: Please follow the Git Flow in `CLAUDE.md`
 
 ---
 
