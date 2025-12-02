@@ -2,6 +2,9 @@
 description: "Run TruffleHog security scan on all managed projects"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 # YPM - TruffleHog Security Scan
 
 Run TruffleHog security scan on all YPM-managed projects.

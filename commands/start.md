@@ -2,6 +2,9 @@
 description: "Show YPM welcome message and quick commands"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 **YPM (Your Project Manager)** - Multi-project progress tracking system.
 
 This system monitors multiple projects in configured directories and centralizes progress management.

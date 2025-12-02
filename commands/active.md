@@ -2,6 +2,9 @@
 description: "Show only active projects updated within 1 week"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 Display only active projects updated within 1 week from `~/.ypm/PROJECT_STATUS.md`.
 
 **Prerequisites**:

@@ -1,30 +1,33 @@
-全プロジェクトをスキャンして `PROJECT_STATUS.md` を更新してください。
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
 
-**実行内容**:
-1. `python scripts/scan_projects.py` を実行してプロジェクト情報を収集
-   - Git worktree判定（.gitファイル/ディレクトリで判定）
-   - プロジェクト分類（アクティブ/開発中/休止中）
-2. スキャン結果（JSON形式）を読み取り
-3. アクティブなプロジェクトの詳細情報を `CLAUDE.md` から収集
-4. `PROJECT_STATUS.md` を人間が読みやすい形式で更新
-   - worktreeの場合、プロジェクト名に「（Git worktree）」を追加
-5. 完了
+Scan all projects and update `PROJECT_STATUS.md`.
 
-**重要**: このコマンドは**Git操作を行いません**。`PROJECT_STATUS.md`はローカルファイルとして更新されます（`.gitignore`済み）。
+**Execution Steps**:
+1. Run `python scripts/scan_projects.py` to collect project information
+   - Git worktree detection (determined by .git file/directory)
+   - Project classification (active/developing/dormant)
+2. Read scan results (JSON format)
+3. Collect detailed information from `CLAUDE.md` for active projects
+4. Update `PROJECT_STATUS.md` in human-readable format
+   - For worktrees, add "(Git worktree)" to project name
+5. Complete
 
-**注意事項**:
-- 他のプロジェクトのファイルは読み取り専用です（変更禁止）
-- YPM自身のファイルのみ変更可能です
-- スキャンスクリプトが自動的に新規プロジェクトを検出します
-- PROJECT_STATUS.mdはGit管理外（日常的な運用タスクのため）
+**Important**: This command **does not perform Git operations**. `PROJECT_STATUS.md` is updated as a local file (already in `.gitignore`).
 
-**🚨 CRITICAL: 正確性の確保**:
-- **「次のタスク」は以下の情報源からのみ取得すること**:
-  - GitHubのIssue（`gh issue list`コマンド）
-  - 最新のコミットメッセージ
-  - プロジェクトのCLAUDE.md、README.mdに明記された内容
-- **絶対にやってはいけないこと**:
-  - 存在しない機能や計画を創作する
-  - 実装されていない機能を「実装中」と記載する
-  - ドキュメントに記載のない「次のタスク」を推測で書く
-- **不明な場合**: 「不明」「記載なし」「GitHubに該当Issueなし」と正直に記載
+**Notes**:
+- Other project files are read-only (modification prohibited)
+- Only YPM's own files can be modified
+- The scan script automatically detects new projects
+- PROJECT_STATUS.md is not under Git management (for routine operational tasks)
+
+**CRITICAL: Ensuring Accuracy**:
+- **"Next tasks" must be obtained ONLY from the following sources**:
+  - GitHub Issues (`gh issue list` command)
+  - Latest commit messages
+  - Content explicitly stated in project's CLAUDE.md, README.md
+- **Absolutely prohibited**:
+  - Making up non-existent features or plans
+  - Listing unimplemented features as "in progress"
+  - Writing "next tasks" by guessing when not documented
+- **When uncertain**: Honestly state "Unknown", "Not documented", or "No matching GitHub Issue"

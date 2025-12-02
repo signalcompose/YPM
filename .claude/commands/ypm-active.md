@@ -1,18 +1,21 @@
-`PROJECT_STATUS.md` から最近1週間以内に更新されたアクティブなプロジェクトのみを表示してください。
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
 
-**表示内容**:
-- プロジェクト名
-- 概要
-- 現在のブランチ
-- 最終更新日
+Display only active projects updated within the last week from `PROJECT_STATUS.md`.
+
+**Display Content**:
+- Project name
+- Overview
+- Current branch
+- Last update date
 - Phase
-- 実装進捗
-- 次のタスク
+- Implementation progress
+- Next task
 
-**表示形式**:
-アクティブなプロジェクトを更新日時の降順（新しい順）で表示します。
+**Display Format**:
+Display active projects in descending order by update date (newest first).
 
-**追加情報**:
-- アクティブなプロジェクト数の合計
-- 最も進捗しているプロジェクト
-- 最も最近更新されたプロジェクト
+**Additional Information**:
+- Total number of active projects
+- Most progressed project
+- Most recently updated project

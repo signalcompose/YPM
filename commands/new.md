@@ -2,6 +2,9 @@
 description: "Launch interactive new project setup wizard"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 Launch new project setup wizard.
 
 Based on `project-bootstrap-prompt.md`, set up through 8 phases interactively:

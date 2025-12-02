@@ -1,163 +1,165 @@
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 # YPM - TruffleHog Security Scan
 
-YPMで管理している全プロジェクトに対してTruffleHogセキュリティスキャンを実行します。
+Runs TruffleHog security scan on all projects managed by YPM.
 
-## 概要
+## Overview
 
-このコマンドは以下を実行します：
-1. `python scripts/scan_projects.py`を実行してプロジェクト一覧を取得
-2. 各プロジェクトに対してTruffleHogスキャンを実行
-3. 検出された問題を見やすく表示
+This command performs the following:
+1. Run `python scripts/scan_projects.py` to get project list
+2. Execute TruffleHog scan on each project
+3. Display detected issues in a readable format
 
-## 実行手順
+## Execution Steps
 
-### STEP 1: TruffleHogのインストール確認
+### STEP 1: Check TruffleHog Installation
 
 ```bash
 which trufflehog
 ```
 
-**trufflehogがインストールされていない場合**:
+**If trufflehog is not installed**:
 ```
-❌ TruffleHogがインストールされていません。
+TruffleHog is not installed.
 
-インストール方法:
+Installation:
 brew install trufflehog
 
-インストール後、再度このコマンドを実行してください。
+Please run this command again after installation.
 ```
-→ **処理を中断**
+→ **Abort processing**
 
-### STEP 2: プロジェクトスキャン実行
+### STEP 2: Execute Project Scan
 
 ```bash
 python scripts/scan_projects.py
 ```
 
-スキャン結果のJSONを読み取り、各プロジェクトの`security_scan`情報を確認します。
+Read the scan result JSON and check `security_scan` information for each project.
 
-### STEP 3: スキャン結果の表示
+### STEP 3: Display Scan Results
 
-#### 3-1. サマリー表示
+#### 3-1. Summary Display
 
 ```
-## 🔒 TruffleHog Security Scan Results
+## TruffleHog Security Scan Results
 
-**スキャン実行日時**: 2025-11-11 10:30
+**Scan Date/Time**: 2025-11-11 10:30
 
-**サマリー**:
-- 総プロジェクト数: 27個
-- スキャン実施: 27個
-- 問題検出: 1個
-- クリーン: 26個
+**Summary**:
+- Total Projects: 27
+- Scanned: 27
+- Issues Found: 1
+- Clean: 26
 ```
 
-#### 3-2. 問題が検出されたプロジェクト
+#### 3-2. Projects with Issues
 
-問題が検出されたプロジェクトを優先表示：
+Display projects with detected issues first:
 
 ```
 ---
 
-## ⚠️ セキュリティ問題が検出されたプロジェクト
+## Security Issues Detected
 
-### godot-mcp
-- **パス**: /Users/yamato/Src/MCPServer/godot-mcp
-- **ブランチ**: main
-- **検出された問題数**: 6個
-- **最終更新**: 8ヶ月前
-- **推奨アクション**:
-  1. プロジェクトディレクトリで詳細確認: `cd /Users/yamato/Src/MCPServer/godot-mcp`
-  2. TruffleHog詳細スキャン: `trufflehog git file://. --json | jq`
-  3. 検出された機密情報を削除またはgit-filter-repoで履歴クリーン
-
----
-```
-
-#### 3-3. クリーンなプロジェクト（オプション）
-
-```
-## ✅ クリーンなプロジェクト（26個）
-
-問題は検出されませんでした：
-- Claude-code
-- CVI
-- InstrVo
-- MaxMCP
-- ... (他22個)
-```
-
-### STEP 4: 次のアクション提案
-
-```
-## 📝 推奨される次のアクション
-
-### 問題が検出された場合
-1. 各プロジェクトで詳細スキャンを実行
-2. 検出された機密情報を確認
-3. 必要に応じて履歴クリーンまたはシークレットローテーション
-
-### 定期的なスキャン
-- 週次または月次でこのコマンドを実行することを推奨
-- 新しいプロジェクトを追加した際にも実行
-
-### 個別プロジェクトのスキャン
-各プロジェクト内で `/trufflehog-scan` を使用して個別にスキャン可能
-```
+### project-name
+- **Path**: /path/to/project
+- **Branch**: main
+- **Issues Found**: 6
+- **Last Update**: 8 months ago
+- **Recommended Actions**:
+  1. Check details in project directory: `cd /path/to/project`
+  2. Detailed TruffleHog scan: `trufflehog git file://. --json | jq`
+  3. Remove detected secrets or clean history with git-filter-repo
 
 ---
+```
 
-## 出力例
-
-### 問題なしの場合
+#### 3-3. Clean Projects (Optional)
 
 ```
-## 🔒 TruffleHog Security Scan Results
+## Clean Projects (26)
 
-**スキャン実行日時**: 2025-11-11 10:30
+No issues detected:
+- Project1
+- Project2
+- Project3
+- ... (22 more)
+```
 
-**サマリー**:
-- 総プロジェクト数: 27個
-- スキャン実施: 27個
-- 問題検出: 0個
-- クリーン: 27個
+### STEP 4: Suggest Next Actions
+
+```
+## Recommended Next Actions
+
+### If Issues Were Detected
+1. Run detailed scan for each project
+2. Review detected secrets
+3. Rotate secrets or clean history as needed
+
+### Regular Scanning
+- Recommend running this command weekly or monthly
+- Also run when adding new projects
+
+### Individual Project Scanning
+Use `/trufflehog-scan` within each project for individual scanning
+```
 
 ---
 
-## ✅ すべてのプロジェクトはクリーンです
+## Output Examples
 
-セキュリティ問題は検出されませんでした。
+### No Issues Found
+
+```
+## TruffleHog Security Scan Results
+
+**Scan Date/Time**: 2025-11-11 10:30
+
+**Summary**:
+- Total Projects: 27
+- Scanned: 27
+- Issues Found: 0
+- Clean: 27
+
+---
+
+## All Projects Are Clean
+
+No security issues were detected.
 ```
 
-### 問題ありの場合
+### Issues Found
 
-上記STEP 3の形式で表示
-
----
-
-## 重要な注意事項
-
-### 1. スキャン時間
-
-- 大量のプロジェクトがある場合、スキャンに時間がかかる可能性があります
-- プロジェクトあたり最大30秒のタイムアウト
-
-### 2. 誤検知の可能性
-
-TruffleHogは機密情報のパターンマッチングを行うため、誤検知の可能性があります。
-検出された内容を必ず確認してください。
-
-### 3. 履歴スキャン
-
-TruffleHogはGitの履歴全体をスキャンします。
-現在のコードに機密情報がなくても、過去のコミットに含まれていれば検出されます。
-
-### 4. プライバシー
-
-スキャン結果にはプロジェクト名やパスが含まれます。
-YPMの「プロジェクト情報の外部露出禁止」ポリシーに従い、
-この結果をGitコミットやPRに含めないでください。
+Display in STEP 3 format above
 
 ---
 
-**このコマンドを実行した後、必ず結果をユーザーに表示してください。**
+## Important Notes
+
+### 1. Scan Time
+
+- May take time if there are many projects
+- Maximum 30 second timeout per project
+
+### 2. False Positives
+
+TruffleHog performs pattern matching for secrets, so false positives are possible.
+Always verify detected content.
+
+### 3. History Scanning
+
+TruffleHog scans the entire Git history.
+Even if current code has no secrets, they will be detected if included in past commits.
+
+### 4. Privacy
+
+Scan results include project names and paths.
+Following YPM's "no external exposure of project information" policy,
+do not include these results in Git commits or PRs.
+
+---
+
+**Always display results to user after executing this command.**

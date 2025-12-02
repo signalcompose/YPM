@@ -1,24 +1,27 @@
-新規プロジェクトの立ち上げを支援します。
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
 
-`project-bootstrap-prompt.md` に基づき、以下の8フェーズで対話形式でセットアップします：
+Assists with launching new projects.
 
-## セットアップフェーズ
+Based on `project-bootstrap-prompt.md`, set up interactively through the following 8 phases:
 
-1. **プロジェクト企画**: ヒアリングを通じて要件を固める（目的、機能、技術スタック）
-2. **ディレクトリ作成**: ローカルディレクトリ作成とGit初期化
-3. **ドキュメント整備**: DDD・TDD・DRY原則に基づく開発環境構築
-4. **GitHub連携**: リモートリポジトリ作成と初期プッシュ
-5. **Git Workflow設定**: ブランチ戦略とルール確立
-6. **環境設定ファイル整備**: `.gitignore`、`.claude/settings.json`
-7. **ドキュメント管理ルール確立**: 実装とドキュメントの同期維持
-8. **最終確認**: 開発開始の準備完了
+## Setup Phases
 
-## セットアップ完了後
+1. **Project Planning**: Finalize requirements through interviews (purpose, features, tech stack)
+2. **Directory Creation**: Create local directory and initialize Git
+3. **Documentation Setup**: Build development environment based on DDD/TDD/DRY principles
+4. **GitHub Integration**: Create remote repository and initial push
+5. **Git Workflow Setup**: Establish branch strategy and rules
+6. **Environment Configuration**: Set up `.gitignore`, `.claude/settings.json`
+7. **Documentation Management Rules**: Maintain sync between implementation and documentation
+8. **Final Check**: Ready to start development
 
-- **ユーザーは新しいプロジェクトディレクトリに移動してください**
-- **そのプロジェクト専用のClaude Codeセッションで開発を開始してください**
-- YPMは次回の `/ypm-update` で自動的に監視対象に追加します
+## After Setup Completion
 
-## 実行方法
+- **User should move to the new project directory**
+- **Start development in a dedicated Claude Code session for that project**
+- YPM will automatically add it to monitored projects on the next `/ypm-update`
 
-`project-bootstrap-prompt.md` の内容を参照しながら、各フェーズを対話形式で進めてください。
+## Execution Method
+
+Proceed through each phase interactively while referring to `project-bootstrap-prompt.md`.

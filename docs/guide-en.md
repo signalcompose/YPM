@@ -426,6 +426,20 @@ YPM estimates project progress based on the following criteria:
 
 Edit `~/.ypm/config.yml` to customize YPM behavior.
 
+### Language Settings
+
+YPM supports multiple languages. Set your preferred language in `~/.ypm/config.yml`:
+
+```yaml
+settings:
+  language: en   # Options: en (English), ja (Japanese)
+```
+
+- **English (`en`)**: Default language, output displayed as-is
+- **Japanese (`ja`)**: Claude will dynamically translate all output to Japanese
+
+The language setting is applied during `/ypm:setup` when you select your preferred language, or you can change it manually in the config file.
+
 ### Adding Monitoring Targets
 
 Add to `directories` in `~/.ypm/config.yml`:
@@ -592,9 +606,10 @@ Powered by Claude Code
 ## Related Documentation
 
 - **[README.md](../README.md)** - Project overview (English)
-- **[詳細ガイド（日本語）](guide-ja.md)** - Japanese detailed guide
 - **[CLAUDE.md](../CLAUDE.md)** - Claude Code instructions
 - **[docs/INDEX.md](INDEX.md)** - Documentation index
+
+> **Note**: Japanese documentation (`guide-ja.md`) is deprecated. Use `settings.language: ja` in config for Japanese output.
 
 ---
 

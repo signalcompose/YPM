@@ -1,5 +1,13 @@
 # YPM 詳細ガイド（日本語）
 
+> **Note**: This document is deprecated. Please refer to [guide-en.md](./guide-en.md) as the primary documentation.
+> YPM now supports language settings in `~/.ypm/config.yml`. Set `settings.language: ja` for Japanese output - Claude will translate dynamically.
+
+> **注意**: このドキュメントは非推奨です。最新のドキュメントは [guide-en.md](./guide-en.md) を参照してください。
+> YPMは `~/.ypm/config.yml` で言語設定をサポートしています。`settings.language: ja` を設定すると、Claude が日本語に翻訳して出力します。
+
+---
+
 > YPM (Your Project Manager) の完全な使い方ガイド
 
 ---

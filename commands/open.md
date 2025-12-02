@@ -2,6 +2,9 @@
 description: "Open a project in your preferred editor"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 # YPM - Open Project in Editor
 
 Open a YPM-managed project in specified editor.

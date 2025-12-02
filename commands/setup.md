@@ -2,6 +2,9 @@
 description: "Initialize YPM data directory and configuration"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 # YPM Setup - Initial Configuration
 
 Set up YPM for global usage. This command creates the data directory and configuration file.

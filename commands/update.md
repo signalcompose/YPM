@@ -2,6 +2,9 @@
 description: "Scan all projects and update PROJECT_STATUS.md"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 Scan all projects and update `~/.ypm/PROJECT_STATUS.md`.
 
 **Prerequisites**:
