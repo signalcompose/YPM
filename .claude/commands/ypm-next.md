@@ -1,22 +1,25 @@
-`PROJECT_STATUS.md` から各プロジェクトの「次のタスク」を抽出し、優先度順に表示してください。
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
 
-**表示形式**:
-- プロジェクト名
-- 現在のPhase
-- 次のタスク
-- 最終更新日
+Extract "next tasks" from `PROJECT_STATUS.md` for each project and display them in priority order.
 
-**優先順位**:
-1. アクティブなプロジェクト（最近1週間以内に更新）
-2. 実装進捗が高いプロジェクト
-3. Phase順
+**Display Format**:
+- Project name
+- Current Phase
+- Next task
+- Last update date
 
-**推奨アクション**:
-- 最も優先度の高いプロジェクトを提案
-- 次に取り組むべきタスクを明確化
+**Priority Order**:
+1. Active projects (updated within the last week)
+2. Projects with higher implementation progress
+3. Phase order
 
-**⚠️ CRITICAL: 報告時の注意**:
-- PROJECT_STATUS.mdに記載された「次のタスク」をそのまま表示する
-- 新たな計画や機能を創作しない
-- GitHubのIssueがある場合は、Issue番号を併記する
-- 情報源が不明な場合は「（情報源不明）」と付記する
+**Recommended Actions**:
+- Suggest the highest priority project
+- Clarify the next task to work on
+
+**CRITICAL: Reporting Notes**:
+- Display the "next tasks" as recorded in PROJECT_STATUS.md
+- Do not create new plans or features
+- If there are GitHub Issues, include the Issue numbers
+- If the source is unclear, append "(source unknown)"

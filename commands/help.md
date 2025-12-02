@@ -2,6 +2,9 @@
 description: "Show detailed YPM help with all available commands"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 # YPM (Your Project Manager) - Help
 
 ## Overview

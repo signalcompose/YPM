@@ -1,20 +1,23 @@
-**YPM (Your Project Manager)** へようこそ。
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
 
-このシステムは `/Users/yamato/Src/` 配下の複数プロジェクトを監視し、進捗を一元管理します。
+**Welcome to YPM (Your Project Manager)**
 
-**できること**:
-- 全プロジェクトの状況を一覧化（Git情報 + ドキュメントから自動収集）
-- 次のタスクと優先順位を整理
+This system monitors multiple projects under your configured directories and provides centralized progress management.
 
-**よく使うコマンド**:
-1. 📊 **"プロジェクト状況を更新して"** → 全プロジェクトをスキャンして `PROJECT_STATUS.md` を更新
-2. 📋 **"次にやるべきタスクは？"** → アクティブなプロジェクトの次のアクションを表示
-3. 🔥 **"アクティブなプロジェクトは？"** → 最近更新されたプロジェクトを確認
+**Features**:
+- List all project statuses (automatically collected from Git info + documentation)
+- Organize next tasks and priorities
 
-**カスタムコマンド**:
-- `/ypm` - このヘルプメッセージを表示
-- `/ypm-update` - プロジェクト状況を更新
-- `/ypm-next` - 次のタスクを表示
-- `/ypm-active` - アクティブなプロジェクトを表示
+**Common Commands**:
+1. **"Update project status"** - Scan all projects and update `PROJECT_STATUS.md`
+2. **"What should I do next?"** - Show next actions for active projects
+3. **"Show active projects"** - Check recently updated projects
 
-どうされますか？
+**Custom Commands**:
+- `/ypm` - Show this help message
+- `/ypm-update` - Update project status
+- `/ypm-next` - Show next tasks
+- `/ypm-active` - Show active projects
+
+What would you like to do?

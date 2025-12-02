@@ -2,6 +2,9 @@
 description: "Show next tasks for all projects in priority order"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 Extract "next tasks" from `~/.ypm/PROJECT_STATUS.md` and display in priority order.
 
 **Prerequisites**:

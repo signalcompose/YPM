@@ -1,105 +1,108 @@
-# YPM (Your Project Manager) - ヘルプ
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
 
-## 概要
+# YPM (Your Project Manager) - Help
 
-YPMは `/Users/yamato/Src/` 配下の複数プロジェクトを監視し、進捗を一元管理するシステムです。
+## Overview
+
+YPM monitors multiple projects under your configured directories and provides centralized progress management.
 
 ---
 
-## 利用可能なコマンド
+## Available Commands
 
-### 📊 プロジェクト管理
+### Project Management
 
 #### `/ypm`
-ウェルカムメッセージとよく使うコマンド一覧を表示します。
+Displays the welcome message and common commands list.
 
 #### `/ypm-update`
-全プロジェクトをスキャンして `PROJECT_STATUS.md` を更新します。
-- 各プロジェクトのGit情報を取得
-- CLAUDE.md、README.md、docs/INDEX.md を読み込み
-- 進捗情報（Phase、実装進捗、テスト、ドキュメント）を収集
-- 変更をコミット
+Scans all projects and updates `PROJECT_STATUS.md`.
+- Retrieves Git information for each project
+- Reads CLAUDE.md, README.md, docs/INDEX.md
+- Collects progress information (Phase, implementation progress, tests, documentation)
+- Commits changes
 
 #### `/ypm-next`
-各プロジェクトの「次のタスク」を優先度順に表示します。
-- アクティブなプロジェクト（最近1週間以内に更新）
-- 実装進捗が高いプロジェクト
-- Phase順
+Displays "next tasks" for each project in priority order.
+- Active projects (updated within the last week)
+- Projects with higher implementation progress
+- Phase order
 
 #### `/ypm-active`
-最近1週間以内に更新されたアクティブなプロジェクトのみを表示します。
-- プロジェクト名、概要、ブランチ、最終更新日
-- Phase、実装進捗、次のタスク
+Shows only active projects updated within the last week.
+- Project name, overview, branch, last update date
+- Phase, implementation progress, next task
 
 ---
 
-### 🚀 新規プロジェクト
+### New Projects
 
 #### `/ypm-new`
-新規プロジェクトの立ち上げを支援します。
-- プロジェクト企画（要件定義、技術選定）
-- ディレクトリ作成とGit初期化
-- ドキュメント整備（DDD・TDD・DRY原則）
-- GitHub連携
-- Git Workflow設定
-- 環境設定ファイル整備
+Assists with launching new projects.
+- Project planning (requirements definition, technology selection)
+- Directory creation and Git initialization
+- Documentation setup (DDD/TDD/DRY principles)
+- GitHub integration
+- Git Workflow configuration
+- Environment configuration file setup
 
-詳細は `project-bootstrap-prompt.md` を参照してください。
+See `project-bootstrap-prompt.md` for details.
 
 ---
 
-### ℹ️  ヘルプ
+### Help
 
 #### `/ypm-help`
-このヘルプメッセージを表示します。
+Displays this help message.
 
 ---
 
-## YPMの原則
+## YPM Principles
 
-### 読み取り専用
-YPMは他のプロジェクトを**読み取り専用**で監視します。変更できるのはYPM自身のファイルのみです。
+### Read-Only
+YPM monitors other projects in **read-only** mode. Only YPM's own files can be modified.
 
-### 役割分担
-- **YPM**: プロジェクト監視・進捗管理・新規プロジェクト立ち上げ支援
-- **各プロジェクト**: 実装・開発・テスト（各プロジェクトの専用Claude Codeセッションで実施）
-
----
-
-## 参考ドキュメント
-
-- **CLAUDE.md** - YPMのプロジェクト指示書
-- **project-bootstrap-prompt.md** - 新規プロジェクト立ち上げガイド
-- **config.example.yml** - 設定ファイルのサンプル
+### Role Division
+- **YPM**: Project monitoring, progress management, new project launch support
+- **Each Project**: Implementation, development, testing (conducted in dedicated Claude Code sessions for each project)
 
 ---
 
-## よくある使い方
+## Reference Documentation
 
-### 1. セッション開始時
+- **CLAUDE.md** - YPM project instructions
+- **project-bootstrap-prompt.md** - New project launch guide
+- **config.example.yml** - Sample configuration file
+
+---
+
+## Common Usage
+
+### 1. At Session Start
 ```
 /ypm
 ```
-ウェルカムメッセージを表示して、何ができるか確認します。
+Display the welcome message to see available options.
 
-### 2. プロジェクト状況を確認したい
+### 2. Check Project Status
 ```
 /ypm-update
 ```
-全プロジェクトをスキャンして最新の状況を把握します。
+Scan all projects to get the latest status.
 
-### 3. 次に何をすべきか知りたい
+### 3. Know What to Do Next
 ```
 /ypm-next
 ```
-優先度の高いタスクを確認します。
+Check high-priority tasks.
 
-### 4. 新しいプロジェクトを始めたい
+### 4. Start a New Project
 ```
 /ypm-new
 ```
-対話形式でプロジェクトをセットアップします。
+Set up a project interactively.
 
 ---
 
-**YPMで複数プロジェクトを効率的に管理しましょう！** 🚀
+**Manage multiple projects efficiently with YPM!**

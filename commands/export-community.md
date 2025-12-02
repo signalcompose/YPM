@@ -2,6 +2,9 @@
 description: "Export private repository to public community version"
 ---
 
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 # /ypm-export-community - Export Private Repository to Public Community Version
 
 This command exports from a private repository to public community version.
@@ -16,12 +19,14 @@ Execute the following steps **strictly**:
 
 ### STEP 0: Language Detection
 
-Detect language from user's recent messages for subsequent AskUserQuestion.
+Check `~/.ypm/config.yml` for `settings.language` setting.
 
 **Detection rules**:
-- User's recent message contains Japanese keywords -> **Japanese**
-- Otherwise (English only) -> **English**
-- Default: **Japanese**
+- If `settings.language` is set, use that language
+- If not set or config doesn't exist, detect from user's recent messages:
+  - User's recent message contains Japanese keywords -> **Japanese**
+  - Otherwise (English only) -> **English**
+- Default: **English**
 
 Note detected language internally for use in STEP 3 and STEP 4-2 AskUserQuestion.
 

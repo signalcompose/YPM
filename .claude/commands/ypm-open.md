@@ -1,570 +1,556 @@
+<!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
+<!-- If language is not "en", translate all output to that language -->
+
 # YPM - Open Project in Editor
 
-YPMで管理しているプロジェクトを指定したエディタで開きます。
+Opens projects managed by YPM in a specified editor.
 
-## サブコマンド
+## Subcommands
 
-- **(引数なし)**: ignore除外の一覧から選択（デフォルトエディタで開く）
-- `<プロジェクト名> [エディタ名]`: プロジェクトを指定エディタで開く
-- `all`: ignore含む全プロジェクトから選択
-- `ignore-list`: ignore設定済みプロジェクト一覧表示
-- `add-ignore`: プロジェクトをignoreに追加
-- `remove-ignore`: ignoreから削除
-- `--editor [エディタ名]`: デフォルトエディタの設定・表示
+- **(no arguments)**: Select from list (excluding ignored) and open in default editor
+- `<project_name> [editor_name]`: Open project in specified editor
+- `all`: Select from all projects including ignored
+- `ignore-list`: Show projects in ignore list
+- `add-ignore`: Add project to ignore list
+- `remove-ignore`: Remove project from ignore list
+- `--editor [editor_name]`: Show/set default editor
 
-## 使用例
+## Usage Examples
 
 ```
-/ypm-open                    # 通常モード（デフォルトエディタ）
-/ypm-open oshireq           # oshireqをデフォルトエディタで開く
-/ypm-open oshireq cursor    # oshireqをCursorで開く
-/ypm-open OnsetSpace terminal  # OnsetSpaceをTerminal.appで開く
-/ypm-open all               # 全表示モード
-/ypm-open --editor          # 現在のデフォルトエディタを表示
-/ypm-open --editor cursor   # デフォルトをCursorに設定
-/ypm-open ignore-list       # ignore一覧
-/ypm-open add-ignore        # ignoreに追加
-/ypm-open remove-ignore     # ignoreから削除
+/ypm-open                    # Normal mode (default editor)
+/ypm-open myproject          # Open myproject in default editor
+/ypm-open myproject cursor   # Open myproject in Cursor
+/ypm-open myproject terminal # Open myproject in Terminal.app
+/ypm-open all                # Full display mode
+/ypm-open --editor           # Show current default editor
+/ypm-open --editor cursor    # Set default to Cursor
+/ypm-open ignore-list        # Show ignore list
+/ypm-open add-ignore         # Add to ignore
+/ypm-open remove-ignore      # Remove from ignore
 ```
 
-**対応エディタ**: `code` (VS Code), `cursor` (Cursor), `zed` (Zed), `terminal` (Terminal.app)
+**Supported Editors**: `code` (VS Code), `cursor` (Cursor), `zed` (Zed), `terminal` (Terminal.app)
 
 ---
 
-## 実行手順
+## Execution Steps
 
-### 共通STEP: 引数の確認
+### Common STEP: Check Arguments
 
-引数を確認し、対応するモードに分岐：
-- 引数なし → **モード1: 通常モード**
-- `<プロジェクト名> [エディタ名]` → **モード1: 通常モード**（直接プロジェクト指定）
-- `all` → **モード2: 全表示モード**
-- `ignore-list` → **モード3: ignore一覧**
-- `add-ignore` → **モード4: ignore追加**
-- `remove-ignore` → **モード5: ignore削除**
-- `--editor [エディタ名]` → **モード6: エディタ設定**
+Check arguments and branch to corresponding mode:
+- No arguments → **Mode 1: Normal Mode**
+- `<project_name> [editor_name]` → **Mode 1: Normal Mode** (direct project specification)
+- `all` → **Mode 2: Full Display Mode**
+- `ignore-list` → **Mode 3: Ignore List**
+- `add-ignore` → **Mode 4: Add Ignore**
+- `remove-ignore` → **Mode 5: Remove Ignore**
+- `--editor [editor_name]` → **Mode 6: Editor Settings**
 
 ---
 
-## モード1: 通常モード（引数なし または プロジェクト名指定）
+## Mode 1: Normal Mode (no arguments or project name specified)
 
-### STEP 1: config.ymlとエディタCLIの確認
+### STEP 1: Check config.yml and Editor CLI
 
-#### 1-1. config.ymlからデフォルトエディタを取得
-
-```bash
-# config.ymlを読み込み
-# editor.default の値を取得（例: code, cursor, zed）
-```
-
-#### 1-2. 第2引数がある場合、エディタを上書き
-
-- 第2引数 (`cursor`, `code`, `zed` 等) が指定されている場合、そのエディタを使用
-- 第2引数がない場合、config.ymlのデフォルトを使用
-
-#### 1-3. エディタCLIの確認
-
-**Terminal.app以外のエディタの場合**:
+#### 1-1. Get default editor from config.yml
 
 ```bash
-which <エディタ名>
+# Read config.yml
+# Get editor.default value (e.g., code, cursor, zed)
 ```
 
-**結果が空の場合**:
+#### 1-2. Override editor if second argument exists
+
+- If second argument (`cursor`, `code`, `zed`, etc.) is specified, use that editor
+- If no second argument, use default from config.yml
+
+#### 1-3. Check Editor CLI
+
+**For editors other than Terminal.app**:
+
+```bash
+which <editor_name>
 ```
-❌ <エディタ名> CLI が見つかりません。
 
-<エディタ名>のCLIをインストールしてください。
+**If result is empty**:
+```
+Editor <editor_name> CLI not found.
 
-【VS Code (code)】
-1. VS Codeを開く
+Please install the <editor_name> CLI.
+
+[VS Code (code)]
+1. Open VS Code
 2. Command Palette (Cmd+Shift+P)
-3. "Shell Command: Install 'code' command in PATH" を実行
+3. Run "Shell Command: Install 'code' command in PATH"
 
-【Cursor (cursor)】
-1. Cursorを開く
+[Cursor (cursor)]
+1. Open Cursor
 2. Command Palette (Cmd+Shift+P)
-3. "Shell Command: Install 'cursor' command in PATH" を実行
+3. Run "Shell Command: Install 'cursor' command in PATH"
 
-【Zed (zed)】
-1. Zedを開く
+[Zed (zed)]
+1. Open Zed
 2. Command Palette (Cmd+Shift+P)
-3. "zed: Install CLI" を実行
+3. Run "zed: Install CLI"
 
-インストール後、再度このコマンドを実行してください。
+Please run this command again after installation.
 ```
-→ **処理を中断**
+→ **Abort processing**
 
-**Terminal.appの場合**:
-- CLI確認は不要（macOS組み込みのため）
-- そのまま次のSTEPへ進む
+**For Terminal.app**:
+- CLI check not needed (built into macOS)
+- Proceed to next STEP
 
-### STEP 2: PROJECT_STATUS.mdとconfig.ymlの読み込み
+### STEP 2: Read PROJECT_STATUS.md and config.yml
 
 ```bash
-# ReadツールでPROJECT_STATUS.mdを読み込み
-# Readツールでconfig.ymlを読み込み
+# Use Read tool to read PROJECT_STATUS.md
+# Use Read tool to read config.yml
 ```
 
-**PROJECT_STATUS.mdが存在しない場合**:
+**If PROJECT_STATUS.md does not exist**:
 ```
-❌ PROJECT_STATUS.md が見つかりません。
+PROJECT_STATUS.md not found.
 
-先に /ypm-update を実行してプロジェクトをスキャンしてください。
+Please run /ypm-update first to scan projects.
 ```
-→ **処理を中断**
+→ **Abort processing**
 
-### STEP 3: プロジェクト一覧の抽出と除外
+### STEP 3: Extract Project List and Exclusions
 
-#### 3-1. PROJECT_STATUS.mdから抽出
+#### 3-1. Extract from PROJECT_STATUS.md
 
-1. **アクティブプロジェクト**（`## 🔥 アクティブプロジェクト` セクション）
-2. **開発中プロジェクト**（`## 🚧 開発中` セクション）
-3. **休止中プロジェクト**（`## 💤 休止中` セクション）
+1. **Active Projects** (`## Active Projects` section)
+2. **Developing Projects** (`## Developing` section)
+3. **Dormant Projects** (`## Dormant` section)
 
-**抽出ルール**:
-- `### プロジェクト名` の行からプロジェクト名を取得
-- `- **概要**: ...` から簡単な説明を取得
-- `- **実装進捗**: XX%` から進捗を取得
-- `- **ドキュメント**: [...]` からプロジェクトパスを抽出
-  - 例: `[CLAUDE.md](/Users/yamato/Src/proj_max_mcp/MaxMCP/CLAUDE.md)`
-  - → プロジェクトパス: `/Users/yamato/Src/proj_max_mcp/MaxMCP`
+**Extraction Rules**:
+- Get project name from `### ProjectName` line
+- Get brief description from `- **Overview**: ...`
+- Get progress from `- **Implementation Progress**: XX%`
+- Extract project path from `- **Documentation**: [...]`
+  - Example: `[CLAUDE.md](/path/to/project/CLAUDE.md)`
+  - → Project path: `/path/to/project`
 
-#### 3-2. Git worktreeの除外
+#### 3-2. Exclude Git Worktrees
 
-以下の条件に**いずれか**該当するプロジェクトは除外：
-- プロジェクト名が `-main` で終わる
-- プロジェクト名が `-develop` で終わる
-- 概要に「worktree」が含まれる
+Exclude projects that match **any** of the following:
+- Project name ends with `-main`
+- Project name ends with `-develop`
+- Overview contains "worktree"
 
-#### 3-3. ignore_in_openの除外（通常モードのみ）
+#### 3-3. Exclude ignore_in_open (Normal Mode Only)
 
-config.ymlの`monitor.ignore_in_open`リストに含まれるプロジェクトを除外。
+Exclude projects in the `monitor.ignore_in_open` list in config.yml.
 
-### STEP 4: 番号付き一覧表示
+### STEP 4: Display Numbered List
 
 ```
-## 利用可能なプロジェクト（12個）
+## Available Projects (12)
 
-### 🔥 アクティブ（1週間以内に更新）
-1. Slack_MCP - Slack-Claude Bridge MCP（v1.0.0リリース準備中、95%）
-2. CVI - Claude Voice Integration（v2.0.0リリース済み、100%）
-3. MaxMCP - Max/MSP用ネイティブMCPサーバー（実装中、35%）
-4. MaxMSP-MCP-Server-multipatch - Max/MSP MCPサーバー研究版（80%）
-5. picopr - メールマガジン自動化システム（15%）
-6. redmine-mcp-server - Redmine REST API MCPサーバー（100%）
-7. InstrVo - 楽器演奏を歌声に変換（MVP開発、70%）
-8. Claude-code - Claude Code活用ガイド
-9. git-dotfiles-manager - プライベート設定ファイル管理（90%）
-10. TabClear - P2Pタブ管理・共有システム（設計段階、5%）
-11. oshireq - 推し活リクエスト（本番稼働中）
+### Active (Updated within 1 week)
+1. ProjectA - Description (95%)
+2. ProjectB - Description (100%)
+3. ProjectC - Description (35%)
+...
 
-### 🚧 開発中（1ヶ月以内に更新）
-12. DUNGIA - ダンジョンタイムアタックゲーム（設計中、0%）
-13. my_first_turnip - 自動取引PDCAシステム（実験段階、30%）
-14. orbitscore - ライブコーディングDSL（オーディオ実装、20%）
+### Developing (Updated within 1 month)
+12. ProjectX - Description (0%)
+...
 
-※ 非表示: 2個（全て表示: /ypm-open all）
+* Hidden: 2 (show all: /ypm-open all)
 
-番号またはプロジェクト名を入力してください:
+Enter number or project name:
 ```
 
-### STEP 5: ユーザー入力処理
+### STEP 5: User Input Processing
 
-**入力パターン**:
+**Input Patterns**:
 
-#### 5-1. 番号入力（例: `3`）
-- 該当番号のプロジェクトを選択 → STEP 6へ
+#### 5-1. Number Input (e.g., `3`)
+- Select project with that number → Go to STEP 6
 
-#### 5-2. プロジェクト名入力（例: `max`）
-- 大文字小文字を区別せず部分一致検索
-- **1件マッチ**: そのプロジェクトを選択 → STEP 6へ
-- **複数マッチ**:
+#### 5-2. Project Name Input (e.g., `proj`)
+- Case-insensitive partial match search
+- **1 match**: Select that project → Go to STEP 6
+- **Multiple matches**:
   ```
-  複数のプロジェクトがマッチしました：
+  Multiple projects matched:
 
-  1. MaxMCP
-  2. MaxMSP-MCP-Server-multipatch
+  1. ProjectA
+  2. ProjectB
 
-  番号を入力してください:
+  Enter number:
   ```
-  → 再度番号入力を待つ → STEP 6へ
+  → Wait for number input again → Go to STEP 6
 
-- **0件マッチ**:
+- **0 matches**:
   ```
-  ❌ プロジェクト "xxx" が見つかりませんでした。
+  Project "xxx" not found.
 
-  正確なプロジェクト名または番号を指定してください。
+  Please specify exact project name or number.
   ```
-  → **処理を中断**
+  → **Abort processing**
 
-### STEP 6: エディタでプロジェクトを開く
+### STEP 6: Open Project in Editor
 
-#### 6-1. Terminal.app以外のエディタの場合
+#### 6-1. For Editors Other Than Terminal.app
 
-**重要**: 環境変数をクリアしてエディタを起動します。これにより、各プロジェクトの`.node-version`等が正しく読み込まれます。
+**Important**: Launch editor with environment variables cleared. This ensures each project's `.node-version` etc. are read correctly.
 
 ```bash
-env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディタ名> /path/to/project
+env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <editor_name> /path/to/project
 ```
 
-**クリアする環境変数**:
-- `NODENV_VERSION` - Node.jsバージョン（nodenv）
-- `NODENV_DIR` - nodenvディレクトリ
-- `RBENV_VERSION` - Rubyバージョン（rbenv）
-- `PYENV_VERSION` - Pythonバージョン（pyenv）
+**Environment Variables to Clear**:
+- `NODENV_VERSION` - Node.js version (nodenv)
+- `NODENV_DIR` - nodenv directory
+- `RBENV_VERSION` - Ruby version (rbenv)
+- `PYENV_VERSION` - Python version (pyenv)
 
-#### 6-2. Terminal.appの場合
+#### 6-2. For Terminal.app
 
-**重要**: ディレクトリ移動後にシェルを再初期化することで、環境変数が正しく設定されます。
+**Important**: Reinitialize shell after changing directory to set environment variables correctly.
 
 ```bash
 osascript -e 'tell application "Terminal" to do script "cd '"$PROJECT_PATH"' && exec $SHELL"'
 ```
 
-**仕組み**:
-1. Terminal.appを起動
-2. 指定されたプロジェクトディレクトリに移動
-3. `exec $SHELL`でシェルを再初期化
-4. 新しいディレクトリのコンテキストで`.zshrc`/`.bashrc`が実行される
-5. nodenv/rbenv等の環境マネージャーがプロジェクト固有のバージョンを検出
+#### 6-3. Success Message
 
-#### 6-3. 成功時のメッセージ
-
-**Terminal.app以外**:
+**For editors other than Terminal.app**:
 ```
-✅ <エディタ表示名>で "MaxMCP" を開きました。
+Opened "ProjectName" in <EditorDisplayName>.
 
-プロジェクトパス: /Users/yamato/Src/proj_max_mcp/MaxMCP
-エディタ: <エディタ表示名> (<エディタ名>)
+Project path: /path/to/project
+Editor: <EditorDisplayName> (<editor_name>)
 
-※ 環境変数（NODENV_VERSION等）をクリアした状態で起動しました。
-各プロジェクトの設定ファイル（.node-version等）が正しく読み込まれます。
+* Launched with environment variables (NODENV_VERSION, etc.) cleared.
+Project config files (.node-version, etc.) will be read correctly.
 ```
 
-**Terminal.app**:
+**For Terminal.app**:
 ```
-✅ Terminal.appで "MaxMCP" を開きました。
+Opened "ProjectName" in Terminal.app.
 
-プロジェクトパス: /Users/yamato/Src/proj_max_mcp/MaxMCP
-エディタ: Terminal.app (terminal)
+Project path: /path/to/project
+Editor: Terminal.app (terminal)
 
-※ プロジェクトディレクトリに移動後、シェルを再初期化しました。
-各プロジェクトの設定ファイル（.node-version等）が正しく読み込まれます。
+* Shell reinitialized after moving to project directory.
+Project config files (.node-version, etc.) will be read correctly.
 ```
 
-**エディタ表示名の対応**:
+**Editor Display Name Mapping**:
 - `code` → "VS Code"
 - `cursor` → "Cursor"
 - `zed` → "Zed"
 - `terminal` → "Terminal.app"
 
-**失敗時のメッセージ**:
+**Failure Message**:
 ```
-❌ <エディタ表示名>の起動に失敗しました。
+Failed to launch <EditorDisplayName>.
 
-エラー: <エラーメッセージ>
+Error: <error_message>
 
-手動で以下のコマンドを実行してください：
-env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <エディタ名> /Users/yamato/Src/proj_max_mcp/MaxMCP
+Please run the following command manually:
+env -u NODENV_VERSION -u NODENV_DIR -u RBENV_VERSION -u PYENV_VERSION <editor_name> /path/to/project
 ```
 
 ---
 
-## モード2: 全表示モード（`/ypm-open all`）
+## Mode 2: Full Display Mode (`/ypm-open all`)
 
-### 処理
+### Processing
 
-**STEP 1-2**: モード1と同じ
+**STEP 1-2**: Same as Mode 1
 
-**STEP 3**: プロジェクト抽出
-- worktreeは除外
-- **ignore_in_openは除外しない**（これが通常モードとの違い）
+**STEP 3**: Project Extraction
+- Exclude worktrees
+- **Do not exclude ignore_in_open** (this is the difference from Normal Mode)
 
-**STEP 4**: 番号付き一覧表示（ignore含む）
+**STEP 4**: Display numbered list (including ignored)
 
 ```
-## 利用可能なプロジェクト（全16個）
+## Available Projects (All 16)
 
-### 🔥 アクティブ
-1-11. （通常モードと同じ）
+### Active
+1-11. (same as Normal Mode)
 
-### 🚧 開発中
-12-14. （通常モードと同じ）
+### Developing
+12-14. (same as Normal Mode)
 
-### 💤 休止中・その他（ignore設定済み）
-15. godot-mcp - Godot Engine向けMCPサーバー（休止中）
-16. loto7loto6Generator - ロト番号生成ツール（レガシー、完成済み）
+### Dormant/Other (in ignore list)
+15. ProjectY - Description (dormant)
+16. ProjectZ - Description (legacy, complete)
 
-番号またはプロジェクト名を入力してください:
+Enter number or project name:
 ```
 
-**STEP 5-6**: モード1と同じ
+**STEP 5-6**: Same as Mode 1
 
 ---
 
-## モード3: ignore一覧（`/ypm-open ignore-list`）
+## Mode 3: Ignore List (`/ypm-open ignore-list`)
 
-### 処理
+### Processing
 
 ```bash
-# config.ymlを読み込み
-# monitor.ignore_in_openセクションを抽出
+# Read config.yml
+# Extract monitor.ignore_in_open section
 ```
 
-**表示**:
+**Display**:
 ```
-## Ignore設定済みプロジェクト
+## Projects in Ignore List
 
-1. godot-mcp
-2. loto7loto6Generator
+1. project-a
+2. project-b
 
-削除: /ypm-open remove-ignore
-追加: /ypm-open add-ignore
+Remove: /ypm-open remove-ignore
+Add: /ypm-open add-ignore
 ```
 
-**ignore_in_openが空の場合**:
+**If ignore_in_open is empty**:
 ```
-✅ 現在ignoreに設定されているプロジェクトはありません。
+No projects currently in ignore list.
 
-追加: /ypm-open add-ignore
+Add: /ypm-open add-ignore
 ```
 
 ---
 
-## モード4: ignore追加（`/ypm-open add-ignore`）
+## Mode 4: Add Ignore (`/ypm-open add-ignore`)
 
-### STEP 1-3: モード1と同じ（通常モード）
+### STEP 1-3: Same as Mode 1 (Normal Mode)
 
-### STEP 4: プロジェクト一覧表示
+### STEP 4: Display Project List
 
 ```
-## ignoreに追加するプロジェクトを選択
+## Select project to add to ignore
 
-現在表示中のプロジェクト（12個）:
-1. Slack_MCP
-2. CVI
-3. MaxMCP
+Currently displayed projects (12):
+1. ProjectA
+2. ProjectB
 ...
-14. orbitscore
 
-番号またはプロジェクト名を入力してください:
+Enter number or project name:
 ```
 
-### STEP 5: プロジェクト選択（モード1と同じ）
+### STEP 5: Project Selection (same as Mode 1)
 
-### STEP 6: config.ymlに追加
+### STEP 6: Add to config.yml
 
-選択されたプロジェクト名を`monitor.ignore_in_open`リストに追加。
+Add selected project name to `monitor.ignore_in_open` list.
 
 ```yaml
 monitor:
   ignore_in_open:
-    - godot-mcp
-    - loto7loto6Generator
-    - orbitscore  # 追加
+    - project-a
+    - project-b
+    - project-c  # added
 ```
 
-**成功メッセージ**:
+**Success Message**:
 ```
-✅ "orbitscore" をignoreに追加しました。
+Added "project-c" to ignore list.
 
-config.ymlを更新:
+Updated config.yml:
   monitor.ignore_in_open:
-    - godot-mcp
-    - loto7loto6Generator
-    - orbitscore
+    - project-a
+    - project-b
+    - project-c
 
-次回から /ypm-open では表示されません。
-全て表示: /ypm-open all
+This project will not appear in /ypm-open from next time.
+Show all: /ypm-open all
 ```
 
 ---
 
-## モード5: ignore削除（`/ypm-open remove-ignore`）
+## Mode 5: Remove Ignore (`/ypm-open remove-ignore`)
 
-### STEP 1: config.yml読み込み
+### STEP 1: Read config.yml
 
 ```bash
-# config.ymlを読み込み
-# monitor.ignore_in_openセクションを抽出
+# Read config.yml
+# Extract monitor.ignore_in_open section
 ```
 
-**ignore_in_openが空の場合**:
+**If ignore_in_open is empty**:
 ```
-✅ 現在ignoreに設定されているプロジェクトはありません。
+No projects currently in ignore list.
 
-追加: /ypm-open add-ignore
+Add: /ypm-open add-ignore
 ```
-→ **処理を中断**
+→ **Abort processing**
 
-### STEP 2: ignore一覧表示
+### STEP 2: Display Ignore List
 
 ```
-## ignoreから削除するプロジェクトを選択
+## Select project to remove from ignore
 
-1. godot-mcp
-2. loto7loto6Generator
-3. orbitscore
+1. project-a
+2. project-b
+3. project-c
 
-番号またはプロジェクト名を入力してください:
+Enter number or project name:
 ```
 
-### STEP 3: プロジェクト選択
+### STEP 3: Project Selection
 
-番号または名前で選択（モード1のSTEP 5と同じロジック）
+Select by number or name (same logic as Mode 1 STEP 5)
 
-### STEP 4: config.ymlから削除
+### STEP 4: Remove from config.yml
 
-選択されたプロジェクト名を`monitor.ignore_in_open`リストから削除。
+Remove selected project name from `monitor.ignore_in_open` list.
 
 ```yaml
 monitor:
   ignore_in_open:
-    - godot-mcp
-    - loto7loto6Generator
-    # orbitscoreを削除
+    - project-a
+    - project-b
+    # project-c removed
 ```
 
-**成功メッセージ**:
+**Success Message**:
 ```
-✅ "orbitscore" をignoreから削除しました。
+Removed "project-c" from ignore list.
 
-config.ymlを更新:
+Updated config.yml:
   monitor.ignore_in_open:
-    - godot-mcp
-    - loto7loto6Generator
+    - project-a
+    - project-b
 
-次回から /ypm-open で表示されます。
+This project will appear in /ypm-open from next time.
 ```
 
 ---
 
-## モード6: エディタ設定（`/ypm-open --editor [エディタ名]`）
+## Mode 6: Editor Settings (`/ypm-open --editor [editor_name]`)
 
-### STEP 1: 引数の確認
+### STEP 1: Check Arguments
 
-#### 引数がない場合（`/ypm-open --editor`）
+#### No argument (`/ypm-open --editor`)
 
-現在のデフォルトエディタを表示します。
+Display current default editor.
 
 ```bash
-# config.ymlを読み込み
-# editor.default の値を取得
+# Read config.yml
+# Get editor.default value
 ```
 
-**表示メッセージ**:
+**Display Message**:
 ```
-📝 現在のデフォルトエディタ
+Current Default Editor
 
-エディタ: VS Code (code)
+Editor: VS Code (code)
 
-変更方法: /ypm-open --editor <エディタ名>
-対応エディタ: code (VS Code), cursor (Cursor), zed (Zed), terminal (Terminal.app)
+Change: /ypm-open --editor <editor_name>
+Supported: code (VS Code), cursor (Cursor), zed (Zed), terminal (Terminal.app)
 ```
 
-#### 引数がある場合（`/ypm-open --editor cursor`）
+#### With argument (`/ypm-open --editor cursor`)
 
-デフォルトエディタを変更します。
+Change default editor.
 
-### STEP 2: エディタ名のバリデーション
+### STEP 2: Validate Editor Name
 
-指定されたエディタ名が対応しているか確認します。
+Check if specified editor name is supported.
 
-**対応エディタ**:
+**Supported Editors**:
 - `code` - VS Code
 - `cursor` - Cursor
 - `zed` - Zed
 - `terminal` - Terminal.app
 
-**対応していない場合**:
+**If not supported**:
 ```
-❌ 未対応のエディタです: "xxx"
+Unsupported editor: "xxx"
 
-対応エディタ:
+Supported editors:
 - code (VS Code)
 - cursor (Cursor)
 - zed (Zed)
 - terminal (Terminal.app)
 
-使用例: /ypm-open --editor cursor
+Example: /ypm-open --editor cursor
 ```
-→ **処理を中断**
+→ **Abort processing**
 
-### STEP 3: config.ymlの更新
+### STEP 3: Update config.yml
 
-`editor.default`の値を指定されたエディタ名に変更します。
+Change `editor.default` value to specified editor name.
 
 ```yaml
-# 変更前
+# Before
 editor:
   default: code
 
-# 変更後
+# After
 editor:
   default: cursor
 ```
 
-### STEP 4: 成功メッセージ
+### STEP 4: Success Message
 
 ```
-✅ デフォルトエディタを変更しました
+Default editor changed
 
-変更前: VS Code (code)
-変更後: Cursor (cursor)
+Before: VS Code (code)
+After: Cursor (cursor)
 
-config.ymlを更新:
+Updated config.yml:
   editor.default: cursor
 
-次回から /ypm-open で Cursor が使用されます。
+Cursor will be used for /ypm-open from next time.
 ```
 
 ---
 
-## 重要な注意事項
+## Important Notes
 
-### 1. Git worktreeの除外
+### 1. Git Worktree Exclusion
 
-Git worktree（例: `MaxMCP-main`, `redmine-mcp-server-main`, `InstrVo-develop`）は**全モードで自動的に除外**されます。これらは開発用ではなく確認用のため、選択肢に含めません。
+Git worktrees (e.g., `ProjectA-main`, `ProjectB-develop`) are **automatically excluded in all modes**. These are for review purposes, not development, so they are not included in selections.
 
-### 2. ignoreとexcludeの違い
+### 2. Difference Between ignore and exclude
 
-- **exclude**: スキャン対象から完全に除外（PROJECT_STATUS.mdにも表示されない）
-- **ignore_in_open**: スキャン対象だが、ypm-openでデフォルト非表示（allで表示可能）
+- **exclude**: Completely excluded from scanning (not shown in PROJECT_STATUS.md)
+- **ignore_in_open**: Scanned but hidden by default in ypm-open (visible with `all`)
 
-### 3. config.ymlの保存
+### 3. Saving config.yml
 
-ignore追加・削除時、エディタ設定変更時は、config.ymlファイルを**必ず保存**してください。Writeツールを使用します。
+When adding/removing from ignore or changing editor settings, **always save** the config.yml file. Use the Write tool.
 
-### 4. PROJECT_STATUS.mdの更新
+### 4. Updating PROJECT_STATUS.md
 
-プロジェクト一覧が古い場合、先に `/ypm-update` を実行してください。
+If the project list is outdated, run `/ypm-update` first.
 
-### 5. エディタCLIのインストール
+### 5. Editor CLI Installation
 
-各エディタのCLIがインストールされていない場合、プロジェクトを開くことができません。STEP 1でインストール方法を案内します。
-
----
-
-## エラーハンドリング
-
-| エラー | 対処法 |
-|--------|--------|
-| エディタCLIがない | インストール手順を表示して中断 |
-| 未対応のエディタ | 対応エディタ一覧を表示して中断 |
-| PROJECT_STATUS.mdがない | `/ypm-update` の実行を促して中断 |
-| config.ymlがない | エラーメッセージを表示して中断 |
-| プロジェクトが見つからない | エラーメッセージを表示して中断 |
-| 複数マッチ | 候補を番号付きで再表示 |
-| エディタ起動失敗 | エラーメッセージと手動コマンドを表示 |
+If each editor's CLI is not installed, you cannot open projects. Installation instructions are shown in STEP 1.
 
 ---
 
-## 仕様書
+## Error Handling
 
-詳細な仕様は以下を参照：
+| Error | Action |
+|-------|--------|
+| Editor CLI not found | Show installation instructions and abort |
+| Unsupported editor | Show supported editor list and abort |
+| PROJECT_STATUS.md not found | Prompt to run `/ypm-update` and abort |
+| config.yml not found | Show error message and abort |
+| Project not found | Show error message and abort |
+| Multiple matches | Re-display candidates with numbers |
+| Editor launch failure | Show error message and manual command |
+
+---
+
+## Specification Document
+
+See the following for detailed specifications:
 - **[docs/development/ypm-open-spec.md](../../docs/development/ypm-open-spec.md)**
 
 ---
 
-**このコマンドを実行した後、必ず成功/失敗メッセージをユーザーに表示してください。**
+**Always display success/failure message to user after executing this command.**
