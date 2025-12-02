@@ -73,6 +73,7 @@ All commands are prefixed with `ypm:`:
 | `/ypm:active` | Show active projects only |
 | `/ypm:open` | Open project in editor |
 | `/ypm:new` | Launch project setup wizard |
+| `/ypm:setup-gitflow` | Set up Git Flow workflow |
 | `/ypm:export-community` | Export to community version |
 | `/ypm:trufflehog-scan` | Run TruffleHog security scan |
 
