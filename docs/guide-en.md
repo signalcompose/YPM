@@ -158,6 +158,7 @@ YPM provides the following commands. All commands are prefixed with `ypm:`.
 | `/ypm:active` | Show active projects only |
 | `/ypm:open` | Open project in editor |
 | `/ypm:new` | Launch project setup wizard |
+| `/ypm:setup-gitflow` | Set up Git Flow workflow |
 | `/ypm:export-community` | Export to community version |
 | `/ypm:trufflehog-scan` | Run TruffleHog security scan |
 
@@ -266,6 +267,29 @@ Sets up projects step-by-step through 8 phases:
 
 See [project-bootstrap-prompt.md](../project-bootstrap-prompt.md) for details.
 
+### Git Workflow Command
+
+#### `/ypm:setup-gitflow`
+Set up Git Flow workflow for the current project with branch protection and security settings.
+
+**What it does**:
+- Creates `main` (default) and `develop` branches
+- Configures branch protection (no direct push to main/develop)
+- Disables squash/rebase merge (merge commit only)
+- Sets up security settings based on project type (CODEOWNERS, Secret Scanning)
+
+**Project Types**:
+1. **Personal Project** - Minimal settings, solo development
+2. **Small OSS** - CODEOWNERS, branch protection recommended
+3. **Large OSS** - All security settings enabled
+
+**Usage**:
+```bash
+/ypm:setup-gitflow
+```
+
+The command will interactively ask about project type and development style to configure appropriate settings.
+
 ### Security & Export Commands
 
 #### `/ypm:export-community`
@@ -370,6 +394,7 @@ The following documentation is created during project setup:
 │   ├── active.md
 │   ├── open.md
 │   ├── new.md
+│   ├── setup-gitflow.md
 │   ├── export-community.md
 │   └── trufflehog-scan.md
 ├── scripts/
