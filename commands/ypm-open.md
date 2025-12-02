@@ -6,6 +6,10 @@ description: "Open a project in your preferred editor"
 
 Open a YPM-managed project in specified editor.
 
+**Prerequisites**:
+- Run `/ypm:ypm-setup` first if `~/.ypm/config.yml` doesn't exist
+- Run `/ypm:ypm-update` first if `~/.ypm/PROJECT_STATUS.md` doesn't exist
+
 ## Subcommands
 
 - **(no args)**: Select from list (excluding ignored, open with default editor)
@@ -54,10 +58,10 @@ Check arguments and branch to corresponding mode:
 
 ### STEP 1: Check config.yml and Editor CLI
 
-#### 1-1. Get default editor from config.yml
+#### 1-1. Get default editor from ~/.ypm/config.yml
 
 ```bash
-# Read config.yml
+# Read ~/.ypm/config.yml
 # Get editor.default value (e.g., code, cursor, zed)
 ```
 
@@ -103,18 +107,18 @@ Please run this command again after installation.
 - No CLI check needed (macOS built-in)
 - Proceed to next STEP
 
-### STEP 2: Read PROJECT_STATUS.md and config.yml
+### STEP 2: Read ~/.ypm/PROJECT_STATUS.md and ~/.ypm/config.yml
 
 ```bash
-# Read PROJECT_STATUS.md with Read tool
-# Read config.yml with Read tool
+# Read ~/.ypm/PROJECT_STATUS.md with Read tool
+# Read ~/.ypm/config.yml with Read tool
 ```
 
-**If PROJECT_STATUS.md doesn't exist**:
+**If ~/.ypm/PROJECT_STATUS.md doesn't exist**:
 ```
-PROJECT_STATUS.md not found.
+~/.ypm/PROJECT_STATUS.md not found.
 
-Please run /ypm-update first to scan projects.
+Please run /ypm:ypm-update first to scan projects.
 ```
 -> **Abort process**
 
@@ -141,7 +145,7 @@ Exclude projects matching **any** of these conditions:
 
 #### 3-3. Exclude ignore_in_open (normal mode only)
 
-Exclude projects in config.yml's `monitor.ignore_in_open` list.
+Exclude projects in `~/.ypm/config.yml`'s `monitor.ignore_in_open` list.
 
 ### STEP 4: Display Numbered List
 
@@ -227,8 +231,8 @@ Git worktrees are **automatically excluded in all modes**.
 - **exclude**: Completely excluded from scan (not shown in PROJECT_STATUS.md)
 - **ignore_in_open**: Scanned but hidden in ypm-open default (visible with `all`)
 
-### 3. Saving config.yml
-When adding/removing ignore or changing editor settings, **always save** config.yml using Write tool.
+### 3. Saving ~/.ypm/config.yml
+When adding/removing ignore or changing editor settings, **always save** `~/.ypm/config.yml` using Write tool.
 
 ---
 

@@ -57,35 +57,49 @@ This will scan all projects and generate `PROJECT_STATUS.md`.
 
 ---
 
-## Installation as Claude Code Plugin
+## Installation as Claude Code Plugin (Recommended)
 
-YPM can be installed as a Claude Code plugin for easy access to all commands.
+YPM can be installed as a Claude Code plugin, making it accessible from **any directory**.
 
-### Quick Install
+### Step 1: Install the Plugin
 
 ```bash
-# Add the marketplace
+# In Claude Code, run:
 /plugin marketplace add signalcompose/YPM
-
-# Install YPM plugin
 /plugin install ypm@signalcompose-ypm
 ```
 
-### Manual Install
+### Step 2: Initial Setup
 
 ```bash
-# Clone and add as local plugin
-git clone https://github.com/signalcompose/YPM.git
-/plugin marketplace add ./YPM
-/plugin install ypm@local
+# Run the setup wizard (from any directory)
+/ypm:ypm-setup
 ```
 
-### Available Commands (after plugin installation)
+This creates `~/.ypm/` with your configuration:
+- `~/.ypm/config.yml` - Your monitoring settings
+- `~/.ypm/PROJECT_STATUS.md` - Generated project status
+
+### Step 3: Start Using
+
+```bash
+# Scan your projects
+/ypm:ypm-update
+
+# View next tasks
+/ypm:ypm-next
+
+# Show active projects
+/ypm:ypm-active
+```
+
+### Available Commands
 
 All commands are prefixed with `ypm:` when installed as a plugin:
 
 | Command | Description |
 |---------|-------------|
+| `/ypm:ypm-setup` | Initial setup wizard |
 | `/ypm:ypm` | Show welcome and quick commands |
 | `/ypm:ypm-help` | Show detailed help |
 | `/ypm:ypm-update` | Update project status |
@@ -95,6 +109,31 @@ All commands are prefixed with `ypm:` when installed as a plugin:
 | `/ypm:ypm-new` | Launch project setup wizard |
 | `/ypm:ypm-export-community` | Export to community version |
 | `/ypm:ypm-trufflehog-scan` | Run security scan |
+
+### Optional: Prefix-Free Commands
+
+During setup, you can optionally create symlinks to `~/.claude/commands/` for prefix-free access:
+
+```bash
+# With symlinks, you can use:
+/ypm-update    # instead of /ypm:ypm-update
+/ypm-next      # instead of /ypm:ypm-next
+```
+
+### Data Location
+
+YPM stores all user data in `~/.ypm/`:
+
+```
+~/.ypm/
+  ├── config.yml           # Your monitoring settings
+  └── PROJECT_STATUS.md    # Generated project status
+```
+
+This separation ensures:
+- Plugin updates don't affect your configuration
+- Easy backup (just backup `~/.ypm/`)
+- Works across all your projects
 
 ---
 
@@ -201,7 +240,7 @@ See [project-bootstrap-prompt.md](project-bootstrap-prompt.md) for details.
 
 ## Configuration
 
-Edit `config.yml` to customize monitoring:
+Edit `~/.ypm/config.yml` to customize monitoring (created by `/ypm:ypm-setup`):
 
 ```yaml
 monitor:

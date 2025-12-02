@@ -2,11 +2,12 @@
 """
 YPM プロジェクトスキャンスクリプト
 
-config.ymlで指定された監視対象ディレクトリをスキャンし、
+~/.ypm/config.ymlで指定された監視対象ディレクトリをスキャンし、
 各プロジェクトのGit情報とドキュメント情報を収集してJSON形式で出力する。
 
 使用方法:
     python scripts/scan_projects.py
+    python scripts/scan_projects.py --config /path/to/config.yml
 
 出力:
     JSON形式で標準出力に出力
@@ -21,14 +22,26 @@ from pathlib import Path
 from datetime import datetime
 import time
 import glob
+import argparse
 
 
-def load_config():
+def get_default_config_path():
+    """デフォルトの設定ファイルパスを取得"""
+    return Path.home() / ".ypm" / "config.yml"
+
+
+def load_config(config_path=None):
     """config.ymlを読み込み"""
-    config_path = Path("config.yml")
+    if config_path is None:
+        config_path = get_default_config_path()
+    else:
+        config_path = Path(config_path)
 
     if not config_path.exists():
-        print(json.dumps({"error": "config.yml not found"}), file=sys.stderr)
+        print(json.dumps({
+            "error": f"config.yml not found at {config_path}",
+            "hint": "Run /ypm:ypm-setup to initialize YPM"
+        }), file=sys.stderr)
         sys.exit(1)
 
     try:
@@ -306,10 +319,24 @@ def classify_project(last_commit_timestamp, active_days, inactive_days):
         return "dormant"
 
 
+def parse_args():
+    """コマンドライン引数をパース"""
+    parser = argparse.ArgumentParser(description='YPM Project Scanner')
+    parser.add_argument(
+        '--config', '-c',
+        type=str,
+        default=None,
+        help='Path to config.yml (default: ~/.ypm/config.yml)'
+    )
+    return parser.parse_args()
+
+
 def main():
     """メイン処理"""
+    args = parse_args()
+
     # config.yml読み込み
-    config = load_config()
+    config = load_config(args.config)
 
     monitor_config = config.get('monitor', {})
     base_dirs = monitor_config.get('directories', [])

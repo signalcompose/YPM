@@ -2,7 +2,11 @@
 description: "Show only active projects updated within 1 week"
 ---
 
-Display only active projects updated within 1 week from `PROJECT_STATUS.md`.
+Display only active projects updated within 1 week from `~/.ypm/PROJECT_STATUS.md`.
+
+**Prerequisites**:
+- Run `/ypm:ypm-setup` first if `~/.ypm/config.yml` doesn't exist
+- Run `/ypm:ypm-update` first if `~/.ypm/PROJECT_STATUS.md` doesn't exist
 
 **Display Content**:
 - Project name
