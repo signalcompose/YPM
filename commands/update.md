@@ -5,10 +5,10 @@ description: "Scan all projects and update PROJECT_STATUS.md"
 Scan all projects and update `~/.ypm/PROJECT_STATUS.md`.
 
 **Prerequisites**:
-- Run `/ypm:ypm-setup` first if `~/.ypm/config.yml` doesn't exist
+- Run `/ypm:setup` first if `~/.ypm/config.yml` doesn't exist
 
 **Execution Steps**:
-1. Check that `~/.ypm/config.yml` exists. If not, prompt user to run `/ypm:ypm-setup`
+1. Check that `~/.ypm/config.yml` exists. If not, prompt user to run `/ypm:setup`
 2. Find the YPM plugin directory and run `python <plugin-dir>/scripts/scan_projects.py` to collect project information
    - Git worktree detection (.git file/directory)
    - Project classification (active/developing/inactive)

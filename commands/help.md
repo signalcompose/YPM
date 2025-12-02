@@ -14,22 +14,22 @@ YPM monitors multiple projects in configured directories and centralizes progres
 
 ### Project Management
 
-#### `/ypm`
+#### `/ypm:start`
 Show welcome message and quick commands.
 
-#### `/ypm-update`
+#### `/ypm:update`
 Scan all projects and update `PROJECT_STATUS.md`.
 - Get Git information for each project
 - Read CLAUDE.md, README.md, docs/INDEX.md
 - Collect progress info (Phase, Implementation, Testing, Documentation)
 
-#### `/ypm-next`
+#### `/ypm:next`
 Display "next tasks" for each project in priority order.
 - Active projects (updated within 1 week)
 - Projects with high implementation progress
 - By Phase order
 
-#### `/ypm-active`
+#### `/ypm:active`
 Display only active projects updated within 1 week.
 - Project name, overview, branch, last update
 - Phase, implementation progress, next task
@@ -38,7 +38,7 @@ Display only active projects updated within 1 week.
 
 ### Project Operations
 
-#### `/ypm-open`
+#### `/ypm:open`
 Open project in preferred editor.
 - Basic: Select from project list
 - `<project>`: Open with default editor
@@ -51,7 +51,7 @@ Open project in preferred editor.
 
 ### New Project
 
-#### `/ypm-new`
+#### `/ypm:new`
 Launch new project setup wizard.
 - Project planning (requirements, tech stack)
 - Directory creation and Git initialization
@@ -66,7 +66,7 @@ See `project-bootstrap-prompt.md` for details.
 
 ### Export
 
-#### `/ypm-export-community`
+#### `/ypm:export`
 Export private repository to public community version.
 - Interactive setup on first run
 - Automatic export on subsequent runs
@@ -76,14 +76,14 @@ Export private repository to public community version.
 
 ### Security
 
-#### `/ypm-trufflehog-scan`
+#### `/ypm:scan`
 Run TruffleHog security scan on all managed projects.
 
 ---
 
 ### Help
 
-#### `/ypm-help`
+#### `/ypm:help`
 Show this help message.
 
 ---
@@ -111,25 +111,25 @@ YPM monitors other projects in **read-only** mode. Only YPM's own files can be m
 
 ### 1. Session Start
 ```
-/ypm
+/ypm:start
 ```
 Show welcome message to see available options.
 
 ### 2. Check Project Status
 ```
-/ypm-update
+/ypm:update
 ```
 Scan all projects and get latest status.
 
 ### 3. Find Next Task
 ```
-/ypm-next
+/ypm:next
 ```
 Check high-priority tasks.
 
 ### 4. Start New Project
 ```
-/ypm-new
+/ypm:new
 ```
 Interactive project setup.
 

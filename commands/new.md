@@ -21,7 +21,7 @@ Based on `project-bootstrap-prompt.md`, set up through 8 phases interactively:
 
 - **User should navigate to the new project directory**
 - **Start development in a dedicated Claude Code session for that project**
-- YPM will automatically add it to monitoring on next `/ypm-update`
+- YPM will automatically add it to monitoring on next `/ypm:update`
 
 ## How to Run
 

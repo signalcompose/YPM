@@ -5,8 +5,8 @@ description: "Show next tasks for all projects in priority order"
 Extract "next tasks" from `~/.ypm/PROJECT_STATUS.md` and display in priority order.
 
 **Prerequisites**:
-- Run `/ypm:ypm-setup` first if `~/.ypm/config.yml` doesn't exist
-- Run `/ypm:ypm-update` first if `~/.ypm/PROJECT_STATUS.md` doesn't exist
+- Run `/ypm:setup` first if `~/.ypm/config.yml` doesn't exist
+- Run `/ypm:update` first if `~/.ypm/PROJECT_STATUS.md` doesn't exist
 
 **Display Format**:
 - Project name

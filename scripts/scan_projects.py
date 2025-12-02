@@ -40,7 +40,7 @@ def load_config(config_path=None):
     if not config_path.exists():
         print(json.dumps({
             "error": f"config.yml not found at {config_path}",
-            "hint": "Run /ypm:ypm-setup to initialize YPM"
+            "hint": "Run /ypm:setup to initialize YPM"
         }), file=sys.stderr)
         sys.exit(1)
 

@@ -73,7 +73,7 @@ YPM can be installed as a Claude Code plugin, making it accessible from **any di
 
 ```bash
 # Run the setup wizard (from any directory)
-/ypm:ypm-setup
+/ypm:setup
 ```
 
 This creates `~/.ypm/` with your configuration:
@@ -84,13 +84,13 @@ This creates `~/.ypm/` with your configuration:
 
 ```bash
 # Scan your projects
-/ypm:ypm-update
+/ypm:update
 
 # View next tasks
-/ypm:ypm-next
+/ypm:next
 
 # Show active projects
-/ypm:ypm-active
+/ypm:active
 ```
 
 ### Available Commands
@@ -99,16 +99,16 @@ All commands are prefixed with `ypm:` when installed as a plugin:
 
 | Command | Description |
 |---------|-------------|
-| `/ypm:ypm-setup` | Initial setup wizard |
-| `/ypm:ypm` | Show welcome and quick commands |
-| `/ypm:ypm-help` | Show detailed help |
-| `/ypm:ypm-update` | Update project status |
-| `/ypm:ypm-next` | Show next tasks |
-| `/ypm:ypm-active` | Show active projects only |
-| `/ypm:ypm-open` | Open project in editor |
-| `/ypm:ypm-new` | Launch project setup wizard |
-| `/ypm:ypm-export-community` | Export to community version |
-| `/ypm:ypm-trufflehog-scan` | Run security scan |
+| `/ypm:setup` | Initial setup wizard |
+| `/ypm:start` | Show welcome and quick commands |
+| `/ypm:help` | Show detailed help |
+| `/ypm:update` | Update project status |
+| `/ypm:next` | Show next tasks |
+| `/ypm:active` | Show active projects only |
+| `/ypm:open` | Open project in editor |
+| `/ypm:new` | Launch project setup wizard |
+| `/ypm:export` | Export to community version |
+| `/ypm:scan` | Run security scan |
 
 ### Optional: Prefix-Free Commands
 
@@ -116,8 +116,8 @@ During setup, you can optionally create symlinks to `~/.claude/commands/` for pr
 
 ```bash
 # With symlinks, you can use:
-/ypm-update    # instead of /ypm:ypm-update
-/ypm-next      # instead of /ypm:ypm-next
+/update    # instead of /ypm:update
+/next      # instead of /ypm:next
 ```
 
 ### Data Location
@@ -173,45 +173,40 @@ This separation ensures:
 
 ---
 
-## Claude Code Custom Commands
+## Command Reference
 
-YPM includes custom slash commands for quick operations:
+For detailed command reference, see the [Available Commands](#available-commands) section above.
 
-### Project Management
-- `/ypm` - Show welcome message and quick commands
-- `/ypm-help` - Show detailed help with all available commands
-- `/ypm-update` - Update project status (scan all projects)
-- `/ypm-next` - Show next tasks for all projects in priority order
-- `/ypm-active` - Show only active projects (updated within 1 week)
-- `/ypm-open [project] [editor] [options]` - Open a project in your preferred editor
-  - **Basic usage**:
-    - No arguments: Show project list (excluding ignored, worktrees auto-excluded)
-    - `<project>`: Open project with default editor
-    - `<project> <editor>`: Open project with specific editor (code/cursor/zed)
-  - **Editor settings**:
-    - `--editor`: Show current default editor
-    - `--editor <name>`: Set default editor (code/cursor/zed)
-  - **Ignore management**:
-    - `all`: Show all projects including ignored ones
-    - `ignore-list`: Show currently ignored projects
-    - `add-ignore`: Add a project to ignore list
-    - `remove-ignore`: Remove a project from ignore list
-  - See [ypm-open-spec.md](docs/development/ypm-open-spec.md) for details
+### Key Commands
 
-### New Project Setup
-- `/ypm-new` - Launch interactive project setup wizard
+| Command | Description |
+|---------|-------------|
+| `/ypm:setup` | Initial setup - configure monitoring directories |
+| `/ypm:update` | Scan all projects and update status |
+| `/ypm:next` | Show next tasks in priority order |
+| `/ypm:open` | Open project in preferred editor |
+| `/ypm:new` | Launch new project setup wizard |
+| `/ypm:export` | Export to public community version |
 
-### Community Export
-- `/ypm-export-community` - Export private repository to public community version
-  - **Multi-language support**: Automatic language detection (Japanese/English)
-  - **Interactive setup**: Configure private/public repositories, file exclusions, and commit sanitization
-  - **Upstream safety**: Automatic repository verification to prevent mistakes
-  - **Security scan**: TruffleHog integration for secret detection
-  - See [global-export-system.md](docs/development/global-export-system.md) for details
+### `/ypm:open` Options
 
-**Usage**: Simply type the command in Claude Code, e.g., `/ypm-update`
+- `<project>` - Open with default editor
+- `<project> <editor>` - Open with specific editor (code/cursor/zed)
+- `--editor` - View/set default editor
+- `all` - Show all projects including ignored
+- `add-ignore`/`remove-ignore` - Manage ignore list
 
-**Note**: `/ypm-update` and similar operational commands do **not** use Git Flow. They update local files only (PROJECT_STATUS.md is `.gitignore`d). Git Flow is used **only for developing YPM itself** (adding features, fixing bugs).
+See [ypm-open-spec.md](docs/development/ypm-open-spec.md) for details.
+
+### `/ypm:export` Features
+
+- Multi-language support (Japanese/English)
+- Interactive setup for repositories and exclusions
+- TruffleHog security scan integration
+
+See [global-export-system.md](docs/development/global-export-system.md) for details.
+
+**Note**: Commands like `/ypm:update` update local files only (`~/.ypm/PROJECT_STATUS.md`). They do not perform Git operations.
 
 ---
 
@@ -228,7 +223,7 @@ YPM includes a comprehensive project setup assistant for launching new projects.
 
 **How to use**:
 
-Simply run `/ypm-new` in Claude Code, or manually use the prompt:
+Simply run `/ypm:new` in Claude Code, or manually use the prompt:
 
 1. Copy the contents of `project-bootstrap-prompt.md`
 2. Paste into Claude Code
@@ -240,7 +235,7 @@ See [project-bootstrap-prompt.md](project-bootstrap-prompt.md) for details.
 
 ## Configuration
 
-Edit `~/.ypm/config.yml` to customize monitoring (created by `/ypm:ypm-setup`):
+Edit `~/.ypm/config.yml` to customize monitoring (created by `/ypm:setup`):
 
 ```yaml
 monitor:

@@ -7,8 +7,8 @@ description: "Open a project in your preferred editor"
 Open a YPM-managed project in specified editor.
 
 **Prerequisites**:
-- Run `/ypm:ypm-setup` first if `~/.ypm/config.yml` doesn't exist
-- Run `/ypm:ypm-update` first if `~/.ypm/PROJECT_STATUS.md` doesn't exist
+- Run `/ypm:setup` first if `~/.ypm/config.yml` doesn't exist
+- Run `/ypm:update` first if `~/.ypm/PROJECT_STATUS.md` doesn't exist
 
 ## Subcommands
 
@@ -23,16 +23,16 @@ Open a YPM-managed project in specified editor.
 ## Usage Examples
 
 ```
-/ypm-open                    # Normal mode (default editor)
-/ypm-open myproject          # Open myproject with default editor
-/ypm-open myproject cursor   # Open myproject with Cursor
-/ypm-open myproject terminal # Open myproject in Terminal.app
-/ypm-open all                # Show all mode
-/ypm-open --editor           # Show current default editor
-/ypm-open --editor cursor    # Set default to Cursor
-/ypm-open ignore-list        # Show ignore list
-/ypm-open add-ignore         # Add to ignore
-/ypm-open remove-ignore      # Remove from ignore
+/ypm:open                    # Normal mode (default editor)
+/ypm:open myproject          # Open myproject with default editor
+/ypm:open myproject cursor   # Open myproject with Cursor
+/ypm:open myproject terminal # Open myproject in Terminal.app
+/ypm:open all                # Show all mode
+/ypm:open --editor           # Show current default editor
+/ypm:open --editor cursor    # Set default to Cursor
+/ypm:open ignore-list        # Show ignore list
+/ypm:open add-ignore         # Add to ignore
+/ypm:open remove-ignore      # Remove from ignore
 ```
 
 **Supported Editors**: `code` (VS Code), `cursor` (Cursor), `zed` (Zed), `terminal` (Terminal.app)
@@ -118,7 +118,7 @@ Please run this command again after installation.
 ```
 ~/.ypm/PROJECT_STATUS.md not found.
 
-Please run /ypm:ypm-update first to scan projects.
+Please run /ypm:update first to scan projects.
 ```
 -> **Abort process**
 
@@ -161,7 +161,7 @@ Exclude projects in `~/.ypm/config.yml`'s `monitor.ignore_in_open` list.
 12. ProjectX - Description (0%)
 ...
 
-* Hidden: 2 items (show all: /ypm-open all)
+* Hidden: 2 items (show all: /ypm:open all)
 
 Enter number or project name:
 ```
@@ -209,7 +209,7 @@ Project-specific configuration files (.node-version, etc.) will be loaded correc
 
 ---
 
-## Mode 2: Show All Mode (`/ypm-open all`)
+## Mode 2: Show All Mode (`/ypm:open all`)
 
 Same as Mode 1, but **does not exclude ignore_in_open**.
 
