@@ -71,8 +71,11 @@ YPMはClaude Codeプラグインとしてインストールされ、**どのデ�
 ### ステップ1: プラグインをインストール
 
 ```bash
-# Claude Code内で実行:
-/install signalcompose/YPM
+# Claude Code内で、まずマーケットプレースを追加:
+/plugin marketplace add signalcompose/ypm
+
+# 次にプラグインをインストール:
+/plugin install ypm
 ```
 
 ### ステップ2: 初期設定
@@ -521,7 +524,7 @@ monitor:
 
 ### Q: 別のマシンで使いたい
 
-**A**: `/install signalcompose/YPM` でYPMをインストールし、`/ypm:setup` で環境を設定してください。`~/.ypm/config.yml` を新しいマシンにコピーすることもできます。
+**A**: `/plugin marketplace add signalcompose/ypm` でマーケットプレースを追加し、`/plugin install ypm` でYPMをインストールしてから、`/ypm:setup` で環境を設定してください。`~/.ypm/config.yml` を新しいマシンにコピーすることもできます。
 
 ---
 
