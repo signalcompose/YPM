@@ -66,7 +66,7 @@ See `project-bootstrap-prompt.md` for details.
 
 ### Export
 
-#### `/ypm:export`
+#### `/ypm:export-community`
 Export private repository to public community version.
 - Interactive setup on first run
 - Automatic export on subsequent runs
@@ -76,7 +76,7 @@ Export private repository to public community version.
 
 ### Security
 
-#### `/ypm:scan`
+#### `/ypm:trufflehog-scan`
 Run TruffleHog security scan on all managed projects.
 
 ---

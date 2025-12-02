@@ -107,8 +107,8 @@ All commands are prefixed with `ypm:` when installed as a plugin:
 | `/ypm:active` | Show active projects only |
 | `/ypm:open` | Open project in editor |
 | `/ypm:new` | Launch project setup wizard |
-| `/ypm:export` | Export to community version |
-| `/ypm:scan` | Run security scan |
+| `/ypm:export-community` | Export to community version |
+| `/ypm:trufflehog-scan` | Run TruffleHog security scan |
 
 ### Optional: Prefix-Free Commands
 
@@ -186,7 +186,7 @@ For detailed command reference, see the [Available Commands](#available-commands
 | `/ypm:next` | Show next tasks in priority order |
 | `/ypm:open` | Open project in preferred editor |
 | `/ypm:new` | Launch new project setup wizard |
-| `/ypm:export` | Export to public community version |
+| `/ypm:export-community` | Export to public community version |
 
 ### `/ypm:open` Options
 
@@ -198,7 +198,7 @@ For detailed command reference, see the [Available Commands](#available-commands
 
 See [ypm-open-spec.md](docs/development/ypm-open-spec.md) for details.
 
-### `/ypm:export` Features
+### `/ypm:export-community` Features
 
 - Multi-language support (Japanese/English)
 - Interactive setup for repositories and exclusions
