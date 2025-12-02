@@ -1,6 +1,10 @@
 {
   "name": "signalcompose-ypm",
   "description": "Signal Compose YPM - Multi-project progress tracking",
+  "owner": {
+    "name": "Hiroshi Yamato",
+    "email": "info@signalcompose.com"
+  },
   "plugins": [
     {
       "name": "ypm",
