@@ -21,52 +21,13 @@ YPM is a project management tool that automatically tracks the status of multipl
 
 ## Quick Start
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/signalcompose/YPM.git
-cd YPM
-```
-
-### 2. Install dependencies
-
-```bash
-pip3 install -r requirements.txt
-```
-
-### 3. Run the onboarding wizard
-
-```bash
-python3 scripts/onboarding.py
-```
-
-The wizard will guide you through:
-- Setting the directory to monitor
-- Configuring project detection patterns
-- Setting activity classification thresholds
-
-### 4. Update project status
-
-Open Claude Code in the YPM directory and say:
-
-```
-Update project status
-```
-
-This will scan all projects and generate `PROJECT_STATUS.md`.
-
----
-
-## Installation as Claude Code Plugin (Recommended)
-
-YPM can be installed as a Claude Code plugin, making it accessible from **any directory**.
+YPM is installed as a Claude Code plugin, making it accessible from **any directory**.
 
 ### Step 1: Install the Plugin
 
 ```bash
 # In Claude Code, run:
-/plugin marketplace add signalcompose/YPM
-/plugin install ypm@signalcompose-ypm
+/install signalcompose/YPM
 ```
 
 ### Step 2: Initial Setup
@@ -93,9 +54,11 @@ This creates `~/.ypm/` with your configuration:
 /ypm:active
 ```
 
-### Available Commands
+---
 
-All commands are prefixed with `ypm:` when installed as a plugin:
+## Available Commands
+
+All commands are prefixed with `ypm:`:
 
 | Command | Description |
 |---------|-------------|
@@ -166,47 +129,10 @@ This separation ensures:
 
 ## Requirements
 
+- **Claude Code**: Required for running YPM
+  - [Get Claude Code](https://claude.ai/download)
 - **Git**: For project information collection
-- **Claude Code**: For project status updates (recommended)
-  - [Get Claude Code](https://claude.com/claude-code)
-- **Python 3.8+**: For onboarding wizard
-
----
-
-## Command Reference
-
-For detailed command reference, see the [Available Commands](#available-commands) section above.
-
-### Key Commands
-
-| Command | Description |
-|---------|-------------|
-| `/ypm:setup` | Initial setup - configure monitoring directories |
-| `/ypm:update` | Scan all projects and update status |
-| `/ypm:next` | Show next tasks in priority order |
-| `/ypm:open` | Open project in preferred editor |
-| `/ypm:new` | Launch new project setup wizard |
-| `/ypm:export-community` | Export to public community version |
-
-### `/ypm:open` Options
-
-- `<project>` - Open with default editor
-- `<project> <editor>` - Open with specific editor (code/cursor/zed)
-- `--editor` - View/set default editor
-- `all` - Show all projects including ignored
-- `add-ignore`/`remove-ignore` - Manage ignore list
-
-See [ypm-open-spec.md](docs/development/ypm-open-spec.md) for details.
-
-### `/ypm:export-community` Features
-
-- Multi-language support (Japanese/English)
-- Interactive setup for repositories and exclusions
-- TruffleHog security scan integration
-
-See [global-export-system.md](docs/development/global-export-system.md) for details.
-
-**Note**: Commands like `/ypm:update` update local files only (`~/.ypm/PROJECT_STATUS.md`). They do not perform Git operations.
+- **Python 3.8+**: For project scanning (included in the plugin)
 
 ---
 
@@ -259,45 +185,23 @@ classification:
 
 ---
 
-## Using YPM as a Private Fork
+## Development Setup
 
-You can use YPM as a private fork to manage your personal projects while staying synchronized with the public version.
+For contributors or those who want to run YPM from source:
 
-### Why Use a Private Fork?
+```bash
+# Clone the repository
+git clone https://github.com/signalcompose/YPM.git
+cd YPM
 
-- Keep your project-specific configurations (`config.yml`, `CLAUDE.md`) private
-- Store sensitive project information securely
-- Sync with upstream updates to get new features
-- Export improvements back to the public repository
+# Install dependencies
+pip3 install -r requirements.txt
 
-### Setting Up a Private Fork
+# Run onboarding wizard (creates config.yml in current directory)
+python3 scripts/onboarding.py
+```
 
-1. **Create a private fork**:
-   ```bash
-   # Clone the public repository
-   git clone https://github.com/signalcompose/YPM.git YPM-private
-   cd YPM-private
-
-   # Create your private repository on GitHub (set as private)
-   gh repo create your-username/YPM-private --private --source=. --remote=origin
-
-   # Add upstream remote
-   git remote add upstream https://github.com/signalcompose/YPM.git
-   ```
-
-2. **Synchronize with upstream**:
-   ```bash
-   # Fetch latest changes from public version
-   git fetch upstream
-   git merge upstream/develop
-   ```
-
-3. **Customize for your environment**:
-   - Edit `config.yml` with your project directories
-   - Update `CLAUDE.md` with your workflow preferences
-   - These files are excluded from community exports
-
-For detailed private fork management, see `CLAUDE.md` in your fork.
+Then open Claude Code in the YPM directory and use the commands directly.
 
 ---
 
