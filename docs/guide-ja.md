@@ -49,97 +49,61 @@ YPMは、ユーザーが指定したディレクトリ配下の複数プロジ�
 
 ## 前提条件
 
-- **Git**: プロジェクト情報の収集に使用します
-- **Claude Code**: プロジェクト状況の更新に使用します（推奨）
-  - [Claude Code公式サイト](https://claude.com/claude-code)
-- **Python 3.8+**: オンボーディングウィザード用
+- **Claude Code**: YPM実行に必要
+  - [Claude Codeダウンロード](https://claude.ai/download)
+- **Git**: プロジェクト情報の収集に使用
+- **Python 3.8+**: プロジェクトスキャン用（プラグインに含まれています）
 
 ---
 
 ## インストール
 
-### 1. リポジトリをクローン
+YPMはClaude Codeプラグインとしてインストールされ、**どのディレクトリからでも**アクセスできます。
+
+### ステップ1: プラグインをインストール
 
 ```bash
-# YPMをクローン
-git clone https://github.com/signalcompose/YPM.git
-cd YPM
+# Claude Code内で実行:
+/install signalcompose/YPM
 ```
 
-### 2. 依存関係のインストール
+### ステップ2: 初期設定
 
 ```bash
-# Python依存関係をインストール
-pip3 install -r requirements.txt
+# セットアップウィザードを実行（どのディレクトリからでもOK）
+/ypm:setup
 ```
 
-**必要な依存関係**:
-- Python 3.8+
-- PyYAML (config.ymlの読み書き用)
-
----
-
-## セットアップ
-
-### オンボーディングウィザードを使用（推奨）
-
-YPMには対話型の初期設定ウィザードが用意されています。以下のコマンドを実行するだけで、簡単にセットアップできます。
-
-```bash
-# オンボーディングウィザードを実行
-python3 scripts/onboarding.py
-```
-
-ウィザードが以下の情報を対話的に収集します：
+セットアップウィザードが以下の情報を対話的に収集します：
 1. 監視したいプロジェクトディレクトリのパス
-2. プロジェクト検出パターン（自動提案）
+2. プロジェクト検出パターン
 3. アクティブ/休止中の分類基準日数
 
-完了すると、`config.yml`が自動生成されます。
+完了すると、`~/.ypm/config.yml`が自動生成されます。
 
-### 手動セットアップ（上級者向け）
-
-ウィザードを使用せずに手動でセットアップする場合：
-
-1. `config.example.yml`をコピー
+### ステップ3: 初回スキャン
 
 ```bash
-cp config.example.yml config.yml
+# プロジェクトをスキャン
+/ypm:update
 ```
 
-2. `config.yml`を編集
+これで `~/.ypm/PROJECT_STATUS.md` が生成され、すべてのプロジェクト情報が収集されます。
 
-```yaml
-monitor:
-  directories:
-    - /path/to/your/projects    # あなたのプロジェクトディレクトリに変更
+### データの保存場所
 
-  patterns:
-    - "*"             # 直下の全プロジェクト
-```
-
-**例（macOS/Linux）**:
-```yaml
-directories:
-  - /Users/yourname/Projects
-  - /Users/yourname/Work
-```
-
-**例（Windows）**:
-```yaml
-directories:
-  - C:/Users/yourname/Projects
-```
-
-### 初回のプロジェクト情報収集
-
-Claude Codeを起動して、以下のように指示：
+YPMはすべてのユーザーデータを `~/.ypm/` に保存します：
 
 ```
-プロジェクト状況を更新して
+~/.ypm/
+  ├── config.yml           # 監視設定
+  └── PROJECT_STATUS.md    # 生成されたプロジェクト状況
 ```
 
-これで `PROJECT_STATUS.md` が生成され、すべてのプロジェクト情報が収集されます。
+この分離により：
+- プラグインの更新があなたの設定に影響しない
+- バックアップが簡単（`~/.ypm/` をバックアップするだけ）
+- すべてのプロジェクトで動作
 
 ---
 
@@ -148,8 +112,11 @@ Claude Codeを起動して、以下のように指示：
 ### 1. プロジェクト状況の確認
 
 ```bash
-cd ~/Src/proj_YPM/YPM
-cat PROJECT_STATUS.md
+# ステータスファイルを直接確認
+cat ~/.ypm/PROJECT_STATUS.md
+
+# またはコマンドを使用
+/ypm:active
 ```
 
 すべてのプロジェクトの状況が一覧で確認できます。
@@ -157,59 +124,64 @@ cat PROJECT_STATUS.md
 ### 2. 状況の更新
 
 ```bash
-cd ~/Src/proj_YPM/YPM
-# Claude Codeを起動
-```
-
-Claude Codeに以下のように指示：
-
-```
-プロジェクト状況を更新して
+# Claude Codeでどのディレクトリからでも実行可能
+/ypm:update
 ```
 
 自動的に以下が実行されます：
-1. `config.yml`で指定したディレクトリをスキャン
+1. `~/.ypm/config.yml`で指定したディレクトリをスキャン
 2. 各プロジェクトのGit情報を取得
 3. ドキュメント（CLAUDE.md、README.md、docs/INDEX.md）を読み込み
-4. `PROJECT_STATUS.md`を更新
-5. 変更をコミット
+4. `~/.ypm/PROJECT_STATUS.md`を更新
 
 ### 3. 次のタスク確認
 
-```
-次にやるべきタスクは？
+```bash
+/ypm:next
 ```
 
 各プロジェクトの次のタスクを優先度順に表示します。
 
 ---
 
-## Claude Codeカスタムコマンド
+## 利用可能なコマンド
 
-YPMには便利なカスタムコマンドが用意されています。Claude Code内で直接実行できます。
+YPMは以下のコマンドを提供します。すべてのコマンドは `ypm:` プレフィックス付きです。
+
+| コマンド | 説明 |
+|---------|------|
+| `/ypm:setup` | 初期設定ウィザード |
+| `/ypm:start` | ウェルカムメッセージ表示 |
+| `/ypm:help` | 詳細ヘルプ表示 |
+| `/ypm:update` | プロジェクト状況更新 |
+| `/ypm:next` | 次のタスク表示 |
+| `/ypm:active` | アクティブプロジェクト表示 |
+| `/ypm:open` | エディタでプロジェクトを開く |
+| `/ypm:new` | 新規プロジェクトウィザード |
+| `/ypm:export-community` | コミュニティ版へエクスポート |
+| `/ypm:trufflehog-scan` | TruffleHogセキュリティスキャン |
 
 ### プロジェクト管理コマンド
 
-#### `/ypm`
+#### `/ypm:start`
 ウェルカムメッセージとよく使うコマンド一覧を表示します。セッション開始時に便利です。
 
-#### `/ypm-help`
+#### `/ypm:help`
 全コマンドの詳細なヘルプを表示します。各コマンドの説明、YPMの原則、よくある使い方が確認できます。
 
-#### `/ypm-update`
-全プロジェクトをスキャンして `PROJECT_STATUS.md` を更新します。
+#### `/ypm:update`
+全プロジェクトをスキャンして `~/.ypm/PROJECT_STATUS.md` を更新します。
 
 **実行内容**:
-1. `config.yml` で指定された監視対象ディレクトリをスキャン
+1. `~/.ypm/config.yml` で指定された監視対象ディレクトリをスキャン
 2. 各プロジェクトのGit情報を取得（ブランチ、最終コミット、変更ファイル数）
 3. 各プロジェクトの `CLAUDE.md`、`README.md`、`docs/INDEX.md` を読み込み
 4. プロジェクトの進捗情報（Phase、実装進捗、テスト、ドキュメント）を収集
-5. `PROJECT_STATUS.md` を更新
-6. 変更をコミット
+5. `~/.ypm/PROJECT_STATUS.md` を更新
 
 **注意**: 他のプロジェクトのファイルは読み取り専用です（変更禁止）
 
-#### `/ypm-next`
+#### `/ypm:next`
 各プロジェクトの「次のタスク」を優先度順に表示します。
 
 **表示内容**:
@@ -223,7 +195,7 @@ YPMには便利なカスタムコマンドが用意されています。Claude C
 2. 実装進捗が高いプロジェクト
 3. Phase順
 
-#### `/ypm-active`
+#### `/ypm:active`
 最近1週間以内に更新されたアクティブなプロジェクトのみを表示します。
 
 **表示内容**:
@@ -233,29 +205,30 @@ YPMには便利なカスタムコマンドが用意されています。Claude C
 
 更新日時の降順（新しい順）で表示されます。
 
-#### `/ypm-open [プロジェクト名] [エディタ] [オプション]`
+#### `/ypm:open [プロジェクト名] [エディタ] [オプション]`
 選択したエディタでプロジェクトを開きます。環境変数を自動的にクリアします。
 
 **基本的な使い方**:
-- `/ypm-open` - プロジェクト一覧を表示（ignore除外、worktreeは自動除外）
-- `/ypm-open oshireq` - "oshireq"プロジェクトをデフォルトエディタで開く
-- `/ypm-open oshireq cursor` - "oshireq"プロジェクトをCursorで開く
+- `/ypm:open` - プロジェクト一覧を表示（ignore除外、worktreeは自動除外）
+- `/ypm:open oshireq` - "oshireq"プロジェクトをデフォルトエディタで開く
+- `/ypm:open oshireq cursor` - "oshireq"プロジェクトをCursorで開く
 
 **対応エディタ**:
 - `code` - VS Code
 - `cursor` - Cursor
 - `zed` - Zed
+- `terminal` - Terminal.app
 
 **エディタ設定**:
-- `/ypm-open --editor` - 現在のデフォルトエディタを表示
-- `/ypm-open --editor cursor` - デフォルトエディタをCursorに設定
-- `/ypm-open --editor zed` - デフォルトエディタをZedに設定
+- `/ypm:open --editor` - 現在のデフォルトエディタを表示
+- `/ypm:open --editor cursor` - デフォルトエディタをCursorに設定
+- `/ypm:open --editor zed` - デフォルトエディタをZedに設定
 
 **Ignore管理**:
-- `/ypm-open all` - ignore設定済みを含む全プロジェクトを表示
-- `/ypm-open ignore-list` - ignore設定済みプロジェクト一覧
-- `/ypm-open add-ignore` - プロジェクトをignoreに追加
-- `/ypm-open remove-ignore` - プロジェクトをignoreから削除
+- `/ypm:open all` - ignore設定済みを含む全プロジェクトを表示
+- `/ypm:open ignore-list` - ignore設定済みプロジェクト一覧
+- `/ypm:open add-ignore` - プロジェクトをignoreに追加
+- `/ypm:open remove-ignore` - プロジェクトをignoreから削除
 
 **機能**:
 - **環境変数クリア**: エディタ起動前に`NODENV_VERSION`、`NODENV_DIR`、`RBENV_VERSION`、`PYENV_VERSION`を自動的にクリアし、各プロジェクトのバージョンファイル（`.node-version`等）が正しく読み込まれるようにします
@@ -263,17 +236,17 @@ YPMには便利なカスタムコマンドが用意されています。Claude C
 - **柔軟なエディタ選択**: プロジェクトのニーズや個人の好みに応じてエディタを切り替え可能
 
 **設定**:
-デフォルトエディタは`config.yml`で設定：
+デフォルトエディタは`~/.ypm/config.yml`で設定：
 ```yaml
 editor:
-  default: code  # 選択肢: code, cursor, zed
+  default: code  # 選択肢: code, cursor, zed, terminal
 ```
 
-詳細な仕様は [ypm-open-spec.md](../docs/development/ypm-open-spec.md) を参照してください。
+詳細な仕様は [ypm-open-spec.md](development/ypm-open-spec.md) を参照してください。
 
 ### 新規プロジェクト立ち上げコマンド
 
-#### `/ypm-new`
+#### `/ypm:new`
 新規プロジェクトの立ち上げを支援する対話型ウィザードを起動します。
 
 8つのフェーズで段階的にプロジェクトをセットアップ：
@@ -289,9 +262,22 @@ editor:
 **セットアップ完了後**:
 - 新しいプロジェクトディレクトリに移動
 - そのプロジェクト専用のClaude Codeセッションで開発を開始
-- YPMは次回の `/ypm-update` で自動的に監視対象に追加
+- YPMは次回の `/ypm:update` で自動的に監視対象に追加
 
 詳細は [project-bootstrap-prompt.md](../project-bootstrap-prompt.md) を参照してください。
+
+### セキュリティ＆エクスポートコマンド
+
+#### `/ypm:export-community`
+プライベートリポジトリをパブリックコミュニティ版にエクスポートします。
+- 初回実行時は対話型セットアップ
+- 2回目以降は自動エクスポート
+- TruffleHogセキュリティスキャン統合
+
+#### `/ypm:trufflehog-scan`
+管理対象の全プロジェクトでTruffleHogセキュリティスキャンを実行します。
+- TruffleHogのインストールが必要（`brew install trufflehog`）
+- Git履歴全体をスキャンして秘密情報を検出
 
 ---
 
@@ -307,7 +293,7 @@ YPMには新規プロジェクトを立ち上げるための包括的なアシ�
 
 Claude Code内で以下を実行：
 ```
-/ypm-new
+/ypm:new
 ```
 
 **方法2: プロンプトを手動で使用**
@@ -371,29 +357,32 @@ Claude Code内で以下を実行：
 
 ## ファイル構成
 
+### プラグインファイル（`/install`でインストール）
+
 ```
-YPM/
-├── .claude/
-│   └── settings.json           # Claude Code権限設定
-├── docs/
-│   ├── INDEX.md                # ドキュメント索引
-│   ├── guide-ja.md             # 日本語詳細ガイド（このファイル）
-│   ├── guide-en.md             # 英語詳細ガイド
-│   └── development/            # 開発者向けドキュメント
-│       ├── architecture.md     # アーキテクチャ設計
-│       └── onboarding-script-spec.md  # オンボーディング仕様書
+~/.claude/plugins/ypm/          # プラグインインストールディレクトリ
+├── commands/                   # スラッシュコマンド
+│   ├── start.md
+│   ├── help.md
+│   ├── setup.md
+│   ├── update.md
+│   ├── next.md
+│   ├── active.md
+│   ├── open.md
+│   ├── new.md
+│   ├── export-community.md
+│   └── trufflehog-scan.md
 ├── scripts/
-│   ├── onboarding.py           # 初回セットアップウィザード
-│   ├── update_status.py        # プロジェクト状況更新（将来）
-│   └── create_project.py       # プロジェクト作成支援（将来）
-├── config.yml                  # 設定ファイル（監視対象など）※Git管理外
-├── config.example.yml          # 設定テンプレート
-├── requirements.txt            # Python依存関係
-├── CLAUDE.md                   # Claude Code向け指示書
-├── README.md                   # プロジェクト概要（英語）
-├── PROJECT_STATUS.md           # プロジェクト状況一覧※Git管理外
-├── LICENSE                     # MITライセンス
-└── .gitignore                  # Git除外設定
+│   └── scan_projects.py        # プロジェクトスキャンスクリプト
+└── ...
+```
+
+### ユーザーデータ（`/ypm:setup`で作成）
+
+```
+~/.ypm/
+├── config.yml                  # 監視設定
+└── PROJECT_STATUS.md           # 生成されたプロジェクト状況
 ```
 
 ---
@@ -435,9 +424,11 @@ YPMは以下の基準でプロジェクトの進捗率を推測します：
 
 ## カスタマイズ
 
+`~/.ypm/config.yml` を編集してYPMの動作をカスタマイズできます。
+
 ### 監視対象の追加
 
-`config.yml`の`directories`に追加：
+`~/.ypm/config.yml`の`directories`に追加：
 
 ```yaml
 monitor:
@@ -461,17 +452,17 @@ monitor:
 
 ### デフォルトエディタの変更
 
-お好みのエディタを`config.yml`で設定：
+お好みのエディタを`~/.ypm/config.yml`で設定：
 
 ```yaml
 editor:
   default: cursor    # codeからcursorに変更
-  # 選択肢: code (VS Code), cursor (Cursor), zed (Zed)
+  # 選択肢: code (VS Code), cursor (Cursor), zed (Zed), terminal (Terminal.app)
 ```
 
 またはコマンドで設定：
 ```
-/ypm-open --editor cursor
+/ypm:open --editor cursor
 ```
 
 ### 分類基準の変更
@@ -499,11 +490,11 @@ classification:
 
 ### Q: 新しいプロジェクトを追加したい
 
-**A**: `config.yml`で指定したディレクトリ配下にプロジェクトを作成すれば、次回更新時に自動的に検出されます。
+**A**: `~/.ypm/config.yml`で指定したディレクトリ配下にプロジェクトを作成すれば、次回 `/ypm:update` 時に自動的に検出されます。
 
 ### Q: プロジェクトを除外したい
 
-**A**: `config.yml`の`exclude`に追加してください：
+**A**: `~/.ypm/config.yml`の`exclude`に追加してください：
 
 ```yaml
 monitor:
@@ -514,7 +505,7 @@ monitor:
 
 ### Q: 進捗率が不正確
 
-**A**: `PROJECT_STATUS.md`を直接編集して調整してください。
+**A**: `~/.ypm/PROJECT_STATUS.md`を直接編集して調整してください。
 
 ### Q: 次のタスクが表示されない
 
@@ -522,7 +513,7 @@ monitor:
 
 ### Q: 別のマシンで使いたい
 
-**A**: `config.yml`のディレクトリパスを環境に合わせて変更してください。Gitで管理しているので、簡単に同期できます。
+**A**: `/install signalcompose/YPM` でYPMをインストールし、`/ypm:setup` で環境を設定してください。`~/.ypm/config.yml` を新しいマシンにコピーすることもできます。
 
 ---
 
@@ -549,12 +540,12 @@ YPMは現在**Phase 1完成状態**です。Claude Code駆動のアプローチ�
 
 **A**: 以下を確認：
 1. Gitリポジトリか？（`.git/`ディレクトリがあるか）
-2. ディレクトリ構造が設定したパターンに一致するか？
+2. `~/.ypm/config.yml` のパターンとディレクトリ構造が一致するか？
 3. 除外対象に含まれていないか？
 
-### Q: Claude Codeが設定ファイルを変更しようとする
+### Q: "config.yml not found" エラー
 
-**A**: `.claude/settings.json`で読み取り専用権限を設定してください。YPM自身のファイルのみ変更可能にします。
+**A**: `/ypm:setup` を実行して `~/.ypm/config.yml` に初期設定ファイルを作成してください。
 
 ---
 

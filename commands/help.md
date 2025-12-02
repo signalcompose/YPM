@@ -135,4 +135,14 @@ Interactive project setup.
 
 ---
 
+## License
+
+YPM is licensed under the **MIT License**.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+See [LICENSE](https://github.com/signalcompose/YPM/blob/main/LICENSE) for full details.
+
+---
+
 **Manage your projects efficiently with YPM!**

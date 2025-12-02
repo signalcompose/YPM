@@ -25,3 +25,7 @@ This system monitors multiple projects in configured directories and centralizes
 - `/ypm:new` - Project setup wizard
 
 What would you like to do?
+
+---
+
+*YPM is MIT licensed. Provided "AS IS" without warranty. See `/ypm:help` for details.*
