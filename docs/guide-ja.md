@@ -169,6 +169,7 @@ YPMは以下のコマンドを提供します。すべてのコマンドは `ypm
 | `/ypm:active` | アクティブプロジェクト表示 |
 | `/ypm:open` | エディタでプロジェクトを開く |
 | `/ypm:new` | 新規プロジェクトウィザード |
+| `/ypm:setup-gitflow` | Git Flowワークフロー設定 |
 | `/ypm:export-community` | コミュニティ版へエクスポート |
 | `/ypm:trufflehog-scan` | TruffleHogセキュリティスキャン |
 
@@ -277,6 +278,29 @@ editor:
 
 詳細は [project-bootstrap-prompt.md](../project-bootstrap-prompt.md) を参照してください。
 
+### Git Workflowコマンド
+
+#### `/ypm:setup-gitflow`
+現在のプロジェクトにGit Flowワークフローを設定します。ブランチ保護とセキュリティ設定を含みます。
+
+**実行内容**:
+- `main`（デフォルト）と`develop`ブランチを作成
+- ブランチ保護を設定（main/developへの直プッシュ禁止）
+- Squash/Rebaseマージを無効化（マージコミットのみ許可）
+- プロジェクトタイプに応じたセキュリティ設定（CODEOWNERS、Secret Scanning）
+
+**プロジェクトタイプ**:
+1. **個人プロジェクト** - 最小限の設定、一人開発
+2. **小規模OSS** - CODEOWNERS、ブランチ保護推奨
+3. **大規模OSS** - 全セキュリティ設定を有効化
+
+**使い方**:
+```bash
+/ypm:setup-gitflow
+```
+
+コマンドはプロジェクトタイプと開発スタイルについて対話的に質問し、適切な設定を構成します。
+
 ### セキュリティ＆エクスポートコマンド
 
 #### `/ypm:export-community`
@@ -381,6 +405,7 @@ Claude Code内で以下を実行：
 │   ├── active.md
 │   ├── open.md
 │   ├── new.md
+│   ├── setup-gitflow.md
 │   ├── export-community.md
 │   └── trufflehog-scan.md
 ├── scripts/
