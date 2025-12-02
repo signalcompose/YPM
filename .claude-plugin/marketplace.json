@@ -10,7 +10,7 @@
       "name": "ypm",
       "source": {
         "source": "github",
-        "repo": "signalcompose/YPM"
+        "repo": "signalcompose/ypm"
       },
       "description": "Multi-project progress tracking system",
       "category": "productivity",
