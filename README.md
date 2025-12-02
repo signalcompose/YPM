@@ -57,6 +57,47 @@ This will scan all projects and generate `PROJECT_STATUS.md`.
 
 ---
 
+## Installation as Claude Code Plugin
+
+YPM can be installed as a Claude Code plugin for easy access to all commands.
+
+### Quick Install
+
+```bash
+# Add the marketplace
+/plugin marketplace add signalcompose/YPM
+
+# Install YPM plugin
+/plugin install ypm@signalcompose-ypm
+```
+
+### Manual Install
+
+```bash
+# Clone and add as local plugin
+git clone https://github.com/signalcompose/YPM.git
+/plugin marketplace add ./YPM
+/plugin install ypm@local
+```
+
+### Available Commands (after plugin installation)
+
+All commands are prefixed with `ypm:` when installed as a plugin:
+
+| Command | Description |
+|---------|-------------|
+| `/ypm:ypm` | Show welcome and quick commands |
+| `/ypm:ypm-help` | Show detailed help |
+| `/ypm:ypm-update` | Update project status |
+| `/ypm:ypm-next` | Show next tasks |
+| `/ypm:ypm-active` | Show active projects only |
+| `/ypm:ypm-open` | Open project in editor |
+| `/ypm:ypm-new` | Launch project setup wizard |
+| `/ypm:ypm-export-community` | Export to community version |
+| `/ypm:ypm-trufflehog-scan` | Run security scan |
+
+---
+
 ## Documentation
 
 - **[Detailed Guide (English)](docs/guide-en.md)** - Complete usage guide
