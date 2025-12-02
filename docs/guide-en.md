@@ -49,97 +49,61 @@ YPM is a tool that automatically collects and organizes the status of multiple p
 
 ## Prerequisites
 
+- **Claude Code**: Required for running YPM
+  - [Get Claude Code](https://claude.ai/download)
 - **Git**: Used for collecting project information
-- **Claude Code**: Used for updating project status (recommended)
-  - [Get Claude Code](https://claude.com/claude-code)
-- **Python 3.8+**: For the onboarding wizard
+- **Python 3.8+**: For project scanning (included in the plugin)
 
 ---
 
 ## Installation
 
-### 1. Clone the Repository
+YPM is installed as a Claude Code plugin, making it accessible from **any directory**.
+
+### Step 1: Install the Plugin
 
 ```bash
-# Clone YPM
-git clone https://github.com/signalcompose/YPM.git
-cd YPM
+# In Claude Code, run:
+/install signalcompose/YPM
 ```
 
-### 2. Install Dependencies
+### Step 2: Initial Setup
 
 ```bash
-# Install Python dependencies
-pip3 install -r requirements.txt
+# Run the setup wizard (from any directory)
+/ypm:setup
 ```
 
-**Required Dependencies**:
-- Python 3.8+
-- PyYAML (for reading/writing config.yml)
-
----
-
-## Setup
-
-### Using the Onboarding Wizard (Recommended)
-
-YPM includes an interactive setup wizard. Simply run the following command for easy setup:
-
-```bash
-# Run the onboarding wizard
-python3 scripts/onboarding.py
-```
-
-The wizard will interactively collect:
-1. Path to the project directory to monitor
-2. Project detection patterns (auto-suggested)
+The setup wizard will interactively collect:
+1. Path to the project directories to monitor
+2. Project detection patterns
 3. Classification threshold days for active/inactive status
 
-Upon completion, `config.yml` will be automatically generated.
+Upon completion, `~/.ypm/config.yml` will be automatically generated.
 
-### Manual Setup (Advanced)
-
-If you prefer manual setup without the wizard:
-
-1. Copy `config.example.yml`
+### Step 3: First Scan
 
 ```bash
-cp config.example.yml config.yml
+# Scan your projects
+/ypm:update
 ```
 
-2. Edit `config.yml`
+This will generate `~/.ypm/PROJECT_STATUS.md` with all project information collected.
 
-```yaml
-monitor:
-  directories:
-    - /path/to/your/projects    # Change to your project directory
+### Data Location
 
-  patterns:
-    - "*"             # All projects directly under the directory
-```
-
-**Example (macOS/Linux)**:
-```yaml
-directories:
-  - /Users/yourname/Projects
-  - /Users/yourname/Work
-```
-
-**Example (Windows)**:
-```yaml
-directories:
-  - C:/Users/yourname/Projects
-```
-
-### Initial Project Information Collection
-
-Start Claude Code and instruct:
+YPM stores all user data in `~/.ypm/`:
 
 ```
-Update project status
+~/.ypm/
+  ├── config.yml           # Your monitoring settings
+  └── PROJECT_STATUS.md    # Generated project status
 ```
 
-This will generate `PROJECT_STATUS.md` with all project information collected.
+This separation ensures:
+- Plugin updates don't affect your configuration
+- Easy backup (just backup `~/.ypm/`)
+- Works across all your projects
 
 ---
 
@@ -148,8 +112,11 @@ This will generate `PROJECT_STATUS.md` with all project information collected.
 ### 1. Check Project Status
 
 ```bash
-cd ~/Src/proj_YPM/YPM
-cat PROJECT_STATUS.md
+# View the status file directly
+cat ~/.ypm/PROJECT_STATUS.md
+
+# Or use the command
+/ypm:active
 ```
 
 View the status of all projects at a glance.
@@ -157,59 +124,64 @@ View the status of all projects at a glance.
 ### 2. Update Status
 
 ```bash
-cd ~/Src/proj_YPM/YPM
-# Start Claude Code
-```
-
-Instruct Claude Code:
-
-```
-Update project status
+# From any directory in Claude Code
+/ypm:update
 ```
 
 This will automatically:
-1. Scan directories specified in `config.yml`
+1. Scan directories specified in `~/.ypm/config.yml`
 2. Retrieve Git information for each project
 3. Read documentation (CLAUDE.md, README.md, docs/INDEX.md)
-4. Update `PROJECT_STATUS.md`
-5. Commit changes
+4. Update `~/.ypm/PROJECT_STATUS.md`
 
 ### 3. Check Next Tasks
 
-```
-What are the next tasks?
+```bash
+/ypm:next
 ```
 
 Displays next tasks for each project in priority order.
 
 ---
 
-## Claude Code Custom Commands
+## Available Commands
 
-YPM includes convenient custom commands that can be executed directly within Claude Code.
+YPM provides the following commands. All commands are prefixed with `ypm:`.
+
+| Command | Description |
+|---------|-------------|
+| `/ypm:setup` | Initial setup wizard |
+| `/ypm:start` | Show welcome and quick commands |
+| `/ypm:help` | Show detailed help |
+| `/ypm:update` | Update project status |
+| `/ypm:next` | Show next tasks |
+| `/ypm:active` | Show active projects only |
+| `/ypm:open` | Open project in editor |
+| `/ypm:new` | Launch project setup wizard |
+| `/ypm:export-community` | Export to community version |
+| `/ypm:trufflehog-scan` | Run TruffleHog security scan |
 
 ### Project Management Commands
 
-#### `/ypm`
+#### `/ypm:start`
 Displays a welcome message and list of frequently used commands. Useful when starting a session.
 
-#### `/ypm-help`
+#### `/ypm:help`
 Displays detailed help for all commands. You can view command descriptions, YPM principles, and common use cases.
 
-#### `/ypm-update`
-Scans all projects and updates `PROJECT_STATUS.md`.
+#### `/ypm:update`
+Scans all projects and updates `~/.ypm/PROJECT_STATUS.md`.
 
 **Actions performed**:
-1. Scans monitoring target directories specified in `config.yml`
+1. Scans monitoring target directories specified in `~/.ypm/config.yml`
 2. Retrieves Git information for each project (branch, last commit, changed files)
 3. Reads `CLAUDE.md`, `README.md`, `docs/INDEX.md` from each project
 4. Collects progress information (Phase, implementation progress, testing, documentation)
-5. Updates `PROJECT_STATUS.md`
-6. Commits changes
+5. Updates `~/.ypm/PROJECT_STATUS.md`
 
 **Note**: Other projects' files are read-only (modification forbidden)
 
-#### `/ypm-next`
+#### `/ypm:next`
 Displays "next tasks" for each project in priority order.
 
 **Display content**:
@@ -223,7 +195,7 @@ Displays "next tasks" for each project in priority order.
 2. Projects with high implementation progress
 3. Phase order
 
-#### `/ypm-active`
+#### `/ypm:active`
 Displays only active projects updated within the last week.
 
 **Display content**:
@@ -233,29 +205,30 @@ Displays only active projects updated within the last week.
 
 Displayed in descending order of update date (newest first).
 
-#### `/ypm-open [project] [editor] [options]`
+#### `/ypm:open [project] [editor] [options]`
 Opens a project in your preferred editor with automatic environment variable cleanup.
 
 **Basic Usage**:
-- `/ypm-open` - Show project list (excluding ignored projects, worktrees auto-excluded)
-- `/ypm-open oshireq` - Open "oshireq" project with default editor
-- `/ypm-open oshireq cursor` - Open "oshireq" project with Cursor editor
+- `/ypm:open` - Show project list (excluding ignored projects, worktrees auto-excluded)
+- `/ypm:open oshireq` - Open "oshireq" project with default editor
+- `/ypm:open oshireq cursor` - Open "oshireq" project with Cursor editor
 
 **Supported Editors**:
 - `code` - VS Code
 - `cursor` - Cursor
 - `zed` - Zed
+- `terminal` - Terminal.app
 
 **Editor Settings**:
-- `/ypm-open --editor` - Show current default editor
-- `/ypm-open --editor cursor` - Set default editor to Cursor
-- `/ypm-open --editor zed` - Set default editor to Zed
+- `/ypm:open --editor` - Show current default editor
+- `/ypm:open --editor cursor` - Set default editor to Cursor
+- `/ypm:open --editor zed` - Set default editor to Zed
 
 **Ignore Management**:
-- `/ypm-open all` - Show all projects including ignored ones
-- `/ypm-open ignore-list` - Show currently ignored projects
-- `/ypm-open add-ignore` - Add a project to ignore list
-- `/ypm-open remove-ignore` - Remove a project from ignore list
+- `/ypm:open all` - Show all projects including ignored ones
+- `/ypm:open ignore-list` - Show currently ignored projects
+- `/ypm:open add-ignore` - Add a project to ignore list
+- `/ypm:open remove-ignore` - Remove a project from ignore list
 
 **Features**:
 - **Environment Variable Cleanup**: Automatically clears `NODENV_VERSION`, `NODENV_DIR`, `RBENV_VERSION`, `PYENV_VERSION` before launching editor, ensuring each project's version files (`.node-version`, etc.) are properly loaded
@@ -263,17 +236,17 @@ Opens a project in your preferred editor with automatic environment variable cle
 - **Flexible Editor Selection**: Switch between code editors based on project needs or personal preference
 
 **Configuration**:
-Default editor is set in `config.yml`:
+Default editor is set in `~/.ypm/config.yml`:
 ```yaml
 editor:
-  default: code  # Options: code, cursor, zed
+  default: code  # Options: code, cursor, zed, terminal
 ```
 
-See [ypm-open-spec.md](../docs/development/ypm-open-spec.md) for detailed specifications.
+See [ypm-open-spec.md](development/ypm-open-spec.md) for detailed specifications.
 
 ### New Project Setup Command
 
-#### `/ypm-new`
+#### `/ypm:new`
 Launches an interactive wizard to help set up new projects.
 
 Sets up projects step-by-step through 8 phases:
@@ -289,9 +262,22 @@ Sets up projects step-by-step through 8 phases:
 **After setup completion**:
 - Move to the new project directory
 - Start development in a dedicated Claude Code session for that project
-- YPM will automatically add it to monitoring targets on the next `/ypm-update`
+- YPM will automatically add it to monitoring targets on the next `/ypm:update`
 
 See [project-bootstrap-prompt.md](../project-bootstrap-prompt.md) for details.
+
+### Security & Export Commands
+
+#### `/ypm:export-community`
+Export private repository to public community version.
+- Interactive setup on first run
+- Automatic export on subsequent runs
+- TruffleHog security scan integration
+
+#### `/ypm:trufflehog-scan`
+Run TruffleHog security scan on all managed projects.
+- Requires TruffleHog to be installed (`brew install trufflehog`)
+- Scans entire Git history for secrets
 
 ---
 
@@ -307,7 +293,7 @@ Two methods are available:
 
 Execute in Claude Code:
 ```
-/ypm-new
+/ypm:new
 ```
 
 **Method 2: Use Prompt Manually**
@@ -371,29 +357,32 @@ The following documentation is created during project setup:
 
 ## File Structure
 
+### Plugin Files (installed via `/install`)
+
 ```
-YPM/
-├── .claude/
-│   └── settings.json           # Claude Code permissions
-├── docs/
-│   ├── INDEX.md                # Documentation index
-│   ├── guide-ja.md             # Japanese detailed guide
-│   ├── guide-en.md             # English detailed guide (this file)
-│   └── development/            # Developer documentation
-│       ├── architecture.md     # Architecture design
-│       └── onboarding-script-spec.md  # Onboarding specification
+~/.claude/plugins/ypm/          # Plugin installation directory
+├── commands/                   # Slash commands
+│   ├── start.md
+│   ├── help.md
+│   ├── setup.md
+│   ├── update.md
+│   ├── next.md
+│   ├── active.md
+│   ├── open.md
+│   ├── new.md
+│   ├── export-community.md
+│   └── trufflehog-scan.md
 ├── scripts/
-│   ├── onboarding.py           # Initial setup wizard
-│   ├── update_status.py        # Project status update (future)
-│   └── create_project.py       # Project creation support (future)
-├── config.yml                  # Configuration file (monitoring targets) *Git-ignored
-├── config.example.yml          # Configuration template
-├── requirements.txt            # Python dependencies
-├── CLAUDE.md                   # Claude Code instructions
-├── README.md                   # Project overview (English)
-├── PROJECT_STATUS.md           # Project status list *Git-ignored
-├── LICENSE                     # MIT License
-└── .gitignore                  # Git exclusion settings
+│   └── scan_projects.py        # Project scanning script
+└── ...
+```
+
+### User Data (created by `/ypm:setup`)
+
+```
+~/.ypm/
+├── config.yml                  # Your monitoring settings
+└── PROJECT_STATUS.md           # Generated project status
 ```
 
 ---
@@ -435,9 +424,11 @@ YPM estimates project progress based on the following criteria:
 
 ## Customization
 
+Edit `~/.ypm/config.yml` to customize YPM behavior.
+
 ### Adding Monitoring Targets
 
-Add to `directories` in `config.yml`:
+Add to `directories` in `~/.ypm/config.yml`:
 
 ```yaml
 monitor:
@@ -461,17 +452,17 @@ monitor:
 
 ### Changing Default Editor
 
-Set your preferred editor in `config.yml`:
+Set your preferred editor in `~/.ypm/config.yml`:
 
 ```yaml
 editor:
   default: cursor    # Change from code to cursor
-  # Options: code (VS Code), cursor (Cursor), zed (Zed)
+  # Options: code (VS Code), cursor (Cursor), zed (Zed), terminal (Terminal.app)
 ```
 
 Or use the command:
 ```
-/ypm-open --editor cursor
+/ypm:open --editor cursor
 ```
 
 ### Changing Classification Criteria
@@ -499,11 +490,11 @@ Regular updates help you stay on top of project status.
 
 ### Q: How do I add a new project?
 
-**A**: Create a project under the directory specified in `config.yml`, and it will be automatically detected on the next update.
+**A**: Create a project under the directory specified in `~/.ypm/config.yml`, and it will be automatically detected on the next `/ypm:update`.
 
 ### Q: How do I exclude a project?
 
-**A**: Add to `exclude` in `config.yml`:
+**A**: Add to `exclude` in `~/.ypm/config.yml`:
 
 ```yaml
 monitor:
@@ -514,7 +505,7 @@ monitor:
 
 ### Q: Progress percentages are inaccurate
 
-**A**: Manually edit `PROJECT_STATUS.md` to adjust them.
+**A**: Manually edit `~/.ypm/PROJECT_STATUS.md` to adjust them.
 
 ### Q: Next tasks are not displayed
 
@@ -522,7 +513,7 @@ monitor:
 
 ### Q: Can I use this on another machine?
 
-**A**: Yes. Update directory paths in `config.yml` to match your environment. Since it's managed via Git, syncing is easy.
+**A**: Yes. Install YPM using `/install signalcompose/YPM`, then run `/ypm:setup` to configure your environment. You can also copy your `~/.ypm/config.yml` to the new machine.
 
 ---
 
@@ -549,12 +540,12 @@ Potential future enhancements:
 
 **A**: Check the following:
 1. Is it a Git repository? (Does `.git/` directory exist?)
-2. Does the directory structure match the configured pattern?
+2. Does the directory structure match the configured pattern in `~/.ypm/config.yml`?
 3. Is it included in the exclusion list?
 
-### Q: Claude Code tries to modify configuration files
+### Q: "config.yml not found" error
 
-**A**: Set read-only permissions in `.claude/settings.json`. Allow changes only to YPM's own files.
+**A**: Run `/ypm:setup` to create the initial configuration file at `~/.ypm/config.yml`.
 
 ---
 

@@ -22,7 +22,7 @@
 
 **ファイル**: `~/.claude/commands/ypm-export-community.md`
 
-どのプロジェクトからも`/ypm-export-community`で実行可能なClaude Code slash command。
+どのプロジェクトからも`/ypm:export-community`で実行可能なClaude Code slash command。
 
 **特徴**:
 - **多言語対応**: ユーザーのメッセージから言語を自動検出（日本語/英語）
@@ -102,7 +102,7 @@ vim .export-config.yml
 #### 推奨方法: Claude Codeで実行
 
 ```
-/ypm-export-community
+/ypm:export-community
 ```
 
 **Claude Codeが自動的に**:
@@ -188,7 +188,7 @@ export:
 ~/.claude/scripts/export-to-community.sh
 
 # または、Claude Codeで
-/ypm-export-community
+/ypm:export-community
 ```
 
 **実行フロー**：
@@ -388,7 +388,7 @@ export:
 ### 任意のプロジェクト
 
 1. `.export-config.yml`を作成
-2. `/ypm-export-community`を実行
+2. `/ypm:export-community`を実行
 3. 完了
 
 ## 今後の改善案

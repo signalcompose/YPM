@@ -1,4 +1,4 @@
-# `/ypm-open` コマンド仕様書
+# `/ypm:open` コマンド仕様書
 
 **作成日**: 2025-10-21
 **最終更新**: 2025-10-21
@@ -33,7 +33,7 @@ YPMで管理している複数プロジェクトの中から、指定したプ�
 
 **使用例**:
 ```
-/ypm-open
+/ypm:open
 ```
 
 **動作**:
@@ -48,7 +48,7 @@ YPMで管理している複数プロジェクトの中から、指定したプ�
 
 **使用例**:
 ```
-/ypm-open all
+/ypm:open all
 ```
 
 **動作**:
@@ -60,7 +60,7 @@ YPMで管理している複数プロジェクトの中から、指定したプ�
 
 **使用例**:
 ```
-/ypm-open ignore-list
+/ypm:open ignore-list
 ```
 
 **動作**:
@@ -71,7 +71,7 @@ YPMで管理している複数プロジェクトの中から、指定したプ�
 
 **使用例**:
 ```
-/ypm-open add-ignore
+/ypm:open add-ignore
 ```
 
 **動作**:
@@ -84,7 +84,7 @@ YPMで管理している複数プロジェクトの中から、指定したプ�
 
 **使用例**:
 ```
-/ypm-open remove-ignore
+/ypm:open remove-ignore
 ```
 
 **動作**:
@@ -174,7 +174,7 @@ VS Code CLIをインストールしてください：
 ```
 ❌ PROJECT_STATUS.md が見つかりません。
 
-先に /ypm-update を実行してプロジェクトをスキャンしてください。
+先に /ypm:update を実行してプロジェクトをスキャンしてください。
 ```
 
 ---
@@ -273,9 +273,9 @@ code /path/to/project
 
 ## 5. 実装例
 
-### 5.1 スラッシュコマンドファイル (.claude/commands/ypm-open.md)
+### 5.1 スラッシュコマンドファイル (.claude/commands/ypm:open.md)
 
-実装済み。詳細は`.claude/commands/ypm-open.md`を参照。
+実装済み。詳細は`.claude/commands/ypm:open.md`を参照。
 
 **主な構成**:
 - サブコマンド説明（引数なし/all/ignore-list/add-ignore/remove-ignore）
@@ -293,24 +293,24 @@ code /path/to/project
 
 | テストケース | 入力 | 期待する動作 |
 |------------|------|------------|
-| TC1: 通常モード | `/ypm-open` → `1` | 番号選択でプロジェクトが開く |
-| TC2: 名前検索（一意） | `/ypm-open` → `Slack` | 部分一致で Slack_MCPプロジェクトが開く |
-| TC3: 全表示モード | `/ypm-open all` | ignore含む全プロジェクトが表示される |
-| TC4: worktree除外 | `/ypm-open` | MaxMCP-main等が選択肢に含まれない |
-| TC5: ignore一覧 | `/ypm-open ignore-list` | ignore_in_openリストが表示される |
-| TC6: ignore追加 | `/ypm-open add-ignore` → `1` | config.ymlに追加される |
-| TC7: ignore削除 | `/ypm-open remove-ignore` → `1` | config.ymlから削除される |
+| TC1: 通常モード | `/ypm:open` → `1` | 番号選択でプロジェクトが開く |
+| TC2: 名前検索（一意） | `/ypm:open` → `Slack` | 部分一致で Slack_MCPプロジェクトが開く |
+| TC3: 全表示モード | `/ypm:open all` | ignore含む全プロジェクトが表示される |
+| TC4: worktree除外 | `/ypm:open` | MaxMCP-main等が選択肢に含まれない |
+| TC5: ignore一覧 | `/ypm:open ignore-list` | ignore_in_openリストが表示される |
+| TC6: ignore追加 | `/ypm:open add-ignore` → `1` | config.ymlに追加される |
+| TC7: ignore削除 | `/ypm:open remove-ignore` → `1` | config.ymlから削除される |
 
 ### 6.2 異常系テスト
 
 | テストケース | 入力 | 期待する動作 |
 |------------|------|------------|
-| TC8: 存在しない番号 | `/ypm-open` → `999` | エラーメッセージ表示 |
-| TC9: 存在しないプロジェクト | `/ypm-open` → `NoSuchProject` | エラーメッセージ表示 |
-| TC10: 複数マッチ | `/ypm-open` → `Max` | 選択肢が表示され、再度番号入力 |
-| TC11: VS Code CLIなし | `/ypm-open` (codeコマンドなし) | インストール手順を表示 |
-| TC12: PROJECT_STATUS.md不在 | `/ypm-open` | `/ypm-update` 実行を促す |
-| TC13: config.yml不在 | `/ypm-open` | エラーメッセージ表示 |
+| TC8: 存在しない番号 | `/ypm:open` → `999` | エラーメッセージ表示 |
+| TC9: 存在しないプロジェクト | `/ypm:open` → `NoSuchProject` | エラーメッセージ表示 |
+| TC10: 複数マッチ | `/ypm:open` → `Max` | 選択肢が表示され、再度番号入力 |
+| TC11: VS Code CLIなし | `/ypm:open` (codeコマンドなし) | インストール手順を表示 |
+| TC12: PROJECT_STATUS.md不在 | `/ypm:open` | `/ypm:update` 実行を促す |
+| TC13: config.yml不在 | `/ypm:open` | エラーメッセージ表示 |
 
 ---
 
@@ -364,7 +364,7 @@ code /path/to/project
 - **[PROJECT_STATUS.md](../../PROJECT_STATUS.md)** - プロジェクト状況一覧
 - **[config.yml](../../config.yml)** - YPM設定ファイル
 - **[scripts/scan_projects.py](../../scripts/scan_projects.py)** - プロジェクトスキャンスクリプト
-- **[.claude/commands/ypm-open.md](../../.claude/commands/ypm-open.md)** - `/ypm-open`コマンド実装
+- **[.claude/commands/ypm:open.md](../../.claude/commands/ypm:open.md)** - `/ypm:open`コマンド実装
 
 ---
 

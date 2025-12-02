@@ -23,7 +23,7 @@
 |------------|------|---------|
 | [development/architecture.md](development/architecture.md) | YPMの全体アーキテクチャと設計原則 | コントリビューター、開発者 |
 | [development/onboarding-script-spec.md](development/onboarding-script-spec.md) | オンボーディングウィザードの仕様書 | コントリビューター、開発者 |
-| [development/ypm-open-spec.md](development/ypm-open-spec.md) | `/ypm-open` コマンドの仕様書 | コントリビューター、開発者 |
+| [development/ypm-open-spec.md](development/ypm-open-spec.md) | `/ypm:open` コマンドの仕様書 | コントリビューター、開発者 |
 | [development/global-export-system.md](development/global-export-system.md) | グローバルエクスポートシステムの設計・使用方法 | コントリビューター、開発者 |
 
 ---

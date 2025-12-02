@@ -1,0 +1,16 @@
+{
+  "name": "signalcompose-ypm",
+  "description": "Signal Compose YPM - Multi-project progress tracking",
+  "plugins": [
+    {
+      "name": "ypm",
+      "source": {
+        "source": "github",
+        "repo": "signalcompose/YPM"
+      },
+      "description": "Multi-project progress tracking system",
+      "category": "productivity",
+      "tags": ["project-management", "git", "workflow"]
+    }
+  ]
+}
