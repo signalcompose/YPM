@@ -8,10 +8,7 @@
   "plugins": [
     {
       "name": "ypm",
-      "source": {
-        "source": "github",
-        "repo": "signalcompose/ypm"
-      },
+      "source": "./",
       "description": "Multi-project progress tracking system",
       "category": "productivity",
       "tags": ["project-management", "git", "workflow"]
