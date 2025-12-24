@@ -472,9 +472,9 @@ Add to `directories` in `~/.ypm/config.yml`:
 ```yaml
 monitor:
   directories:
-    - /Users/yamato/Src
-    - /Users/yamato/Work      # Add
-    - /Users/yamato/Projects  # Add
+    - ~/Projects
+    - ~/Work      # Add
+    - ~/Documents/code  # Add
 ```
 
 ### Changing Project Detection Patterns

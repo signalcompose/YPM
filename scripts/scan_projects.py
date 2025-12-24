@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-YPM プロジェクトスキャンスクリプト
+YPM Project Scanning Script
 
-~/.ypm/config.ymlで指定された監視対象ディレクトリをスキャンし、
-各プロジェクトのGit情報とドキュメント情報を収集してJSON形式で出力する。
+Scans the monitored directories specified in ~/.ypm/config.yml,
+collects Git information and documentation details from each project,
+and outputs the results in JSON format.
 
-使用方法:
+Usage:
     python scripts/scan_projects.py
     python scripts/scan_projects.py --config /path/to/config.yml
 
-出力:
-    JSON形式で標準出力に出力
+Output:
+    JSON format to standard output
 """
 
 import os
@@ -26,12 +27,12 @@ import argparse
 
 
 def get_default_config_path():
-    """デフォルトの設定ファイルパスを取得"""
+    """Get the default configuration file path"""
     return Path.home() / ".ypm" / "config.yml"
 
 
 def load_config(config_path=None):
-    """config.ymlを読み込み"""
+    """Load config.yml"""
     if config_path is None:
         config_path = get_default_config_path()
     else:
@@ -55,15 +56,15 @@ def load_config(config_path=None):
 
 def find_projects(base_dirs, patterns, excludes):
     """
-    パターンに基づいてGitリポジトリを検出
+    Detect Git repositories based on patterns
 
     Args:
-        base_dirs: 監視対象ディレクトリのリスト
-        patterns: プロジェクト検出パターンのリスト
-        excludes: 除外パターンのリスト
+        base_dirs: List of monitored directories
+        patterns: List of project detection patterns
+        excludes: List of exclusion patterns
 
     Returns:
-        プロジェクトパスのリスト
+        List of project paths
     """
     projects = set()
 
@@ -74,20 +75,20 @@ def find_projects(base_dirs, patterns, excludes):
             continue
 
         for pattern in patterns:
-            # パターンに基づいてディレクトリを検索
+            # Search directories based on pattern
             search_pattern = str(base_path / pattern)
 
             for path in glob.glob(search_pattern):
                 path_obj = Path(path)
 
-                # ディレクトリかつGitリポジトリか確認
+                # Check if it's a directory and a Git repository
                 if path_obj.is_dir() and (path_obj / ".git").exists():
-                    # 相対パスに変換
+                    # Convert to relative path
                     try:
                         rel_path = path_obj.relative_to(base_path)
                         rel_path_str = f"./{rel_path}"
 
-                        # 除外パターンに該当するかチェック
+                        # Check if it matches exclusion patterns
                         excluded = False
                         for exclude in excludes:
                             if exclude in rel_path_str:
@@ -97,7 +98,7 @@ def find_projects(base_dirs, patterns, excludes):
                         if not excluded:
                             projects.add(str(path_obj))
                     except ValueError:
-                        # relative_toが失敗した場合は絶対パスを使用
+                        # Use absolute path if relative_to fails
                         projects.add(str(path_obj))
 
     return sorted(list(projects))
@@ -105,14 +106,14 @@ def find_projects(base_dirs, patterns, excludes):
 
 def run_git_command(project_path, command):
     """
-    指定されたプロジェクトでGitコマンドを実行
+    Execute a Git command in the specified project
 
     Args:
-        project_path: プロジェクトパス
-        command: Gitコマンド（リスト形式）
+        project_path: Project path
+        command: Git command (in list format)
 
     Returns:
-        コマンドの出力（文字列）、失敗時はNone
+        Command output (string), or None on failure
     """
     try:
         result = subprocess.run(
@@ -125,38 +126,38 @@ def run_git_command(project_path, command):
         return result.stdout.strip()
     except subprocess.CalledProcessError:
         return None
-    except Exception:
+    except (FileNotFoundError, PermissionError, OSError):
         return None
 
 
 def get_git_info(project_path):
     """
-    プロジェクトのGit情報を取得
+    Retrieve Git information from the project
 
     Args:
-        project_path: プロジェクトパス
+        project_path: Project path
 
     Returns:
-        Git情報の辞書
+        Dictionary of Git information
     """
     info = {}
 
-    # ブランチ名
+    # Branch name
     branch = run_git_command(project_path, ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
     info['branch'] = branch if branch else 'unknown'
 
-    # 最終コミット（相対時刻とメッセージ）
+    # Last commit (relative time and message)
     last_commit = run_git_command(project_path, ['git', 'log', '-1', '--format=%ar|%s'])
     info['last_commit'] = last_commit if last_commit else 'unknown'
 
-    # 最終コミット日時（Unix timestamp: 分類用）
+    # Last commit timestamp (Unix timestamp: for classification)
     last_commit_time = run_git_command(project_path, ['git', 'log', '-1', '--format=%ct'])
     if last_commit_time and last_commit_time.isdigit():
         info['last_commit_timestamp'] = int(last_commit_time)
     else:
         info['last_commit_timestamp'] = 0
 
-    # 変更ファイル数
+    # Number of changed files
     status_output = run_git_command(project_path, ['git', 'status', '--short'])
     if status_output:
         info['changed_files'] = len(status_output.split('\n'))
@@ -168,16 +169,16 @@ def get_git_info(project_path):
 
 def is_worktree(project_path):
     """
-    Git worktreeかどうかを判定
+    Determine if it's a Git worktree
 
-    .gitがファイル → worktree
-    .gitがディレクトリ → 通常のリポジトリ
+    .git is a file → worktree
+    .git is a directory → normal repository
 
     Args:
-        project_path: プロジェクトパス
+        project_path: Project path
 
     Returns:
-        bool: worktreeの場合True
+        bool: True if it's a worktree
     """
     git_path = Path(project_path) / ".git"
     return git_path.is_file()
@@ -185,13 +186,13 @@ def is_worktree(project_path):
 
 def run_trufflehog_scan(project_path):
     """
-    TruffleHogでプロジェクトをスキャン
+    Scan the project with TruffleHog
 
     Args:
-        project_path: プロジェクトパス
+        project_path: Project path
 
     Returns:
-        スキャン結果の辞書
+        Dictionary of scan results
     """
     result = {
         "scanned": False,
@@ -199,7 +200,7 @@ def run_trufflehog_scan(project_path):
         "has_secrets": False
     }
 
-    # trufflehogコマンドの存在確認
+    # Check if trufflehog command exists
     try:
         subprocess.run(
             ['which', 'trufflehog'],
@@ -207,21 +208,21 @@ def run_trufflehog_scan(project_path):
             check=True
         )
     except subprocess.CalledProcessError:
-        # trufflehogがインストールされていない
+        # trufflehog is not installed
         return result
 
     try:
-        # trufflehogスキャン実行
+        # Execute trufflehog scan
         scan_result = subprocess.run(
             ['trufflehog', 'git', f'file://{project_path}', '--json', '--no-update'],
             capture_output=True,
             text=True,
-            timeout=30  # 30秒タイムアウト
+            timeout=30  # 30-second timeout
         )
 
         result["scanned"] = True
 
-        # JSON形式の出力をパース
+        # Parse JSON-formatted output
         if scan_result.stdout:
             lines = scan_result.stdout.strip().split('\n')
             issues_count = 0
@@ -239,22 +240,22 @@ def run_trufflehog_scan(project_path):
     except subprocess.TimeoutExpired:
         result["scanned"] = True
         result["timeout"] = True
-    except Exception:
-        # エラーが発生してもスキャンは続行
-        pass
+    except (OSError, PermissionError) as e:
+        # Continue scanning even if error occurs
+        result["error"] = str(e)
 
     return result
 
 
 def read_project_docs(project_path):
     """
-    プロジェクトのドキュメントを読み込み
+    Read project documentation
 
     Args:
-        project_path: プロジェクトパス
+        project_path: Project path
 
     Returns:
-        ドキュメント情報の辞書（読み込めない場合は空辞書）
+        Dictionary of documentation information (empty dictionary if unable to read)
     """
     docs = {}
     doc_priority = ['CLAUDE.md', 'README.md', 'docs/INDEX.md']
@@ -264,17 +265,17 @@ def read_project_docs(project_path):
         if doc_path.exists():
             try:
                 with open(doc_path, 'r', encoding='utf-8') as f:
-                    content = f.read(2000)  # 最初の2000文字のみ読み込み
+                    content = f.read(2000)  # Read only the first 2000 characters
 
-                    # 簡易的な情報抽出（今後改善可能）
+                    # Simple information extraction (can be improved in the future)
                     if 'Phase' in content or 'phase' in content:
-                        # Phaseを探す
+                        # Search for Phase
                         for line in content.split('\n'):
                             if 'Phase' in line or 'phase' in line:
                                 docs['phase_hint'] = line.strip()
                                 break
 
-                    # 概要を抽出（最初の数行）
+                    # Extract overview (first few lines)
                     lines = content.split('\n')
                     overview_lines = []
                     for line in lines[:10]:
@@ -286,8 +287,8 @@ def read_project_docs(project_path):
                     if overview_lines:
                         docs['overview'] = ' '.join(overview_lines)[:200]
 
-                    break  # 最初に見つかったドキュメントを使用
-            except Exception:
+                    break  # Use first found document
+            except (UnicodeDecodeError, PermissionError, IOError):
                 continue
 
     return docs
@@ -295,15 +296,15 @@ def read_project_docs(project_path):
 
 def classify_project(last_commit_timestamp, active_days, inactive_days):
     """
-    プロジェクトを分類
+    Classify the project
 
     Args:
-        last_commit_timestamp: 最終コミット日時（Unix timestamp）
-        active_days: アクティブ基準日数
-        inactive_days: 休止中基準日数
+        last_commit_timestamp: Last commit timestamp (Unix timestamp)
+        active_days: Number of days for active classification
+        inactive_days: Number of days for dormant classification
 
     Returns:
-        分類（"active", "developing", "dormant"）
+        Classification ("active", "developing", "dormant")
     """
     if last_commit_timestamp == 0:
         return "unknown"
@@ -320,7 +321,7 @@ def classify_project(last_commit_timestamp, active_days, inactive_days):
 
 
 def parse_args():
-    """コマンドライン引数をパース"""
+    """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description='YPM Project Scanner')
     parser.add_argument(
         '--config', '-c',
@@ -332,10 +333,10 @@ def parse_args():
 
 
 def main():
-    """メイン処理"""
+    """Main processing"""
     args = parse_args()
 
-    # config.yml読み込み
+    # Load config.yml
     config = load_config(args.config)
 
     monitor_config = config.get('monitor', {})
@@ -347,20 +348,20 @@ def main():
     active_days = classification_config.get('active_days', 7)
     inactive_days = classification_config.get('inactive_days', 30)
 
-    # プロジェクト検出
+    # Detect projects
     project_paths = find_projects(base_dirs, patterns, excludes)
 
-    # 各プロジェクトの情報を収集
+    # Collect information for each project
     projects = []
     categories = {"active": 0, "developing": 0, "dormant": 0, "unknown": 0}
 
     for project_path in project_paths:
         project_name = Path(project_path).name
 
-        # Git情報取得
+        # Retrieve Git information
         git_info = get_git_info(project_path)
 
-        # 分類
+        # Classify
         category = classify_project(
             git_info['last_commit_timestamp'],
             active_days,
@@ -368,18 +369,18 @@ def main():
         )
         categories[category] += 1
 
-        # ドキュメント情報取得（アクティブなプロジェクトのみ）
+        # Retrieve documentation information (active projects only)
         docs = {}
         if category in ["active", "developing"]:
             docs = read_project_docs(project_path)
 
-        # worktree判定
+        # Determine if it's a worktree
         is_wt = is_worktree(project_path)
 
-        # TruffleHogセキュリティスキャン
+        # TruffleHog security scan
         security_scan = run_trufflehog_scan(project_path)
 
-        # プロジェクト情報を追加
+        # Add project information
         projects.append({
             "name": project_name,
             "path": project_path,
@@ -392,7 +393,7 @@ def main():
             "security_scan": security_scan
         })
 
-    # 結果をJSON形式で出力
+    # Output results in JSON format
     result = {
         "projects": projects,
         "summary": {

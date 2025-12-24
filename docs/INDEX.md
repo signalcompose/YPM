@@ -1,142 +1,142 @@
-# YPM ドキュメント索引
+# YPM Documentation Index
 
-**最終更新**: 2025-11-12
+**Last Updated**: 2025-11-12
 
-このディレクトリには、YPM (Your Project Manager) の設計・使用方法に関するドキュメントが格納されています。
-
----
-
-## 📚 ドキュメント一覧
-
-### 必読ドキュメント
-
-| ドキュメント | 説明 | 対象読者 |
-|------------|------|---------|
-| [../README.md](../README.md) | YPMの概要と使い方 | 全員 |
-| [../CLAUDE.md](../CLAUDE.md) | Claude Code向け指示書 | AI開発者 |
-| [../config.example.yml](../config.example.yml) | 設定ファイルサンプル（監視対象、検出パターン） | 設定変更者 |
-| [../project-bootstrap-prompt.md](../project-bootstrap-prompt.md) | 新規プロジェクト立ち上げガイド | 全員 |
-
-### 開発者向けドキュメント
-
-| ドキュメント | 説明 | 対象読者 |
-|------------|------|---------|
-| [development/architecture.md](development/architecture.md) | YPMの全体アーキテクチャと設計原則 | コントリビューター、開発者 |
-| [development/onboarding-script-spec.md](development/onboarding-script-spec.md) | オンボーディングウィザードの仕様書 | コントリビューター、開発者 |
-| [development/ypm-open-spec.md](development/ypm-open-spec.md) | `/ypm:open` コマンドの仕様書 | コントリビューター、開発者 |
-| [development/global-export-system.md](development/global-export-system.md) | グローバルエクスポートシステムの設計・使用方法 | コントリビューター、開発者 |
+This directory contains documentation about the design and usage of YPM (Your Project Manager).
 
 ---
 
-## 📖 読む順序
+## 📚 Documentation List
 
-### 初めて使う場合
+### Essential Documentation
 
-1. **[README.md](../README.md)** - YPMとは何か、どう使うか
-2. **[config.yml](../config.yml)** - 監視対象の設定
-3. **[PROJECT_STATUS.md](../PROJECT_STATUS.md)** - 現在のプロジェクト状況を確認
+| Document | Description | Target Audience |
+|----------|-------------|-----------------|
+| [../README.md](../README.md) | YPM overview and usage guide | Everyone |
+| [../CLAUDE.md](../CLAUDE.md) | Instructions for Claude Code | AI Developers |
+| [../config.example.yml](../config.example.yml) | Configuration file sample (watch targets, detection patterns) | Configuration Editors |
+| [../project-bootstrap-prompt.md](../project-bootstrap-prompt.md) | New project launch guide | Everyone |
 
-### Claude Codeで開発する場合
+### Developer Documentation
 
-1. **[CLAUDE.md](../CLAUDE.md)** - セッション開始時の手順
-2. **[docs/INDEX.md](INDEX.md)** - ドキュメント索引
-
-### 設定をカスタマイズする場合
-
-1. **[config.yml](../config.yml)** - 監視対象ディレクトリ、検出パターン、分類基準
-2. **[README.md](../README.md)** - カスタマイズ方法の説明
-
-### YPMに貢献する場合
-
-1. **[development/architecture.md](development/architecture.md)** - 全体アーキテクチャを理解する
-2. **[CLAUDE.md](../CLAUDE.md)** - DDD原則と開発フロー
-3. **[development/onboarding-script-spec.md](development/onboarding-script-spec.md)** - 実装例として参照
+| Document | Description | Target Audience |
+|----------|-------------|-----------------|
+| [development/architecture.md](development/architecture.md) | Overall YPM architecture and design principles | Contributors, Developers |
+| [development/onboarding-script-spec.md](development/onboarding-script-spec.md) | Onboarding wizard specification | Contributors, Developers |
+| [development/ypm-open-spec.md](development/ypm-open-spec.md) | `/ypm:open` command specification | Contributors, Developers |
+| [development/global-export-system.md](development/global-export-system.md) | Global export system design and usage | Contributors, Developers |
 
 ---
 
-## 🎯 ドキュメントの目的
+## 📖 Reading Order
+
+### For First-Time Users
+
+1. **[README.md](../README.md)** - What is YPM and how to use it
+2. **[config.yml](../config.yml)** - Watch target configuration
+3. **[PROJECT_STATUS.md](../PROJECT_STATUS.md)** - Check current project status
+
+### For Development with Claude Code
+
+1. **[CLAUDE.md](../CLAUDE.md)** - Session startup procedures
+2. **[docs/INDEX.md](INDEX.md)** - Documentation index
+
+### For Customizing Configuration
+
+1. **[config.yml](../config.yml)** - Watch target directories, detection patterns, classification criteria
+2. **[README.md](../README.md)** - Explanation of customization methods
+
+### For Contributing to YPM
+
+1. **[development/architecture.md](development/architecture.md)** - Understand overall architecture
+2. **[CLAUDE.md](../CLAUDE.md)** - DDD principles and development flow
+3. **[development/onboarding-script-spec.md](development/onboarding-script-spec.md)** - Reference as implementation example
+
+---
+
+## 🎯 Document Purposes
 
 ### README.md
-- **目的**: YPMの使い方を説明する
-- **対象**: YPMを使いたい全員
-- **含まれる内容**: 概要、特徴、セットアップ、使い方、FAQ
+- **Purpose**: Explain how to use YPM
+- **Target**: Everyone who wants to use YPM
+- **Contents**: Overview, features, setup, usage, FAQ
 
 ### CLAUDE.md
-- **目的**: Claude Codeがタスクを実行できるようにする
-- **対象**: AI開発者（Claude Code）
-- **含まれる内容**: セッション開始手順、主な機能、PROJECT_STATUS.mdの構造、更新ルール
+- **Purpose**: Enable Claude Code to execute tasks
+- **Target**: AI Developers (Claude Code)
+- **Contents**: Session startup procedures, main features, PROJECT_STATUS.md structure, update rules
 
 ### config.yml
-- **目的**: 監視対象やプロジェクト検出ルールを定義する
-- **対象**: YPMを設定する人
-- **含まれる内容**: 監視ディレクトリ、除外パターン、検出パターン、分類基準、進捗率推測基準
+- **Purpose**: Define watch targets and project detection rules
+- **Target**: People configuring YPM
+- **Contents**: Watch directories, exclusion patterns, detection patterns, classification criteria, progress rate estimation criteria
 
 ### PROJECT_STATUS.md
-- **目的**: 全プロジェクトの進捗状況を一覧表示する
-- **対象**: プロジェクト管理者、開発者
-- **含まれる内容**: プロジェクトカテゴリ別一覧、進捗率、次のタスク、最終更新日時
+- **Purpose**: Display a list of all project progress statuses
+- **Target**: Project managers, developers
+- **Contents**: List by project category, progress rates, next tasks, last update timestamps
 
 
 ### development/architecture.md
-- **目的**: YPMの全体アーキテクチャと設計原則を説明する
-- **対象**: コントリビューター、開発者
-- **含まれる内容**: DDD原則、ディレクトリ構造、コンポーネント、データフロー、拡張性
+- **Purpose**: Explain overall YPM architecture and design principles
+- **Target**: Contributors, developers
+- **Contents**: DDD principles, directory structure, components, data flow, extensibility
 
 ### development/onboarding-script-spec.md
-- **目的**: オンボーディングウィザードの完全な仕様を提供する
-- **対象**: コントリビューター、開発者
-- **含まれる内容**: 機能要件、入力仕様、出力仕様、エラーハンドリング、実装スケルトン
+- **Purpose**: Provide complete specification for the onboarding wizard
+- **Target**: Contributors, developers
+- **Contents**: Functional requirements, input specifications, output specifications, error handling, implementation skeleton
 
 ---
 
-## 🔄 ドキュメント更新ルール
+## 🔄 Documentation Update Rules
 
-### いつ更新するか
+### When to Update
 
-- **config.yml**: 監視対象や検出ルールを変更する時
-- **README.md**: 使い方が変わった時、FAQが増えた時
-- **CLAUDE.md**: YPMの機能が追加された時、ルールが変更された時
+- **config.yml**: When changing watch targets or detection rules
+- **README.md**: When usage changes or FAQ grows
+- **CLAUDE.md**: When YPM features are added or rules are changed
 
-### 誰が更新するか
+### Who Updates
 
-- **config.yml**: ユーザーが手動で編集
-- **README.md, CLAUDE.md**: 必要に応じて手動で編集
-
----
-
-## 📝 ドキュメント管理の原則
-
-### 1. ドキュメントは常に最新に
-
-古い情報は即座に更新してください。ドキュメントと実態が乖離すると、YPMの信頼性が損なわれます。
-
-### 2. 簡潔で分かりやすく
-
-冗長な説明は避け、必要最小限の情報を提供してください。
-
-### 3. 具体例を含める
-
-抽象的な説明だけでなく、具体的なコード例や設定例を含めてください。
+- **config.yml**: Users edit manually
+- **README.md, CLAUDE.md**: Edit manually as needed
 
 ---
 
-## 🚀 今後の拡張予定
+## 📝 Documentation Management Principles
 
-### ドキュメント追加計画
+### 1. Keep Documentation Always Up-to-Date
 
-- **設定ガイド** (`docs/config_guide.md`) - config.ymlの詳細説明
-- **トラブルシューティング** (`docs/troubleshooting.md`) - よくある問題と解決策
-- **自動化ガイド** (`docs/automation.md`) - cron設定やスクリプト化の方法
-- **ダッシュボード設計** (`docs/dashboard_design.md`) - Webベースの可視化ツールの設計
+Please update outdated information immediately. When documentation diverges from reality, YPM's credibility is compromised.
 
----
+### 2. Keep It Concise and Clear
 
-## 📞 サポート
+Avoid verbose explanations and provide only the minimum necessary information.
 
-- **設定の疑問**: [config.example.yml](../config.example.yml)のコメントを参照
-- **使い方の疑問**: [README.md](../README.md)を確認
-- **開発の疑問**: [CLAUDE.md](../CLAUDE.md)の手順を確認
+### 3. Include Concrete Examples
+
+Include not just abstract explanations, but concrete code examples and configuration examples.
 
 ---
 
-**このドキュメントは、YPMの全体像を把握するための索引です。** 📚
+## 🚀 Future Expansion Plans
+
+### Documentation Addition Plans
+
+- **Configuration Guide** (`docs/config_guide.md`) - Detailed explanation of config.yml
+- **Troubleshooting** (`docs/troubleshooting.md`) - Common issues and solutions
+- **Automation Guide** (`docs/automation.md`) - How to set up cron and scripting
+- **Dashboard Design** (`docs/dashboard_design.md`) - Design for web-based visualization tools
+
+---
+
+## 📞 Support
+
+- **Configuration Questions**: Refer to comments in [config.example.yml](../config.example.yml)
+- **Usage Questions**: Check [README.md](../README.md)
+- **Development Questions**: Check procedures in [CLAUDE.md](../CLAUDE.md)
+
+---
+
+**This document is an index for understanding the overall picture of YPM.** 📚

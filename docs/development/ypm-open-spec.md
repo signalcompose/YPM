@@ -217,7 +217,7 @@ VS Code CLIをインストールしてください：
   "projects": [
     {
       "name": "MaxMCP",
-      "path": "/Users/yamato/Src/proj_max_mcp/MaxMCP",
+      "path": "~/Projects/my-project",
       "branch": "feature/35-maxmcp-server-implementation",
       "last_commit": "2 days ago|feat(server): implement MCP tools...",
       "changed_files": 0,

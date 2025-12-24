@@ -61,7 +61,7 @@
    ↓
 7. スクリプト: "監視したいプロジェクトディレクトリのパスを入力してください:"
    ↓
-8. ユーザー: "/Users/yamato/Projects"
+8. ユーザー: "~/Projects"
    ↓
 9. スクリプト: パス存在確認 → ディレクトリ構造をスキャン
    ↓
@@ -126,7 +126,7 @@
 以下のプロジェクト検出パターンを提案します:
 
 ディレクトリ構造:
-  /Users/yamato/Projects/
+  ~/Projects/
   ├── project1/
   ├── project2/
   └── work/
@@ -231,7 +231,7 @@ settings:
 | 型 | 文字列（パス） |
 | 必須 | はい |
 | デフォルト | なし |
-| 例 | `/Users/yamato/Projects`, `~/workspace` |
+| 例 | `~/Projects`, `~/workspace` |
 | バリデーション | 存在確認、ディレクトリ確認、読み取り権限確認 |
 
 ### 2. プロジェクト検出パターン
@@ -279,7 +279,7 @@ settings:
 
 ### 1. config.yml
 
-**場所**: `/Users/yamato/Src/proj_YPM/YPM/config.yml`
+**場所**: `~/.ypm/config.yml`
 
 **フォーマット**: YAML
 
@@ -287,7 +287,7 @@ settings:
 
 ### 2. PROJECT_STATUS.md（オプション）
 
-**場所**: `/Users/yamato/Src/proj_YPM/YPM/PROJECT_STATUS.md`
+**場所**: `~/.ypm/PROJECT_STATUS.md`
 
 **フォーマット**: Markdown
 
@@ -303,7 +303,7 @@ settings:
 ```
 ✅ セットアップが完了しました！
 
-📁 監視対象ディレクトリ: /Users/yamato/Projects
+📁 監視対象ディレクトリ: ~/Projects
 🔍 検出パターン: *
 📊 アクティブ基準: 7日以内
 💤 休止中基準: 30日以上

@@ -1,332 +1,332 @@
-# プロジェクト立ち上げ支援プロンプト
+# Project Startup Support Prompt
 
-## ⚠️ 重要: このプロンプトの役割
+## ⚠️ Important: Purpose of This Prompt
 
-**このプロンプト（`/ypm:new`コマンド）の唯一の仕事は、ブートストラップフローを厳格に守り、安全かつ迅速にプロジェクトの実装準備を完了させることです。**
+**The sole purpose of this prompt (the `/ypm:new` command) is to strictly follow the bootstrap flow and complete project implementation preparation safely and quickly.**
 
-### 絶対に守るべき原則
+### Absolute Principles to Follow
 
-1. **ブートストラップフローの厳守**
-   - Phase 1〜8を順番通りに実行
-   - フェーズを飛ばさない、省略しない
-   - ユーザーとの対話が必要な箇所は必ず確認
+1. **Strictly Follow the Bootstrap Flow**
+   - Execute Phases 1-8 in order
+   - Do not skip or omit phases
+   - Always confirm when user interaction is required
 
-2. **実装は絶対に行わない**
-   - YPMは準備のみ。実装・テストコード作成は禁止
-   - 準備完了後、別セッションでの作業を案内
+2. **Never Perform Implementation**
+   - YPM is for preparation only. Implementation and test code creation are prohibited
+   - After preparation is complete, guide users to work in a separate session
 
-3. **進捗の可視化**
-   - 各フェーズで現在地を明示
+3. **Visualize Progress**
+   - Clearly indicate current position in each phase
    ```
-   ## [プロジェクト名] - ブートストラップ進捗
+   ## [Project Name] - Bootstrap Progress
 
-   ✅ Phase 1: プロジェクト企画
-   ✅ Phase 2: プロジェクトディレクトリ作成
-   🔄 Phase 3: ドキュメント整備 ← 現在ここ
-   ⏳ Phase 4: GitHub連携
-   ⏳ Phase 5: Git Workflow設定
-   ⏳ Phase 6: 環境設定ファイル整備
-   ⏳ Phase 7: ドキュメント管理ルール
-   ⏳ Phase 8: CLAUDE.md作成と最終確認
+   ✅ Phase 1: Project Planning
+   ✅ Phase 2: Project Directory Creation
+   🔄 Phase 3: Documentation Setup ← Currently here
+   ⏳ Phase 4: GitHub Integration
+   ⏳ Phase 5: Git Workflow Configuration
+   ⏳ Phase 6: Environment Configuration Files
+   ⏳ Phase 7: Documentation Management Rules
+   ⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
    ```
 
-4. **安全性の確保**
-   - 破壊的操作を避ける
-   - ユーザー確認箇所で必ず問いかける
+4. **Ensure Safety**
+   - Avoid destructive operations
+   - Always ask for confirmation when user input is required
 
-5. **迅速性**
-   - 効率的なヒアリング
-   - テンプレート活用
-   - 不要な対話は省く
+5. **Speed**
+   - Efficient requirements gathering
+   - Utilize templates
+   - Skip unnecessary dialogue
 
 ---
 
-新しいプロジェクトの企画から初期セットアップまでを段階的に進めます。
+We will guide you through the planning and initial setup of a new project step by step.
 
-## フェーズ1: プロジェクト企画
+## Phase 1: Project Planning
 
-**進捗表示**:
+**Progress Display**:
 ```
-🔄 Phase 1: プロジェクト企画 ← 現在ここ
-⏳ Phase 2: プロジェクトディレクトリ作成
-⏳ Phase 3: ドキュメント整備
-⏳ Phase 4: GitHub連携
-⏳ Phase 5: Git Workflow設定
-⏳ Phase 6: 環境設定ファイル整備
-⏳ Phase 7: ドキュメント管理ルール
-⏳ Phase 8: CLAUDE.md作成と最終確認
-```
-
-まず、以下について対話しながら要件を固めていきます：
-
-1. **プロジェクト概要のヒアリング**
-   - どんなプロジェクトを作りたいですか？（目的、機能、技術スタック）
-   - 対象ユーザーや利用シーン
-
-2. **要件定義の作成**
-   - 機能要件（必須機能、優先順位）
-   - 非機能要件（パフォーマンス、セキュリティ、スケーラビリティ）
-   - 技術選定の理由
-
-3. **プロジェクト基本情報の決定**
-   - プロジェクト名
-   - 概要説明（短文・長文）
-   - 使用言語・フレームワーク
-
-要件定義がまとまったら、システム仕様書・アーキテクチャ図などの必要なドキュメントを作成します。
-
-### ✅ Phase 1 完了確認
-
-**YPMが確認すること：**
-- プロジェクト概要が明確になったか
-- 要件定義がまとまったか
-- プロジェクト名と技術スタックが決定したか
-
-**すべて完了していることを確認したら、ユーザーに報告：**
-
-「✅ Phase 1（プロジェクト企画）が完了しました。
-
-確定した内容：
-- プロジェクト名: [プロジェクト名]
-- 技術スタック: [技術スタック]
-- 要件定義: [要件概要]
-
-Phase 2（プロジェクトディレクトリの作成）に進んでよろしいですか？」
-
-**ユーザーの承認を得たら：**
-1. ブートストラッププロンプトのPhase 2を読み直す（内部動作）
-2. Phase 2の内容を確認する（内部動作）
-3. Phase 2を開始する
-
-## フェーズ2: プロジェクトディレクトリの作成
-
-**進捗表示**:
-```
-✅ Phase 1: プロジェクト企画
-🔄 Phase 2: プロジェクトディレクトリ作成 ← 現在ここ
-⏳ Phase 3: ドキュメント整備
-⏳ Phase 4: GitHub連携
-⏳ Phase 5: Git Workflow設定
-⏳ Phase 6: 環境設定ファイル整備
-⏳ Phase 7: ドキュメント管理ルール
-⏳ Phase 8: CLAUDE.md作成と最終確認
+🔄 Phase 1: Project Planning ← Currently here
+⏳ Phase 2: Project Directory Creation
+⏳ Phase 3: Documentation Setup
+⏳ Phase 4: GitHub Integration
+⏳ Phase 5: Git Workflow Configuration
+⏳ Phase 6: Environment Configuration Files
+⏳ Phase 7: Documentation Management Rules
+⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
 ```
 
-1. **ローカルディレクトリの確認**
-   - プロジェクト用のgitディレクトリのパスを教えてください
-   - ディレクトリが存在しない場合は作成します
-   
-2. **Git初期化**
-   - `git init` を実行
-   - 初期コミット用のREADME.mdを作成
+First, we will gather requirements through dialogue:
 
-### ✅ Phase 2 完了確認
+1. **Project Overview Hearing**
+   - What kind of project do you want to create? (purpose, features, tech stack)
+   - Target users and use cases
 
-**YPMが確認すること：**
-- プロジェクトディレクトリが作成されたか
-- Gitリポジトリが初期化されたか（`.git/`ディレクトリが存在するか）
-- README.mdが作成されたか
+2. **Requirements Definition Creation**
+   - Functional requirements (essential features, priorities)
+   - Non-functional requirements (performance, security, scalability)
+   - Technology selection rationale
 
-**すべて完了していることを確認したら、ユーザーに報告：**
+3. **Basic Project Information Decisions**
+   - Project name
+   - Overview description (short and long)
+   - Programming languages and frameworks
 
-「✅ Phase 2（プロジェクトディレクトリの作成）が完了しました。
+Once requirements are defined, we will create necessary documents such as system specifications and architecture diagrams.
 
-作成した成果物：
-- プロジェクトディレクトリ: [パス]
-- Gitリポジトリ初期化完了
-- README.md作成完了
+### ✅ Phase 1 Completion Confirmation
 
-Phase 3（ドキュメント整備）に進んでよろしいですか？」
+**YPM will verify:**
+- Is the project overview clear?
+- Are requirements defined?
+- Are project name and tech stack decided?
 
-**ユーザーの承認を得たら：**
-1. ブートストラッププロンプトのPhase 3を読み直す（内部動作）
-2. Phase 3の内容を確認する（内部動作）
-3. Phase 3を開始する
+**After confirming all items are complete, report to user:**
 
-## フェーズ3: ドキュメント整備
+"✅ Phase 1 (Project Planning) is complete.
 
-**進捗表示**:
+Confirmed details:
+- Project name: [Project name]
+- Tech stack: [Tech stack]
+- Requirements: [Requirements summary]
+
+May I proceed to Phase 2 (Project Directory Creation)?"
+
+**After receiving user approval:**
+1. Re-read Phase 2 of the bootstrap prompt (internal operation)
+2. Review Phase 2 content (internal operation)
+3. Start Phase 2
+
+## Phase 2: Project Directory Creation
+
+**Progress Display**:
 ```
-✅ Phase 1: プロジェクト企画
-✅ Phase 2: プロジェクトディレクトリ作成
-🔄 Phase 3: ドキュメント整備 ← 現在ここ
-⏳ Phase 4: GitHub連携
-⏳ Phase 5: Git Workflow設定
-⏳ Phase 6: 環境設定ファイル整備
-⏳ Phase 7: ドキュメント管理ルール
-⏳ Phase 8: CLAUDE.md作成と最終確認
-```
-
-### 🎯 核心原則: DDD（Documentation Driven Development）
-
-**すべての開発はドキュメントから始まります。**
-
-- **DDD = Documentation Driven Development**（ドキュメント駆動開発）
-  - ドメイン駆動設計（Domain-Driven Design）ではありません
-  - 開発フロー: **仕様書作成 → 実装 → テスト → ドキュメント更新**
-  - **ドキュメントが真実の唯一の源（Single Source of Truth）**
-  - コードとドキュメントの乖離を許さない
-
-この原則により：
-✅ 実装前に要件が明確になる
-✅ チーム（または未来の自分）が迷わない
-✅ 新メンバーのオンボーディングが容易
-✅ 設計の一貫性が保たれる
-
-### 1. **docs/ディレクトリの作成**
-   - `docs/` 配下に以下を作成：
-     - **INDEX.md**（ドキュメント索引・管理）
-     - 要件定義書（requirements.md）
-     - システム仕様書（specifications.md）
-     - アーキテクチャ設計書（architecture.md）
-     - 開発ガイドライン（development-guide.md）
-   
-### 2. **開発ルールの導入**
-
-   - **TDD（Test Driven Development - テスト駆動開発）**
-     - Red → Green → Refactor サイクルの遵守
-     - 実装前にテストを書く
-     - テストカバレッジの目標設定
-
-   - **DRY（Don't Repeat Yourself）**
-     - コードの重複を避ける
-     - 共通ロジックの抽出
-     - 再利用可能なコンポーネント設計
-
-### 3. **リサーチディレクトリの準備**
-   - `docs/research/` を作成
-   - README.mdに以下を記載：
-     - 「将来的にサブレポジトリ化予定」
-     - 「geminiコマンドやWebFetchでリサーチした内容をドキュメント化する場所」
-
-### ✅ Phase 3 完了確認
-
-**YPMが確認すること：**
-- docs/INDEX.mdを作成したか
-- docs/配下に4つの基本ドキュメント（requirements.md、specifications.md、architecture.md、development-guide.md）を作成したか
-- docs/research/ディレクトリとREADME.mdを作成したか
-- 開発原則（DDD、TDD、DRY）がドキュメントに明記されているか
-
-**すべて完了していることを確認したら、ユーザーに報告：**
-
-「✅ Phase 3（ドキュメント整備）が完了しました。
-
-作成した成果物：
-- docs/INDEX.md（ドキュメント索引）
-- docs/requirements.md（要件定義書）
-- docs/specifications.md（システム仕様書）
-- docs/architecture.md（アーキテクチャ設計書）
-- docs/development-guide.md（開発ガイドライン）
-- docs/research/（リサーチ内容保存用ディレクトリ）
-
-Phase 4（GitHub連携）に進んでよろしいですか？」
-
-**ユーザーの承認を得たら：**
-1. ブートストラッププロンプトのPhase 4を読み直す（内部動作）
-2. Phase 4の内容を確認する（内部動作）
-3. Phase 4を開始する
-
-## フェーズ4: GitHub連携
-
-**進捗表示**:
-```
-✅ Phase 1: プロジェクト企画
-✅ Phase 2: プロジェクトディレクトリ作成
-✅ Phase 3: ドキュメント整備
-🔄 Phase 4: GitHub連携 ← 現在ここ
-⏳ Phase 5: Git Workflow設定
-⏳ Phase 6: 環境設定ファイル整備
-⏳ Phase 7: ドキュメント管理ルール
-⏳ Phase 8: CLAUDE.md作成と最終確認
+✅ Phase 1: Project Planning
+🔄 Phase 2: Project Directory Creation ← Currently here
+⏳ Phase 3: Documentation Setup
+⏳ Phase 4: GitHub Integration
+⏳ Phase 5: Git Workflow Configuration
+⏳ Phase 6: Environment Configuration Files
+⏳ Phase 7: Documentation Management Rules
+⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
 ```
 
-1. **GitHubアカウント情報の取得**
-   - GitHubアカウント名を教えてください
-   - `gh api user/orgs` で所属組織を取得・表示
-   - 個人アカウントまたは組織を選択
+1. **Local Directory Verification**
+   - Please provide the path for your project git directory
+   - If the directory doesn't exist, we will create it
 
-2. **リポジトリ作成**
-   - **「Privateリポジトリで作成しますがよろしいですか？」とユーザーに確認**
-   - ユーザーが承認したら `gh repo create --private` でリポジトリ作成
-   - 初期プッシュを実行
-   - ※公開する場合は、準備が整ってから手動でPublicに変更可能
+2. **Git Initialization**
+   - Run `git init`
+   - Create initial README.md for the first commit
 
-### ✅ Phase 4 完了確認
+### ✅ Phase 2 Completion Confirmation
 
-**YPMが確認すること：**
-- GitHubリポジトリが作成されたか
-- ローカルリポジトリがGitHubにプッシュされたか
+**YPM will verify:**
+- Has the project directory been created?
+- Has the Git repository been initialized? (Does `.git/` directory exist?)
+- Has README.md been created?
 
-**すべて完了していることを確認したら、ユーザーに報告：**
+**After confirming all items are complete, report to user:**
 
-「✅ Phase 4（GitHub連携）が完了しました。
+"✅ Phase 2 (Project Directory Creation) is complete.
 
-作成した成果物：
-- GitHubリポジトリ: [リポジトリURL]
-- 初期プッシュ完了
+Created deliverables:
+- Project directory: [Path]
+- Git repository initialization complete
+- README.md creation complete
 
-Phase 5（Git Workflowの設定）に進んでよろしいですか？」
+May I proceed to Phase 3 (Documentation Setup)?"
 
-**ユーザーの承認を得たら：**
-1. ブートストラッププロンプトのPhase 5を読み直す（内部動作）
-2. Phase 5の内容を確認する（内部動作）
-3. Phase 5を開始する
+**After receiving user approval:**
+1. Re-read Phase 3 of the bootstrap prompt (internal operation)
+2. Review Phase 3 content (internal operation)
+3. Start Phase 3
 
-## フェーズ5: Git Workflowの設定
+## Phase 3: Documentation Setup
 
-**進捗表示**:
+**Progress Display**:
 ```
-✅ Phase 1: プロジェクト企画
-✅ Phase 2: プロジェクトディレクトリ作成
-✅ Phase 3: ドキュメント整備
-✅ Phase 4: GitHub連携
-🔄 Phase 5: Git Workflow設定 ← 現在ここ
-⏳ Phase 6: 環境設定ファイル整備
-⏳ Phase 7: ドキュメント管理ルール
-⏳ Phase 8: CLAUDE.md作成と最終確認
+✅ Phase 1: Project Planning
+✅ Phase 2: Project Directory Creation
+🔄 Phase 3: Documentation Setup ← Currently here
+⏳ Phase 4: GitHub Integration
+⏳ Phase 5: Git Workflow Configuration
+⏳ Phase 6: Environment Configuration Files
+⏳ Phase 7: Documentation Management Rules
+⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
 ```
 
-1. **Workflowの必要性確認**
-   - Git Flowを導入しますか？（推奨：複数人開発の場合）
+### 🎯 Core Principle: DDD (Documentation Driven Development)
 
-2. **導入する場合の設定**
-   - **デフォルトブランチを`develop`に設定**（重要）
+**All development starts with documentation.**
+
+- **DDD = Documentation Driven Development**
+  - Not to be confused with Domain-Driven Design
+  - Development flow: **Specification creation → Implementation → Testing → Documentation update**
+  - **Documentation is the Single Source of Truth**
+  - No tolerance for divergence between code and documentation
+
+This principle ensures:
+✅ Requirements are clear before implementation
+✅ Teams (or your future self) won't get lost
+✅ Easy onboarding for new members
+✅ Design consistency is maintained
+
+### 1. **Create docs/ Directory**
+   - Create the following under `docs/`:
+     - **INDEX.md** (documentation index and management)
+     - Requirements specification (requirements.md)
+     - System specifications (specifications.md)
+     - Architecture design (architecture.md)
+     - Development guidelines (development-guide.md)
+
+### 2. **Introduce Development Rules**
+
+   - **TDD (Test Driven Development)**
+     - Follow Red → Green → Refactor cycle
+     - Write tests before implementation
+     - Set test coverage targets
+
+   - **DRY (Don't Repeat Yourself)**
+     - Avoid code duplication
+     - Extract common logic
+     - Design reusable components
+
+### 3. **Prepare Research Directory**
+   - Create `docs/research/`
+   - Include the following in README.md:
+     - "Planned for future sub-repository conversion"
+     - "Location for documenting research conducted with gemini commands or WebFetch"
+
+### ✅ Phase 3 Completion Confirmation
+
+**YPM will verify:**
+- Has docs/INDEX.md been created?
+- Have the 4 basic documents (requirements.md, specifications.md, architecture.md, development-guide.md) been created under docs/?
+- Have docs/research/ directory and README.md been created?
+- Are development principles (DDD, TDD, DRY) documented?
+
+**After confirming all items are complete, report to user:**
+
+"✅ Phase 3 (Documentation Setup) is complete.
+
+Created deliverables:
+- docs/INDEX.md (documentation index)
+- docs/requirements.md (requirements specification)
+- docs/specifications.md (system specifications)
+- docs/architecture.md (architecture design)
+- docs/development-guide.md (development guidelines)
+- docs/research/ (directory for storing research)
+
+May I proceed to Phase 4 (GitHub Integration)?"
+
+**After receiving user approval:**
+1. Re-read Phase 4 of the bootstrap prompt (internal operation)
+2. Review Phase 4 content (internal operation)
+3. Start Phase 4
+
+## Phase 4: GitHub Integration
+
+**Progress Display**:
+```
+✅ Phase 1: Project Planning
+✅ Phase 2: Project Directory Creation
+✅ Phase 3: Documentation Setup
+🔄 Phase 4: GitHub Integration ← Currently here
+⏳ Phase 5: Git Workflow Configuration
+⏳ Phase 6: Environment Configuration Files
+⏳ Phase 7: Documentation Management Rules
+⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
+```
+
+1. **Obtain GitHub Account Information**
+   - Please provide your GitHub account name
+   - Get and display organizations with `gh api user/orgs`
+   - Select personal account or organization
+
+2. **Repository Creation**
+   - **"We will create a Private repository. Is this acceptable?" - Confirm with user**
+   - After user approval, create repository with `gh repo create --private`
+   - Perform initial push
+   - *Note: If you want to make it public, you can manually change to Public once ready
+
+### ✅ Phase 4 Completion Confirmation
+
+**YPM will verify:**
+- Has the GitHub repository been created?
+- Has the local repository been pushed to GitHub?
+
+**After confirming all items are complete, report to user:**
+
+"✅ Phase 4 (GitHub Integration) is complete.
+
+Created deliverables:
+- GitHub repository: [Repository URL]
+- Initial push complete
+
+May I proceed to Phase 5 (Git Workflow Configuration)?"
+
+**After receiving user approval:**
+1. Re-read Phase 5 of the bootstrap prompt (internal operation)
+2. Review Phase 5 content (internal operation)
+3. Start Phase 5
+
+## Phase 5: Git Workflow Configuration
+
+**Progress Display**:
+```
+✅ Phase 1: Project Planning
+✅ Phase 2: Project Directory Creation
+✅ Phase 3: Documentation Setup
+✅ Phase 4: GitHub Integration
+🔄 Phase 5: Git Workflow Configuration ← Currently here
+⏳ Phase 6: Environment Configuration Files
+⏳ Phase 7: Documentation Management Rules
+⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
+```
+
+1. **Confirm Workflow Necessity**
+   - Do you want to introduce Git Flow? (Recommended for multi-developer projects)
+
+2. **Configuration for Introduction**
+   - **Set default branch to `develop`** (Important)
      ```bash
      gh api repos/:owner/:repo -X PATCH -f default_branch=develop
      ```
-   - 理由:
-     - `main`はリリースブランチ（本番環境）
-     - `develop`は開発ブランチ（開発作業用）
-     - 開発は`develop`で行うため、`develop`がデフォルト
+   - Reason:
+     - `main` is the release branch (production environment)
+     - `develop` is the development branch (for development work)
+     - Development is done on `develop`, so `develop` is the default
 
-   - **開発スタイルの選択**（新規追加）
-     - ユーザーに確認：
+   - **Select Development Style** (newly added)
+     - Confirm with user:
        ```
-       このプロジェクトの開発スタイルを選択してください：
+       Please select the development style for this project:
 
-       1️⃣ 一人開発（推奨）
-          - あなた一人で開発
-          - 管理者バイパス有効
-          - レビュー推奨（強制ではない）
+       1️⃣ Solo Development (Recommended)
+          - You develop alone
+          - Admin bypass enabled
+          - Review recommended (not enforced)
 
-       2️⃣ チーム開発
-          - 複数人で開発
-          - 管理者も保護ルール適用
-          - レビュー必須
+       2️⃣ Team Development
+          - Multiple developers
+          - Protection rules apply to admins too
+          - Review required
 
-       選択: [1/2]
+       Choice: [1/2]
        ```
 
-   - **ブランチ保護ルール設定**
+   - **Branch Protection Rules Configuration**
 
-     **⚠️ 重要な設計原則**:
-     - **Git Flowはマージコミットが必須**
-     - `required_linear_history: false` に設定（Squashマージ禁止）
-     - Squashマージは履歴を破壊し、main/developの履歴が分岐する原因になる
+     **⚠️ Important Design Principle**:
+     - **Git Flow requires merge commits**
+     - Set `required_linear_history: false` (prohibit squash merge)
+     - Squash merge destroys history and causes main/develop history to diverge
 
-     **一人開発の場合**:
+     **For Solo Development**:
      ```bash
-     # mainブランチ
+     # main branch
      gh api repos/:owner/:repo/branches/main/protection -X PUT --input - <<'EOF'
      {
        "required_status_checks": null,
@@ -343,7 +343,7 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      }
      EOF
 
-     # developブランチ（レビュー設定を追加）
+     # develop branch (with review settings)
      gh api repos/:owner/:repo/branches/develop/protection -X PUT --input - <<'EOF'
      {
        "required_status_checks": null,
@@ -361,13 +361,13 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      EOF
      ```
 
-     **注**: 一人開発でもレビュー設定を追加していますが、`enforce_admins: false`によりAdminはバイパス可能です。これにより：
-     - 現在：セルフレビューを推奨しつつ、必要に応じてスキップ可能
-     - 将来：チーム開発移行時に自動的にレビューが必須化される
+     **Note**: Even in solo development, review settings are added, but Admins can bypass with `enforce_admins: false`. This allows:
+     - Present: Self-review recommended but can be skipped when necessary
+     - Future: When transitioning to team development, reviews automatically become mandatory
 
-     **チーム開発の場合**:
+     **For Team Development**:
      ```bash
-     # mainブランチ
+     # main branch
      gh api repos/:owner/:repo/branches/main/protection -X PUT --input - <<'EOF'
      {
        "required_status_checks": null,
@@ -384,7 +384,7 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
        }
      EOF
 
-     # developブランチ
+     # develop branch
      gh api repos/:owner/:repo/branches/develop/protection -X PUT --input - <<'EOF'
      {
        "required_status_checks": null,
@@ -400,145 +400,145 @@ Phase 5（Git Workflowの設定）に進んでよろしいですか？」
      EOF
      ```
 
-     **設定内容の説明**:
-     - `required_linear_history: false` - **マージコミット許可**（Git Flow維持に必須）
-     - `enforce_admins` - 一人開発: false（バイパス可能）、チーム: true
-     - `required_approving_review_count` - 両方: 1（一人開発はバイパス可能、チームは必須）
-     - `allow_force_pushes: false` - Force push禁止
-     - `dismiss_stale_reviews: true` - 古いレビューは新コミットで無効化
+     **Configuration Details**:
+     - `required_linear_history: false` - **Allow merge commits** (essential for maintaining Git Flow)
+     - `enforce_admins` - Solo: false (can bypass), Team: true
+     - `required_approving_review_count` - Both: 1 (solo can bypass, team required)
+     - `allow_force_pushes: false` - Prohibit force push
+     - `dismiss_stale_reviews: true` - Stale reviews are invalidated by new commits
 
-     **段階的移行の考え方**:
-     1. **ソロ開発フェーズ**: レビュー設定はあるが、Adminはバイパス可能で柔軟に作業
-     2. **チーム参加時**: 新メンバーは自動的にレビュー必須（Admin以外）
-     3. **完全移行時**: `enforce_admins: true`に変更で全員レビュー必須
+     **Gradual Transition Approach**:
+     1. **Solo Development Phase**: Review settings exist but Admin can bypass for flexible work
+     2. **Team Join**: New members automatically require reviews (non-Admins)
+     3. **Full Transition**: Change to `enforce_admins: true` for mandatory reviews for all
 
-   - **リポジトリレベルのマージ設定**（必須）
+   - **Repository-Level Merge Settings** (Required)
 
-     **⚠️ 重要**: ブランチ保護だけでなく、リポジトリレベルでもSquashマージを無効化
+     **⚠️ Important**: Disable squash merge at repository level as well as branch protection
 
      ```bash
-     # Squashマージとリベースマージを無効化
+     # Disable squash merge and rebase merge
      gh api repos/:owner/:repo -X PATCH -f allow_squash_merge=false -f allow_rebase_merge=false
      ```
 
-     **理由**:
-     - ブランチ保護は「履歴を直線にするか」の設定
-     - リポジトリ設定は「どのマージ方法を許可するか」の設定
-     - 両方設定しないと、PRマージ時にSquashが選択できてしまう
-     - **Git Flowでは必ずマージコミットのみ許可する**
+     **Reason**:
+     - Branch protection sets "whether to make history linear"
+     - Repository settings control "which merge methods are allowed"
+     - Without both settings, squash can still be selected during PR merge
+     - **Git Flow must only allow merge commits**
 
-3. **Git Worktreeの導入確認**
-   - Git Worktreeを導入しますか？
-   - **導入する場合の構成**：
-     - **メイン（develop）**: プロジェクトディレクトリそのまま
-     - **main worktree**: `[プロジェクト名]_main/`（リリース用、読み取り専用）
+3. **Git Worktree Introduction Confirmation**
+   - Do you want to introduce Git Worktree?
+   - **Configuration when introducing**:
+     - **Main (develop)**: Use project directory as-is
+     - **main worktree**: `[ProjectName]_main/` (for releases, read-only)
 
-   **セットアップ手順**:
+   **Setup Procedure**:
    ```bash
-   # プロジェクトディレクトリで実行
+   # Run in project directory
    cd /path/to/project
 
-   # main worktreeを作成（プロジェクト名_mainディレクトリ）
-   git worktree add ../[プロジェクト名]_main main
+   # Create main worktree (ProjectName_main directory)
+   git worktree add ../[ProjectName]_main main
    ```
 
-   **ディレクトリ構成例**（instrvoの場合）:
+   **Directory Structure Example** (for my-project):
    ```
-   /Users/yamato/Src/proj_instrvo/
-   ├── instrvo/         # develop worktree（開発作業用、ここがメイン）
-   └── instrvo_main/    # main worktree（リリース用、読み取り専用）
+   ~/Projects/proj_my-project/
+   ├── my-project/         # develop worktree (for development work, this is main)
+   └── my-project_main/    # main worktree (for releases, read-only)
    ```
 
-   - **導入しない場合**：
-     - 通常のブランチ切り替えで運用
-   - **注意**: 初期に導入しなくても、後から必要になったら導入可能
+   - **If not introducing**:
+     - Operate with normal branch switching
+   - **Note**: Even if not introduced initially, can be introduced later when needed
 
-4. **作業フローのルール化**
-   - 作業時は必ずISSUEを作成
-   - 基本的に `develop` からブランチを切る
-   - すでに作業用ブランチにいる場合は、どこからブランチを切るか確認
+4. **Workflow Rules Formalization**
+   - Always create an ISSUE when working
+   - Basically branch from `develop`
+   - If already on a working branch, confirm where to branch from
 
-5. **コミット・PR・ISSUEの命名規則**
-   - タイトル：英語
-   - 本文：日本語または英語（どちらにしますか？）
+5. **Commit/PR/ISSUE Naming Conventions**
+   - Title: English
+   - Body: Japanese or English (which do you prefer?)
 
-### ✅ Phase 5 設定完了後の確認
+### ✅ Phase 5 Configuration Completion Confirmation
 
-**YPMが以下を実行して設定を確認し、ユーザーに提示：**
+**YPM will execute the following to verify settings and present to user:**
 
-1. **デフォルトブランチの確認**
+1. **Verify Default Branch**
    ```bash
    gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'
    ```
-   結果をユーザーに見せて「デフォルトブランチが`develop`になっていますか？」と確認
+   Show result to user and confirm "Is the default branch set to `develop`?"
 
-2. **ブランチ保護設定の確認**
+2. **Verify Branch Protection Settings**
    ```bash
    gh api repos/:owner/:repo/branches/main/protection
    gh api repos/:owner/:repo/branches/develop/protection
    ```
-   結果をユーザーに見せて「ブランチ保護設定は正しいですか？」と確認
+   Show results to user and confirm "Are the branch protection settings correct?"
 
-3. **Git Worktreeの確認**（導入した場合）
+3. **Verify Git Worktree** (if introduced)
    ```bash
    git worktree list
    ```
-   結果をユーザーに見せて「Worktree構成は正しいですか？」と確認
+   Show results to user and confirm "Is the Worktree configuration correct?"
 
-**ユーザーの承認を得てから次のステップに進む**
+**Proceed to next step only after receiving user approval**
 
-### ✅ Phase 5 完了確認
+### ✅ Phase 5 Completion Confirmation
 
-**YPMが確認すること：**
-- デフォルトブランチが`develop`に設定されたか（確認済み）
-- main/developブランチ保護が設定されたか（確認済み）
-- Git Worktree設定が完了したか（導入した場合、確認済み）
-- 作業フローのルールが確立されたか
+**YPM will verify:**
+- Has default branch been set to `develop`? (verified)
+- Has main/develop branch protection been configured? (verified)
+- Has Git Worktree setup been completed? (if introduced, verified)
+- Have workflow rules been established?
 
-**すべて完了していることを確認したら、ユーザーに報告：**
+**After confirming all items are complete, report to user:**
 
-「✅ Phase 5（Git Workflowの設定）が完了しました。
+"✅ Phase 5 (Git Workflow Configuration) is complete.
 
-設定した内容：
-- デフォルトブランチ: develop
-- ブランチ保護: main/develop
-- Git Worktree: [導入した場合は構成を記載]
-- コミット・PR・ISSUE命名規則: [タイトル英語/本文日本語 等]
+Configured settings:
+- Default branch: develop
+- Branch protection: main/develop
+- Git Worktree: [If introduced, describe configuration]
+- Commit/PR/ISSUE naming conventions: [Title in English/Body in Japanese, etc.]
 
-Phase 6（環境設定ファイルの整備）に進んでよろしいですか？」
+May I proceed to Phase 6 (Environment Configuration Files)?"
 
-**ユーザーの承認を得たら：**
-1. ブートストラッププロンプトのPhase 6を読み直す（内部動作）
-2. Phase 6の内容を確認する（内部動作）
-3. Phase 6を開始する
+**After receiving user approval:**
+1. Re-read Phase 6 of the bootstrap prompt (internal operation)
+2. Review Phase 6 content (internal operation)
+3. Start Phase 6
 
-## フェーズ6: 環境設定ファイルの整備
+## Phase 6: Environment Configuration Files
 
-**進捗表示**:
+**Progress Display**:
 ```
-✅ Phase 1: プロジェクト企画
-✅ Phase 2: プロジェクトディレクトリ作成
-✅ Phase 3: ドキュメント整備
-✅ Phase 4: GitHub連携
-✅ Phase 5: Git Workflow設定
-🔄 Phase 6: 環境設定ファイル整備 ← 現在ここ
-⏳ Phase 7: ドキュメント管理ルール
-⏳ Phase 8: CLAUDE.md作成と最終確認
+✅ Phase 1: Project Planning
+✅ Phase 2: Project Directory Creation
+✅ Phase 3: Documentation Setup
+✅ Phase 4: GitHub Integration
+✅ Phase 5: Git Workflow Configuration
+🔄 Phase 6: Environment Configuration Files ← Currently here
+⏳ Phase 7: Documentation Management Rules
+⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
 ```
 
-1. **.gitignoreの設定**
-   - `.serena` を追加（開発プロジェクトで必須）
-   - 言語・フレームワーク固有の設定を追加
+1. **.gitignore Configuration**
+   - Add `.serena` (required for development projects)
+   - Add language/framework-specific settings
 
-2. **.claude/settings.json の設定**
+2. **.claude/settings.json Configuration**
 
-   **公式ドキュメント参照**（形式確認用）:
+   **Official Documentation Reference** (for format verification):
    - [Claude Code Settings - Anthropic Docs](https://docs.anthropic.com/en/docs/claude-code/settings)
 
-   **基本テンプレート**:
+   **Basic Template**:
 
-   > **設計思想**: `allow`は最小限に。各ユーザーは`.claude/settings.local.json`で許可を追加可能。
-   > 共有用`settings.json`は`ask`と`deny`を中心に構成。
+   > **Design Philosophy**: Minimize `allow`. Each user can add permissions in `.claude/settings.local.json`.
+   > Shared `settings.json` is centered on `ask` and `deny`.
 
    ```json
    {
@@ -587,230 +587,230 @@ Phase 6（環境設定ファイルの整備）に進んでよろしいですか�
    }
    ```
 
-   **デフォルト戦略**:
-   - `allow`: **最小限**（読み取り専用のみ）- ユーザーは`settings.local.json`で追加可能
-   - `ask`: 書き込み、Git、ビルドツール、ネットワーク操作等（確認を求める）
-   - `deny`: 機密ファイル、破壊的操作
-   
-3. **破壊的変更の禁止ルール**
-   - システムファイル（/etc, /usr など）への変更禁止
-   - プロジェクトディレクトリ外のファイル変更禁止
-   - これらをsettings.jsonとREADME.mdに明記
+   **Default Strategy**:
+   - `allow`: **Minimal** (read-only) - Users can add via `settings.local.json`
+   - `ask`: Write operations, Git, build tools, network operations, etc. (ask for confirmation)
+   - `deny`: Sensitive files, destructive operations
 
-### ⚠️ 重要な警告
+3. **Destructive Change Prohibition Rules**
+   - Prohibit changes to system files (/etc, /usr, etc.)
+   - Prohibit file changes outside project directory
+   - Document these in settings.json and README.md
 
-**ユーザーへの注意喚起：**
+### ⚠️ Important Warning
 
-「`.claude/settings.json`は公式ドキュメントとベストプラクティスに基づいて作成しますが、プロジェクトごとに要件が異なる可能性があります。
+**Alert to User:**
 
-各プロジェクトでClaude Codeセッションを開始した際に、settings.jsonの設定が適切かどうかを必ず確認してください。特に：
-- プロジェクト固有のツールやコマンドの権限
-- 特殊なディレクトリ構造への対応
-- セキュリティ要件
+"`.claude/settings.json` is created based on official documentation and best practices, but requirements may differ for each project.
 
-必要に応じて手動で調整してください。」
+When starting a Claude Code session in each project, please always verify that the settings.json configuration is appropriate. Pay special attention to:
+- Permissions for project-specific tools and commands
+- Handling special directory structures
+- Security requirements
 
-### ✅ Phase 6 完了確認
+Please adjust manually as needed."
 
-**YPMが確認すること：**
-- .gitignoreに`.serena`が追加されたか
-- .claude/settings.jsonが作成されたか
-- settings.jsonに公式ベストプラクティスが反映されているか
-- 破壊的変更の禁止ルールがsettings.jsonとREADME.mdに明記されているか
+### ✅ Phase 6 Completion Confirmation
 
-**すべて完了していることを確認したら、ユーザーに報告：**
+**YPM will verify:**
+- Has `.serena` been added to .gitignore?
+- Has .claude/settings.json been created?
+- Are official best practices reflected in settings.json?
+- Are destructive change prohibition rules documented in settings.json and README.md?
 
-「✅ Phase 6（環境設定ファイルの整備）が完了しました。
+**After confirming all items are complete, report to user:**
 
-作成した成果物：
-- .gitignore（.serena追加済み）
-- .claude/settings.json（パーミッション設定済み）
+"✅ Phase 6 (Environment Configuration Files) is complete.
 
-⚠️ 注意: settings.jsonはプロジェクトごとに確認・調整が必要です
+Created deliverables:
+- .gitignore (.serena added)
+- .claude/settings.json (permission settings configured)
 
-Phase 7（ドキュメント管理ルールの確立）に進んでよろしいですか？」
+⚠️ Note: settings.json needs to be verified and adjusted for each project
 
-**ユーザーの承認を得たら：**
-1. ブートストラッププロンプトのPhase 7を読み直す（内部動作）
-2. Phase 7の内容を確認する（内部動作）
-3. Phase 7を開始する
+May I proceed to Phase 7 (Documentation Management Rules)?"
 
-## フェーズ7: ドキュメント管理ルールの確立
+**After receiving user approval:**
+1. Re-read Phase 7 of the bootstrap prompt (internal operation)
+2. Review Phase 7 content (internal operation)
+3. Start Phase 7
 
-**進捗表示**:
+## Phase 7: Documentation Management Rules
+
+**Progress Display**:
 ```
-✅ Phase 1: プロジェクト企画
-✅ Phase 2: プロジェクトディレクトリ作成
-✅ Phase 3: ドキュメント整備
-✅ Phase 4: GitHub連携
-✅ Phase 5: Git Workflow設定
-✅ Phase 6: 環境設定ファイル整備
-🔄 Phase 7: ドキュメント管理ルール ← 現在ここ
-⏳ Phase 8: CLAUDE.md作成と最終確認
+✅ Phase 1: Project Planning
+✅ Phase 2: Project Directory Creation
+✅ Phase 3: Documentation Setup
+✅ Phase 4: GitHub Integration
+✅ Phase 5: Git Workflow Configuration
+✅ Phase 6: Environment Configuration Files
+🔄 Phase 7: Documentation Management Rules ← Currently here
+⏳ Phase 8: CLAUDE.md Creation and Final Confirmation
 ```
 
-1. **ドキュメント更新の原則**
-   - **実装とドキュメントの同期維持**
-     - 機能追加・変更時は関連ドキュメントも更新
-     - PRレビュー時にドキュメント更新も確認
-   
-   - **更新が必要なタイミング**
-     - 新機能の実装完了時
-     - アーキテクチャの変更時
-     - API仕様の変更時
-     - 環境設定の変更時
-     - 依存パッケージの大幅な更新時
-   
-   - **対象ドキュメント**
-     - README.md（セットアップ手順、使い方）
-     - docs/specifications.md（システム仕様）
-     - docs/architecture.md（設計図）
-     - docs/development-guide.md（開発ガイドライン）
-     - API仕様書（存在する場合）
+1. **Documentation Update Principles**
+   - **Maintain Synchronization Between Implementation and Documentation**
+     - Update related documentation when adding/changing features
+     - Verify documentation updates during PR reviews
 
-2. **オンボーディング支援**
-   - README.mdに以下を含める：
-     - クイックスタートガイド
-     - 開発環境のセットアップ手順
-     - よくある問題とその解決方法（FAQ）
-     - コントリビューションガイドライン
-   
-   - `docs/onboarding.md` の作成：
-     - プロジェクト構造の説明
-     - コーディング規約
-     - テストの書き方・実行方法
-     - デプロイメントプロセス
+   - **When Updates Are Needed**
+     - When new feature implementation is complete
+     - When architecture changes
+     - When API specifications change
+     - When environment settings change
+     - When major dependency package updates occur
 
-3. **ドキュメント更新のチェックリスト**
-   - PRテンプレートに「ドキュメント更新の有無」を追加
-   - CI/CDでドキュメントのリンク切れチェック（可能な場合）
+   - **Target Documents**
+     - README.md (setup procedures, usage)
+     - docs/specifications.md (system specifications)
+     - docs/architecture.md (design diagrams)
+     - docs/development-guide.md (development guidelines)
+     - API specifications (if they exist)
 
-### ✅ Phase 7 完了確認
+2. **Onboarding Support**
+   - Include the following in README.md:
+     - Quick start guide
+     - Development environment setup procedures
+     - FAQ (frequently asked questions and solutions)
+     - Contribution guidelines
 
-**YPMが確認すること：**
-- ドキュメント管理の原則が確立されたか
-- README.mdにオンボーディング情報が含まれているか
-- docs/onboarding.mdが作成されたか
-- PRテンプレートが作成されたか
+   - Create `docs/onboarding.md`:
+     - Explanation of project structure
+     - Coding conventions
+     - How to write and run tests
+     - Deployment process
 
-**すべて完了していることを確認したら、ユーザーに報告：**
+3. **Documentation Update Checklist**
+   - Add "Documentation update status" to PR template
+   - Check for broken documentation links in CI/CD (if possible)
 
-「✅ Phase 7（ドキュメント管理ルールの確立）が完了しました。
+### ✅ Phase 7 Completion Confirmation
 
-作成した成果物：
-- README.md（オンボーディング情報追加）
+**YPM will verify:**
+- Are documentation management principles established?
+- Does README.md include onboarding information?
+- Has docs/onboarding.md been created?
+- Has PR template been created?
+
+**After confirming all items are complete, report to user:**
+
+"✅ Phase 7 (Documentation Management Rules) is complete.
+
+Created deliverables:
+- README.md (onboarding information added)
 - docs/onboarding.md
-- PRテンプレート（.github/pull_request_template.md）
+- PR template (.github/pull_request_template.md)
 
-Phase 8（CLAUDE.md作成と最終確認）に進んでよろしいですか？」
+May I proceed to Phase 8 (CLAUDE.md Creation and Final Confirmation)?"
 
-**ユーザーの承認を得たら：**
-1. ブートストラッププロンプトのPhase 8を読み直す（内部動作）
-2. Phase 8の内容を確認する（内部動作）
-3. Phase 8を開始する
+**After receiving user approval:**
+1. Re-read Phase 8 of the bootstrap prompt (internal operation)
+2. Review Phase 8 content (internal operation)
+3. Start Phase 8
 
-## フェーズ8: CLAUDE.md作成と最終確認
+## Phase 8: CLAUDE.md Creation and Final Confirmation
 
-**進捗表示**:
+**Progress Display**:
 ```
-✅ Phase 1: プロジェクト企画
-✅ Phase 2: プロジェクトディレクトリ作成
-✅ Phase 3: ドキュメント整備
-✅ Phase 4: GitHub連携
-✅ Phase 5: Git Workflow設定
-✅ Phase 6: 環境設定ファイル整備
-✅ Phase 7: ドキュメント管理ルール
-🔄 Phase 8: CLAUDE.md作成と最終確認 ← 現在ここ
+✅ Phase 1: Project Planning
+✅ Phase 2: Project Directory Creation
+✅ Phase 3: Documentation Setup
+✅ Phase 4: GitHub Integration
+✅ Phase 5: Git Workflow Configuration
+✅ Phase 6: Environment Configuration Files
+✅ Phase 7: Documentation Management Rules
+🔄 Phase 8: CLAUDE.md Creation and Final Confirmation ← Currently here
 ```
 
-1. **CLAUDE.md作成**
-   - プロジェクト専用のCLAUDE.mdを作成
-   - 以下の内容を含める：
-     - プロジェクト概要
-     - 技術スタック
-     - 開発原則（DDD、TDD、DRY）
-     - セッション開始時の手順
-     - **Git Workflow（詳細な手順書）**
-     - **コミット・PR・ISSUE規約（言語ルール強調）**
-     - ディレクトリ構成
-     - 実装の進め方
-     - トラブルシューティング
-     - 参考リソース
+1. **Create CLAUDE.md**
+   - Create project-specific CLAUDE.md
+   - Include the following content:
+     - Project overview
+     - Tech stack
+     - Development principles (DDD, TDD, DRY)
+     - Session startup procedures
+     - **Git Workflow (detailed procedure manual)**
+     - **Commit/PR/ISSUE conventions (emphasize language rules)**
+     - Directory structure
+     - Implementation approach
+     - Troubleshooting
+     - Reference resources
 
-   **CLAUDE.mdに必ず含めるべき重要セクション**:
+   **Important Sections That Must Be Included in CLAUDE.md**:
 
-   ### A. Git Workflow強制ルール
+   ### A. Git Workflow Enforcement Rules
 
    ```markdown
-   ## 開発フロー
+   ## Development Flow
 
-   ### ⚠️ 重要: Git Workflowの強制ルール
+   ### ⚠️ Important: Git Workflow Enforcement Rules
 
-   **このセクションは絶対に省略できません。違反した場合は即座に停止してユーザーに報告すること。**
+   **This section cannot be omitted under any circumstances. If violated, stop immediately and report to user.**
 
-   #### 新機能開発フロー
+   #### New Feature Development Flow
 
-   **STEP 1**: GitHubでISSUE作成（必須）
-   **STEP 2**: 現在のブランチ確認（`git branch --show-current`で`develop`であることを確認）
-   **STEP 3**: featureブランチ作成（`git checkout -b feature/<issue番号>-<機能名>`）
-   **STEP 4**: 実装・コミット
-   **STEP 5**: PR作成（`feature/<...>` → `develop`）
-   **STEP 6**: マージ（マージコミット使用）
+   **STEP 1**: Create ISSUE on GitHub (required)
+   **STEP 2**: Verify current branch (confirm it's `develop` with `git branch --show-current`)
+   **STEP 3**: Create feature branch (`git checkout -b feature/<issue-number>-<feature-name>`)
+   **STEP 4**: Implement and commit
+   **STEP 5**: Create PR (`feature/<...>` → `develop`)
+   **STEP 6**: Merge (use merge commit)
 
-   #### リリースフロー
+   #### Release Flow
 
-   **STEP 1**: GitHubでISSUE作成（例: `Release v1.0.1`）
-   **STEP 2**: developブランチで最終調整・バージョン更新（必要に応じて）
-   **STEP 3**: PR作成（`develop` → `main`）  ← **直接PRでOK**
-   **STEP 4**: マージ（マージコミット使用）
-   **STEP 5**: タグ付け（`git tag v1.0.1`）
+   **STEP 1**: Create ISSUE on GitHub (e.g., `Release v1.0.1`)
+   **STEP 2**: Make final adjustments and version updates on develop branch (if needed)
+   **STEP 3**: Create PR (`develop` → `main`)  ← **Direct PR is OK**
+   **STEP 4**: Merge (use merge commit)
+   **STEP 5**: Tag (`git tag v1.0.1`)
 
-   **重要**: developからmainへの直接PRは**リリース時のみ許可**。
-   逆方向（main → develop）は**絶対禁止**。
+   **Important**: Direct PR from develop to main is **only allowed for releases**.
+   Reverse direction (main → develop) is **absolutely prohibited**.
 
-   #### 🚨 絶対禁止事項
+   #### 🚨 Absolute Prohibitions
 
-   - ❌ **main → develop への逆流**（これが最も重要）
-   - ❌ **main・developブランチへの直接コミット**
-   - ❌ Squashマージ（Git Flow履歴が破壊される）
-   - ❌ ISSUE番号のないブランチ名
+   - ❌ **main → develop backflow** (this is most critical)
+   - ❌ **Direct commits to main/develop branches**
+   - ❌ Squash merge (destroys Git Flow history)
+   - ❌ Branch names without ISSUE numbers
 
-   #### 🚨 違反時の対応
+   #### 🚨 Response to Violations
 
-   以下の状況を検知した場合、**即座に作業を停止**してユーザーに報告：
+   If the following situations are detected, **stop work immediately** and report to user:
 
-   1. **main → develop への逆流PR作成を試みた**
-      → 即座停止、「逆流は絶対禁止です」と報告
+   1. **Attempted to create main → develop backflow PR**
+      → Stop immediately, report "Backflow is absolutely prohibited"
 
-   2. **main・developブランチへの直接コミットを試みた**
-      → 即座停止、「featureブランチまたはbugfix/hotfixブランチで作業してください」と報告
+   2. **Attempted to commit directly to main/develop branches**
+      → Stop immediately, report "Please work on feature branch or bugfix/hotfix branch"
 
-   3. **Squashマージを選択しようとした**
-      → 即座停止、「必ずマージコミットを使用してください」と報告
+   3. **Attempted to select squash merge**
+      → Stop immediately, report "Must use merge commit"
    ```
 
-   ### B. コミット・PR言語ルール
+   ### B. Commit/PR Language Rules
 
    ```markdown
-   ## コミットメッセージ規約
+   ## Commit Message Conventions
 
-   ### 🚨 絶対に守るべき言語ルール（CRITICAL）
+   ### 🚨 Absolute Language Rules to Follow (CRITICAL)
 
-   **コミット・PR・ISSUEの言語**:
-   - ✅ **タイトル（1行目）**: **必ず英語** (Conventional Commits)
-   - ✅ **本文（2行目以降）**: **必ず日本語**
+   **Commit/PR/ISSUE Language**:
+   - ✅ **Title (1st line)**: **Must be in English** (Conventional Commits)
+   - ✅ **Body (2nd line onwards)**: **Must be in Japanese**
 
-   ### フォーマット
+   ### Format
 
    ```
-   <type>(<scope>): <subject>  ← 英語
+   <type>(<scope>): <subject>  ← English
 
-   <body>  ← 日本語
+   <body>  ← Japanese
 
    <footer>
    ```
 
-   **✅ 正しい例**:
+   **✅ Correct Example**:
    ```bash
    feat(tickets): implement issue search functionality
 
@@ -821,122 +821,122 @@ Phase 8（CLAUDE.md作成と最終確認）に進んでよろしいですか？�
    Closes #123
    ```
 
-   **❌ 間違った例（絶対にやってはいけない）**:
+   **❌ Wrong Example (Absolutely Do Not Do This)**:
    ```bash
-   # NG: 本文が英語
+   # NG: Body in English
    feat(tickets): implement issue search functionality
 
-   - Add search_issues tool  ← 英語はダメ！
-   - Support multiple filter parameters  ← 英語はダメ！
+   - Add search_issues tool  ← English is NG!
+   - Support multiple filter parameters  ← English is NG!
 
    Closes #123
    ```
 
-   ### 🚨 違反時の対応
+   ### 🚨 Response to Violations
 
-   4. **コミット・PRの本文が英語になっている**
-      → **絶対に許されない違反**
-      → 即座にユーザーに報告し、修正方法を提案
+   4. **Commit/PR body is in English**
+      → **Absolutely unacceptable violation**
+      → Report to user immediately and suggest correction method
    ```
 
-2. **CLAUDE.mdのレビュー**
-   - 作成したCLAUDE.mdの内容をユーザーに提示
-   - 「このCLAUDE.mdの内容でよろしいですか？」と確認
-   - ⚠️ **重要な注意事項をユーザーに伝える：**
+2. **Review CLAUDE.md**
+   - Present created CLAUDE.md content to user
+   - Confirm "Is this CLAUDE.md content acceptable?"
+   - ⚠️ **Communicate important notice to user:**
 
-     「CLAUDE.mdの変更は各プロジェクトのClaude Codeと確認しつつ修正するか、手動で編集を行ってください。プロジェクト固有の要件に応じて、適宜調整が必要です。」
+     "Changes to CLAUDE.md should be made while confirming with Claude Code in each project, or edited manually. Adjustments are necessary according to project-specific requirements."
 
-3. **追加ルールの確認**
-   - ユーザーに「他に導入したいルールや設定はありますか？」と確認
+3. **Confirm Additional Rules**
+   - Ask user "Are there any other rules or settings you'd like to introduce?"
 
-4. **最終コミット・プッシュ**
-   - すべての変更をコミット
-   - GitHubにプッシュ
+4. **Final Commit and Push**
+   - Commit all changes
+   - Push to GitHub
 
-5. **セットアップ完了確認**
-   - プロジェクトが開発可能な状態であることを確認
-   - 次のステップの案内：
+5. **Setup Completion Confirmation**
+   - Verify project is ready for development
+   - Guide next steps:
 
      ```
-     🎉 [プロジェクト名]の準備が完了しました！
+     🎉 [Project Name] preparation is complete!
 
-     ⚠️ 重要: YPMでの作業はここまでです
+     ⚠️ Important: YPM work ends here
 
-     YPMは「準備のみ」を行います。実装・テストコードの作成は行いません。
+     YPM only performs "preparation". It does not create implementation or test code.
 
-     次のステップ:
-     1. プロジェクトディレクトリに移動: cd [パス]
-     2. 新しいClaude Codeセッションを開始
-     3. CLAUDE.mdの指示に従って開発開始:
-        - DDD原則: ドキュメントから始める
-        - TDD原則: テストを先に書く
-        - 最初のISSUE作成
-        - developブランチから開発ブランチを切る
+     Next steps:
+     1. Navigate to project directory: cd [path]
+     2. Start new Claude Code session
+     3. Start development following CLAUDE.md instructions:
+        - DDD principle: Start with documentation
+        - TDD principle: Write tests first
+        - Create first ISSUE
+        - Branch from develop branch
 
-     実装は各プロジェクトで行ってください。
+     Please perform implementation in each project.
      ```
 
-### ✅ Phase 8 完了確認
+### ✅ Phase 8 Completion Confirmation
 
-**YPMが確認すること：**
-- CLAUDE.mdが作成され、ユーザーのレビューを受けたか
-- すべての変更がコミットされたか
-- GitHubにプッシュされたか
-- プロジェクトが開発可能な状態になったか
+**YPM will verify:**
+- Has CLAUDE.md been created and reviewed by user?
+- Have all changes been committed?
+- Has it been pushed to GitHub?
+- Is the project ready for development?
 
-**すべて完了していることを確認したら、ユーザーに最終報告：**
+**After confirming all items are complete, make final report to user:**
 
-「🎉 全8フェーズのブートストラップが完了しました！
+"🎉 All 8 phases of bootstrap are complete!
 
-[プロジェクト名]は開発可能な状態です。
+[Project Name] is ready for development.
 
-作成された主な成果物：
-- プロジェクトディレクトリとGitリポジトリ
-- docs/配下の基本ドキュメント
-- GitHubリポジトリ（Private）
-- Git Workflow設定（develop/main、ブランチ保護）
-- 環境設定ファイル（.gitignore、.claude/settings.json）
-- ドキュメント管理ルール（PRテンプレート等）
+Main deliverables created:
+- Project directory and Git repository
+- Basic documents under docs/
+- GitHub repository (Private)
+- Git Workflow configuration (develop/main, branch protection)
+- Environment configuration files (.gitignore, .claude/settings.json)
+- Documentation management rules (PR template, etc.)
 - CLAUDE.md
 
-⚠️ 重要: YPMでの作業はここまでです。
-実装は各プロジェクトで行ってください。
+⚠️ Important: YPM work ends here.
+Please perform implementation in each project.
 
-次のステップ:
-1. プロジェクトディレクトリに移動: cd [パス]
-2. 新しいClaude Codeセッションを開始
-3. CLAUDE.mdの指示に従って開発開始」
-
----
-
-## 開発中の継続的な実践
-
-### TDD実践ルール
-1. **Red**: 失敗するテストを書く
-2. **Green**: テストをパスする最小限のコードを書く
-3. **Refactor**: DRY原則に基づいてリファクタリング
-
-### ドキュメント更新のトリガー
-- 機能実装が完了し、PRをマージする直前
-- マイルストーン達成時（v0.1.0, v0.2.0など）
-- 月次または隔週での定期レビュー
+Next steps:
+1. Navigate to project directory: cd [path]
+2. Start new Claude Code session
+3. Start development following CLAUDE.md instructions"
 
 ---
 
-## 使い方
+## Continuous Practice During Development
 
-このプロンプトをClaude Codeに貼り付けて、対話を開始してください。各フェーズで必要な情報を尋ねながら、段階的にプロジェクトをセットアップしていきます。
+### TDD Practice Rules
+1. **Red**: Write failing test
+2. **Green**: Write minimal code to pass test
+3. **Refactor**: Refactor based on DRY principle
+
+### Documentation Update Triggers
+- Just before merging PR after feature implementation is complete
+- When milestones are achieved (v0.1.0, v0.2.0, etc.)
+- Monthly or bi-weekly regular reviews
 
 ---
 
-**主な追加点：**
+## Usage
 
-1. **フェーズ3**にTDD・DRY原則の明記
-2. **フェーズ7**として「ドキュメント管理ルール」を新設
-   - 更新タイミングの明確化
-   - オンボーディング支援の仕組み
-   - チェックリストの導入
-3. **フェーズ8**に開発開始時の指針を追加
-4. **開発中の継続的な実践**セクションで実装中のルールを明記
+Paste this prompt into Claude Code to start the dialogue. We will guide you through project setup step by step, asking for necessary information at each phase.
 
-これにより、プロジェクト開始時だけでなく、開発が進行する中でもドキュメントが最新に保たれ、新しいメンバーがいつでもスムーズに参加できる環境が整います。
+---
+
+**Main Additions:**
+
+1. Added explicit mention of TDD/DRY principles in **Phase 3**
+2. Created new **Phase 7** as "Documentation Management Rules"
+   - Clarified update timing
+   - Onboarding support mechanisms
+   - Introduced checklists
+3. Added development startup guidelines to **Phase 8**
+4. Documented implementation rules in **Continuous Practice During Development** section
+
+This ensures documentation stays current not only at project start but throughout development, creating an environment where new members can smoothly join at any time.

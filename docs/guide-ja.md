@@ -469,9 +469,9 @@ YPMは以下の基準でプロジェクトの進捗率を推測します：
 ```yaml
 monitor:
   directories:
-    - /Users/yamato/Src
-    - /Users/yamato/Work      # 追加
-    - /Users/yamato/Projects  # 追加
+    - ~/Projects
+    - ~/Work      # 追加
+    - ~/Documents/code  # 追加
 ```
 
 ### プロジェクト検出パターンの変更

@@ -231,8 +231,8 @@ def ask_pattern(directory, language):
                 sub_subdirs = [d.name for d in subdir_path.iterdir() if d.is_dir() and not d.name.startswith('.')]
                 for sub in sub_subdirs[:3]:
                     print(f"  │   ├── {sub}/")
-            except:
-                pass
+            except (PermissionError, OSError):
+                pass  # Skip subdirectories we cannot read
 
         if len(subdirs) > 10:
             print(f"  ... (+{len(list(Path(directory).iterdir())) - 10} more)")
@@ -448,7 +448,7 @@ def ask_generate_status(language):
     # Check if Git is available
     try:
         subprocess.run(['git', '--version'], capture_output=True, check=True)
-    except:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         print(m['git_warning'])
         return False
 

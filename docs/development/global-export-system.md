@@ -374,7 +374,7 @@ gh pr create --base develop --head feature/xxx
 ```yaml
 # MaxMCP/.export-config.yml
 export:
-  private_repo: "/Users/yamato/Src/proj_MaxMCP/MaxMCP-yamato"
+  private_repo: "~/Projects/my-project-private"
   public_repo_url: "https://github.com/signalcompose/MaxMCP.git"
   exclude_paths:
     - CLAUDE.md
