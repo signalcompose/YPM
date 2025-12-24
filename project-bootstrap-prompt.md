@@ -2,7 +2,7 @@
 
 ## ⚠️ 重要: このプロンプトの役割
 
-**このプロンプト（`/ypm-new`コマンド）の唯一の仕事は、ブートストラップフローを厳格に守り、安全かつ迅速にプロジェクトの実装準備を完了させることです。**
+**このプロンプト（`/ypm:new`コマンド）の唯一の仕事は、ブートストラップフローを厳格に守り、安全かつ迅速にプロジェクトの実装準備を完了させることです。**
 
 ### 絶対に守るべき原則
 
@@ -531,16 +531,66 @@ Phase 6（環境設定ファイルの整備）に進んでよろしいですか�
    - 言語・フレームワーク固有の設定を追加
 
 2. **.claude/settings.json の設定**
-   - **Gemini検索でベストプラクティスを調査**（必須）:
-     ```bash
-     /gemini-search Claude Code settings.json permissions best practices
-     /gemini-search Claude Code settings.json security configuration
-     ```
-   - 調査結果に基づいて詳細なパーミッション設定を作成
-   - デフォルト戦略：
-     - `allow`: 読み取り専用、プロジェクト内の安全な操作
-     - `ask`: 書き込み操作、外部サービス連携
-     - `deny`: システムファイル、プロジェクト外への破壊的変更
+
+   **公式ドキュメント参照**（形式確認用）:
+   - [Claude Code Settings - Anthropic Docs](https://docs.anthropic.com/en/docs/claude-code/settings)
+
+   **基本テンプレート**:
+
+   > **設計思想**: `allow`は最小限に。各ユーザーは`.claude/settings.local.json`で許可を追加可能。
+   > 共有用`settings.json`は`ask`と`deny`を中心に構成。
+
+   ```json
+   {
+     "permissions": {
+       "allow": [
+         "Read(*)",
+         "Glob(*)",
+         "Grep(*)"
+       ],
+       "ask": [
+         "Write(*)",
+         "Edit(*)",
+         "Bash(git :*)",
+         "Bash(gh :*)",
+         "Bash(npm :*)",
+         "Bash(pnpm :*)",
+         "Bash(yarn :*)",
+         "Bash(python :*)",
+         "Bash(pip :*)",
+         "Bash(cargo :*)",
+         "Bash(go :*)",
+         "Bash(docker :*)",
+         "Bash(curl :*)",
+         "Bash(wget :*)"
+       ],
+       "deny": [
+         "Read(./.env)",
+         "Read(./.env.*)",
+         "Read(./secrets/**)",
+         "Read(./**/credentials.json)",
+         "Read(./**/*.pem)",
+         "Read(./**/*.key)",
+         "Bash(rm -rf :*)",
+         "Bash(rm -r :*)",
+         "Bash(git push --force :*)",
+         "Bash(git push -f :*)",
+         "Bash(git reset --hard :*)",
+         "Bash(git clean -f :*)",
+         "Bash(gh repo delete :*)",
+         "Bash(gh secret :*)",
+         "Bash(sudo :*)",
+         "Bash(chmod 777 :*)"
+       ]
+     },
+     "cleanupPeriodDays": 30
+   }
+   ```
+
+   **デフォルト戦略**:
+   - `allow`: **最小限**（読み取り専用のみ）- ユーザーは`settings.local.json`で追加可能
+   - `ask`: 書き込み、Git、ビルドツール、ネットワーク操作等（確認を求める）
+   - `deny`: 機密ファイル、破壊的操作
    
 3. **破壊的変更の禁止ルール**
    - システムファイル（/etc, /usr など）への変更禁止
@@ -551,7 +601,7 @@ Phase 6（環境設定ファイルの整備）に進んでよろしいですか�
 
 **ユーザーへの注意喚起：**
 
-「`.claude/settings.json`はGemini検索の結果に基づいて作成しますが、プロジェクトごとに要件が異なる可能性があります。
+「`.claude/settings.json`は公式ドキュメントとベストプラクティスに基づいて作成しますが、プロジェクトごとに要件が異なる可能性があります。
 
 各プロジェクトでClaude Codeセッションを開始した際に、settings.jsonの設定が適切かどうかを必ず確認してください。特に：
 - プロジェクト固有のツールやコマンドの権限
@@ -565,7 +615,7 @@ Phase 6（環境設定ファイルの整備）に進んでよろしいですか�
 **YPMが確認すること：**
 - .gitignoreに`.serena`が追加されたか
 - .claude/settings.jsonが作成されたか
-- settings.jsonにGemini検索結果が反映されているか
+- settings.jsonに公式ベストプラクティスが反映されているか
 - 破壊的変更の禁止ルールがsettings.jsonとREADME.mdに明記されているか
 
 **すべて完了していることを確認したら、ユーザーに報告：**
