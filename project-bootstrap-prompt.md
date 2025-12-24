@@ -560,7 +560,9 @@ Phase 6（環境設定ファイルの整備）に進んでよろしいですか�
          "Bash(pip :*)",
          "Bash(cargo :*)",
          "Bash(go :*)",
-         "Bash(docker :*)"
+         "Bash(docker :*)",
+         "Bash(curl :*)",
+         "Bash(wget :*)"
        ],
        "deny": [
          "Read(./.env)",
@@ -571,8 +573,6 @@ Phase 6（環境設定ファイルの整備）に進んでよろしいですか�
          "Read(./**/*.key)",
          "Bash(rm -rf :*)",
          "Bash(rm -r :*)",
-         "Bash(curl :*)",
-         "Bash(wget :*)",
          "Bash(git push --force :*)",
          "Bash(git push -f :*)",
          "Bash(git reset --hard :*)",
@@ -589,8 +589,8 @@ Phase 6（環境設定ファイルの整備）に進んでよろしいですか�
 
    **デフォルト戦略**:
    - `allow`: **最小限**（読み取り専用のみ）- ユーザーは`settings.local.json`で追加可能
-   - `ask`: 書き込み、Git、ビルドツール等（確認を求める）
-   - `deny`: 機密ファイル、破壊的操作、ネットワーク操作
+   - `ask`: 書き込み、Git、ビルドツール、ネットワーク操作等（確認を求める）
+   - `deny`: 機密ファイル、破壊的操作
    
 3. **破壊的変更の禁止ルール**
    - システムファイル（/etc, /usr など）への変更禁止

@@ -17,7 +17,9 @@
       "Bash(pip :*)",
       "Bash(cargo :*)",
       "Bash(go :*)",
-      "Bash(docker :*)"
+      "Bash(docker :*)",
+      "Bash(curl :*)",
+      "Bash(wget :*)"
     ],
     "deny": [
       "Read(./.env)",
@@ -28,8 +30,6 @@
       "Read(./**/*.key)",
       "Bash(rm -rf :*)",
       "Bash(rm -r :*)",
-      "Bash(curl :*)",
-      "Bash(wget :*)",
       "Bash(git push --force :*)",
       "Bash(git push -f :*)",
       "Bash(git reset --hard :*)",
