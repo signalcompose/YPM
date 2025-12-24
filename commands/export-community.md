@@ -5,7 +5,7 @@ description: "Export private repository to public community version"
 <!-- Language Handling: Check ~/.ypm/config.yml for settings.language -->
 <!-- If language is not "en", translate all output to that language -->
 
-# /ypm-export-community - Export Private Repository to Public Community Version
+# /ypm:export-community - Export Private Repository to Public Community Version
 
 This command exports from a private repository to public community version.
 

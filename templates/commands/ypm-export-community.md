@@ -1,4 +1,4 @@
-# /ypm-export-community - Export Private Repository to Public Community Version
+# /ypm:export-community - Export Private Repository to Public Community Version
 
 このコマンドは、privateリポジトリからpublicコミュニティ版へexportします。
 
