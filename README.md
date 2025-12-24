@@ -140,6 +140,23 @@ This separation ensures:
 
 ---
 
+## Language Support
+
+YPM supports multiple languages through dynamic translation:
+
+- **English (default)**: All output displayed as-is
+- **Japanese**: Set `settings.language: ja` in `~/.ypm/config.yml`
+
+Claude automatically translates command output based on your language preference. Static documentation remains in English to ensure consistency across the global community.
+
+```yaml
+# In ~/.ypm/config.yml
+settings:
+  language: ja   # Options: en (default), ja
+```
+
+---
+
 ## Project Bootstrap Assistant
 
 YPM includes a comprehensive project setup assistant for launching new projects.
